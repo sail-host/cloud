@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/sail-host/cloud/config"
+	"github.com/sail-host/cloud/internal/bootstrap"
 )
 
 func main() {
+	// Load config
 	config.LoadConfig()
-	fmt.Println("Hello, World!")
-	fmt.Println(config.GetConfig())
+
+	// Run web server
+	app := bootstrap.NewApp()
+	app.Run()
 }
