@@ -5,3 +5,4 @@ tmp
 *.dll
 *.sqlite
 *.db
+.env
