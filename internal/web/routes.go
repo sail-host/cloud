@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/sail-host/cloud/internal/middleware"
 )
 
 type Route struct {
@@ -17,7 +16,7 @@ func NewRoute(e *echo.Echo) *Route {
 
 func (r *Route) Run() {
 	api := r.echo.Group("/api")
-	api.Use(middleware.ContentJSON)
+	// api.Use(middleware.ContentJSON)
 
 	// Ping
 	api.GET("/ping", func(c echo.Context) error {

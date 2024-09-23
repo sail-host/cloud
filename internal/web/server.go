@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sail-host/cloud/config"
+	"github.com/sail-host/cloud/internal/handlers"
 	"github.com/sail-host/cloud/web"
 )
 
@@ -20,7 +21,7 @@ func NewServer() {
 	e.Use(middleware.Recover())
 
 	// Serve static files
-	e.StaticFS("/*", assets)
+	e.GET("/*", handlers.SPA(assets))
 
 	// Api routes
 	router := NewRoute(e)
