@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/sail-host/cloud/config"
+	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/handlers"
 	"github.com/sail-host/cloud/web"
 )
@@ -27,6 +27,6 @@ func NewServer() {
 	router := NewRoute(e)
 	router.Run()
 
-	log.Printf("Server started on port %s", config.GetConfig().Port)
-	e.Logger.Fatal(e.Start(":" + config.GetConfig().Port))
+	log.Printf("Server started on port %s", global.CONF.System.Port)
+	e.Logger.Fatal(e.Start(":" + global.CONF.System.Port))
 }

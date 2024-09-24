@@ -6,3 +6,4 @@ tmp
 *.sqlite
 *.db
 .env
+.vscode
