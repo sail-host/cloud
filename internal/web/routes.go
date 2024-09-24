@@ -10,6 +10,7 @@ type Route struct {
 	echo *echo.Echo
 }
 
+// TODO: Remove this code
 func NewRoute(e *echo.Echo) *Route {
 	return &Route{echo: e}
 }

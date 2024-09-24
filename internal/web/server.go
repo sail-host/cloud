@@ -10,6 +10,7 @@ import (
 	"github.com/sail-host/cloud/web"
 )
 
+// TODO: Remove this code
 func NewServer() {
 	assets, err := web.Assets()
 	if err != nil {
