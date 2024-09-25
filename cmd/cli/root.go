@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/user"
+	"runtime"
 
 	"github.com/spf13/cobra"
 )
@@ -33,4 +34,9 @@ func isRoot() bool {
 		return false
 	}
 	return u.Gid == "0"
+}
+
+// Check os is linux
+func isLinux() bool {
+	return runtime.GOOS == "linux"
 }
