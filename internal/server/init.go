@@ -8,9 +8,11 @@ import (
 	"github.com/sail-host/cloud/internal/init/migration"
 	"github.com/sail-host/cloud/internal/init/session"
 	"github.com/sail-host/cloud/internal/init/validator"
+	"github.com/sail-host/cloud/internal/init/viper"
 )
 
 func Init() {
+	viper.Init()
 	log.Init()
 	db.Init()
 	migration.Init()
