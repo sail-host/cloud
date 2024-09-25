@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 
+	"github.com/sail-host/cloud/internal/server"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,6 @@ var appCmd = &cobra.Command{
 			return
 		}
 
-		// TODO: Run SailHost web service
+		server.Start()
 	},
 }
