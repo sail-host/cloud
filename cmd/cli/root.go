@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"os/user"
 
 	"github.com/spf13/cobra"
 )
@@ -23,4 +24,13 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+// Check current user
+func isRoot() bool {
+	u, err := user.Current()
+	if err != nil {
+		return false
+	}
+	return u.Gid == "0"
 }
