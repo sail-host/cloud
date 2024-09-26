@@ -19,16 +19,16 @@ var appCmd = &cobra.Command{
 	Short: "Run SailHost web service",
 	Long:  `Run SailHost web service`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if devMode && !isRoot() {
+		if !devMode && !isRoot() {
 			fmt.Println("You must run SailHost as root user. Please run 'sudo sailhost app'")
 			return
 		}
 
-		if devMode && !isLinux() {
+		if !devMode && !isLinux() {
 			fmt.Println("SailHost is only supported on Linux")
 			return
 		}
 
-		server.Start()
+		server.Start(devMode)
 	},
 }

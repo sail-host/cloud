@@ -8,8 +8,8 @@ import (
 	"github.com/sail-host/cloud/internal/init/router"
 )
 
-func Start() {
-	Init()
+func Start(devMode bool) {
+	Init(devMode)
 
 	appRouter := router.Routers()
 

@@ -11,8 +11,8 @@ import (
 	"github.com/sail-host/cloud/internal/init/viper"
 )
 
-func Init() {
-	viper.Init()
+func Init(devMode bool) {
+	viper.Init(devMode)
 	log.Init()
 	db.Init()
 	migration.Init()
