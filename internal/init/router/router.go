@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/labstack/echo/v4"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/sail-host/cloud/internal/app/service"
 	"github.com/sail-host/cloud/internal/middleware"
 	commRoutes "github.com/sail-host/cloud/internal/router"
@@ -27,6 +28,8 @@ func Routers() *echo.Echo {
 	Router = echo.New()
 
 	// TODO: Add this middleware for log and debug
+	Router.Use(echoMiddleware.Logger())
+	Router.Use(echoMiddleware.Recover())
 
 	setStatic(Router)
 

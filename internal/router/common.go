@@ -8,6 +8,7 @@ type ICommonRouter interface {
 
 func commonGroups() []ICommonRouter {
 	return []ICommonRouter{
+		&BaseRouter{},
 		&AppRouter{},
 	}
 }
