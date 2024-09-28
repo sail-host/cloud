@@ -16,6 +16,8 @@ import { Button } from '@/components/custom/button'
 import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -37,32 +39,43 @@ const formSchema = z.object({
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'admin@admin.com',
-      password: 'admin123',
+      email: '',
+      password: '',
     },
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    console.log(data)
 
-    setTimeout(() => {
-      setIsLoading(false)
-
-      // TODO: Fake auth provider
-      if (data.email === 'admin@admin.com' && data.password === 'admin123') {
-        localStorage.setItem('auth_token', 'admin')
-        navigate('/')
+    type LoginResponse = BaseResponse & { token: string }
+    axios
+      .post<LoginResponse>('/api/v1/auth/login', data)
+      .then((res) => {
+        if (res.data.status === 'success') {
+          localStorage.setItem('auth_token', res.data.token)
+          navigate('/')
+        } else {
+          toast.error(res.data.message)
+        }
+        form.reset()
         return
-      }
-
-      // TODO: Show error message
-      toast.error('Invalid email or password')
-    }, 1000)
+      })
+      .catch((err) => {
+        // Check if status is 401
+        if (err.response?.status === 401) {
+          form.setError('password', {
+            message: 'Invalid email or password',
+          })
+        } else {
+          toast.error(err.response?.data?.message || 'Something went wrong')
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   return (
