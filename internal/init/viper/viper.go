@@ -8,6 +8,7 @@ import (
 	"github.com/sail-host/cloud/internal/config"
 	"github.com/sail-host/cloud/internal/constants"
 	"github.com/sail-host/cloud/internal/global"
+	"github.com/sail-host/cloud/internal/utils/random"
 	"github.com/spf13/viper"
 )
 
@@ -88,6 +89,7 @@ func setViperConfig(cfg config.Config) {
 	viper.Set("system.db_path", cfg.System.DbPath)
 	viper.Set("system.log_path", cfg.System.LogPath)
 	viper.Set("system.version", cfg.System.Version)
+	viper.Set("system.encrypt_key", cfg.System.EncryptKey)
 }
 
 // Create config file
@@ -121,6 +123,7 @@ func createConfig(devMode bool, configDir string) config.Config {
 	rootConfig.System.DbPath = path.Join(configDir, "db")
 	rootConfig.System.LogPath = path.Join(configDir, "log")
 	rootConfig.System.Version = constants.Version
+	rootConfig.System.EncryptKey = random.StringGenerator(32)
 
 	return rootConfig
 }
