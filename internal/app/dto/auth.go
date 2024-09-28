@@ -10,3 +10,9 @@ type LoginResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
+
+type RegisterRequest struct {
+	Name     string `json:"name" validate:"required,name"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,password"`
+}

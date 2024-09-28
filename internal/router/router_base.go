@@ -13,5 +13,7 @@ func (r *BaseRouter) InitRouter(Router *echo.Group) {
 	baseApi := apiV1.ApiGroupApp.BaseApi
 	{
 		baseRouter.POST("/login", baseApi.Login)
+		baseRouter.GET("/check-user-first-time", baseApi.CheckUserFirstTime)
+		baseRouter.POST("/register", baseApi.Register)
 	}
 }

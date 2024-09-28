@@ -19,7 +19,19 @@ func Init() {
 	if err := validator.RegisterValidation("password", checkPasswordPattern); err != nil {
 		panic(err)
 	}
+	if err := validator.RegisterValidation("email", checkEmailPattern); err != nil {
+		panic(err)
+	}
 	global.VALID = validator
+	global.ECHO.Validator = &CustomValidator{validator: validator}
+}
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
 }
 
 func checkNamePattern(fl validator.FieldLevel) bool {
@@ -61,4 +73,13 @@ func checkPasswordPattern(fl validator.FieldLevel) bool {
 	}
 
 	return false
+}
+
+func checkEmailPattern(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+	result, err := regexp.MatchString(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`, value)
+	if err != nil {
+		global.LOG.Errorf("regexp check email matchString failed, %v", err)
+	}
+	return result
 }

@@ -14,10 +14,10 @@ import (
 func Init(devMode bool) {
 	viper.Init(devMode)
 	log.Init()
+	app.Init()
 	db.Init()
 	migration.Init()
 	validator.Init()
-	app.Init()
 	cache.Init()
 	session.Init()
 }
