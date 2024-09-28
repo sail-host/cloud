@@ -1,14 +1,11 @@
 package service
 
 import (
-	"time"
-
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
-	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/hash"
+	"github.com/sail-host/cloud/internal/utils/jwt"
 )
 
 type AuthService struct{}
@@ -41,15 +38,13 @@ func (s *AuthService) Login(c echo.Context, request dto.LoginRequest) (*dto.Logi
 	}
 
 	// Generate token
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["id"] = user.ID
-	claims["name"] = user.Name
-	claims["email"] = user.Email
-	claims["role"] = user.Role
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	token := jwt.NewJWT()
+	claims := token.CreateClaims(jwt.BaseClaims{
+		ID:   user.ID,
+		Name: user.Name,
+	})
 
-	tokenString, err := token.SignedString([]byte(global.CONF.System.EncryptKey))
+	tokenString, err := token.CreateToken(claims)
 	if err != nil {
 		baseError.Status = "error"
 		baseError.Message = "Error generating token"
