@@ -1,12 +1,39 @@
-import { Navigate } from "react-router-dom"
+import { Navigate } from 'react-router-dom'
+import axios from 'axios'
+import useAuth from '@/hooks/use-auth'
+import { useEffect } from 'react'
+import { Loading } from '../custom/loading'
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
-    // TODO: Fake auth provider
-    const isAuthenticated = localStorage.getItem('auth_token') !== null
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token')
+  config.headers.Authorization = `Bearer ${token}`
 
-    if (!isAuthenticated) {
-        return <Navigate to='/login' />
-    }
+  return config
+})
 
-    return children
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const { user, login, loading } = useAuth()
+
+  useEffect(() => {
+    login()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (loading) {
+    return (
+      <div className='z-50 flex items-center justify-center h-screen'>
+        <Loading loading={true} />
+      </div>
+    )
+  }
+
+  if (!login && !user) {
+    return <Navigate to='/login' />
+  }
+
+  return children
 }
