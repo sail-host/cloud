@@ -87,3 +87,16 @@ func (b *BaseApi) GitGetByID(echo echo.Context) error {
 	}
 	return echo.JSON(http.StatusOK, git)
 }
+
+func (b *BaseApi) GitCheckAccount(echo echo.Context) error {
+	var request dto.CreateGitRequest
+	if err := echo.Bind(&request); err != nil {
+		return echo.JSON(http.StatusBadRequest, err)
+	}
+
+	git, err := gitService.CheckAccount(echo, request)
+	if err != nil {
+		return echo.JSON(http.StatusBadRequest, err)
+	}
+	return echo.JSON(http.StatusOK, git)
+}

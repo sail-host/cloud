@@ -4,6 +4,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
+	"github.com/sail-host/cloud/internal/utils/git"
+	"github.com/sail-host/cloud/internal/utils/git/github"
 )
 
 type GitService struct {
@@ -15,6 +17,7 @@ type IGitService interface {
 	CreateGit(c echo.Context, request dto.CreateGitRequest) (*dto.GitResponse, *dto.BaseError)
 	UpdateGit(c echo.Context, id uint, request dto.UpdateGitRequest) (*dto.GitResponse, *dto.BaseError)
 	DeleteGit(id uint) *dto.BaseError
+	CheckAccount(c echo.Context, request dto.CreateGitRequest) (*dto.BaseResponse, *dto.BaseError)
 }
 
 func NewIGitService() IGitService {
@@ -154,4 +157,29 @@ func (s *GitService) DeleteGit(id uint) *dto.BaseError {
 	}
 
 	return nil
+}
+
+func (s *GitService) CheckAccount(c echo.Context, request dto.CreateGitRequest) (*dto.BaseResponse, *dto.BaseError) {
+	var response dto.BaseResponse
+	var baseError dto.BaseError
+	response.Data = false
+
+	if request.Type == "github" {
+		github := github.NewGithub(request.Token)
+		gitManager := git.NewGitManager(github)
+
+		account, err := gitManager.CheckAccount()
+		if err != nil {
+			baseError.Status = "error"
+			baseError.Message = "Failed to check account"
+			return nil, &baseError
+		}
+		response.Data = account
+	}
+	// TODO: Add other git provider
+
+	response.Status = "success"
+	response.Message = "Git account checked successfully"
+
+	return &response, nil
 }

@@ -19,5 +19,6 @@ func (r *GitRouter) InitRouter(Router *echo.Group) {
 		gitRouter.PUT("/update/:id", gitApi.GitUpdate)
 		gitRouter.DELETE("/delete/:id", gitApi.GitDelete)
 		gitRouter.GET("/show/:id", gitApi.GitGetByID)
+		gitRouter.POST("/check-account", gitApi.GitCheckAccount)
 	}
 }
