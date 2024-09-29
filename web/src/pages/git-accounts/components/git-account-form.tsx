@@ -30,7 +30,7 @@ export const formSchema = z.object({
   gitUrl: z.string().url({
     message: 'Git URL must be a valid URL.',
   }),
-  type: z.enum(['github', 'gitlab', 'bitbucket']),
+  type: z.enum(['github', 'gitlab', 'bitbucket', 'gitea']),
   token: z.string().min(1, {
     message: 'Token must be at least 1 character.',
   }),
