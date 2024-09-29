@@ -31,10 +31,11 @@ export default function useAuth() {
       })
   }
 
-  const logout = () => {
-    // TODO: Logout user
-    setUser(null)
-    localStorage.removeItem('auth_token')
+  const logout = async () => {
+    await axios.post('/api/v1/auth/logout').finally(() => {
+      setUser(null)
+      localStorage.removeItem('auth_token')
+    })
   }
 
   return { user, login, logout, loading }
