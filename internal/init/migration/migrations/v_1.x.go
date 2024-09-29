@@ -15,3 +15,13 @@ var CreateUserTable = &gormigrate.Migration{
 		return tx.Migrator().DropTable(&model.User{})
 	},
 }
+
+var CreateGitTable = &gormigrate.Migration{
+	ID: "20241024-add-table-git",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.Git{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.Git{})
+	},
+}
