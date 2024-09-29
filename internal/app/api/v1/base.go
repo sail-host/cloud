@@ -12,4 +12,5 @@ var ApiGroupApp = new(ApiGroup)
 
 var (
 	authService = service.NewIAuthService()
+	gitService  = service.NewIGitService()
 )

@@ -6,6 +6,9 @@ run:
 dev:
 	cd web && npm run build && cd .. && go run cmd/main.go app --dev
 
+dev-api:
+	@go run cmd/main.go app --dev
+
 build:
 	@echo "Building web..."
 	cd web && npm run build

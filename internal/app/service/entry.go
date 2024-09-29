@@ -6,4 +6,5 @@ import (
 
 var (
 	userRepo = repo.NewIUserRepo()
+	gitRepo  = repo.NewIGitRepo()
 )
