@@ -18,6 +18,7 @@ type IAuthService interface {
 	Login(c echo.Context, request dto.LoginRequest) (*dto.LoginResponse, *dto.BaseError)
 	Register(c echo.Context, request dto.RegisterRequest) (*dto.BaseResponse, *dto.BaseError)
 	CheckUserFirstTime(c echo.Context) (bool, *dto.BaseError)
+	Logout(c echo.Context) (*dto.BaseResponse, *dto.BaseError)
 }
 
 func NewIAuthService() IAuthService {
@@ -140,4 +141,23 @@ func (s *AuthService) CheckUserFirstTime(c echo.Context) (bool, *dto.BaseError) 
 		return false, &baseError
 	}
 	return exist, nil
+}
+
+func (s *AuthService) Logout(c echo.Context) (*dto.BaseResponse, *dto.BaseError) {
+	var response dto.BaseResponse
+	var baseError dto.BaseError
+
+	authToken := c.Get("auth_token").(string)
+
+	err := authRepo.DeleteAuthTokenByToken(authToken)
+	if err != nil {
+		baseError.Status = "error"
+		baseError.Message = "Database error"
+		return nil, &baseError
+	}
+
+	response.Status = "success"
+	response.Message = "Logout successful"
+
+	return &response, nil
 }

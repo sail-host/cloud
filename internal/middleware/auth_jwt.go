@@ -60,6 +60,7 @@ func AuthJWT(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		c.Set("user", user)
+		c.Set("auth_token", auth.Token)
 		return next(c)
 	}
 }

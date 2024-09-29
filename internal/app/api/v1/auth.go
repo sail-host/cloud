@@ -61,3 +61,12 @@ func (api *BaseApi) Register(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+
+func (api *BaseApi) Logout(c echo.Context) error {
+	res, err := authService.Logout(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
