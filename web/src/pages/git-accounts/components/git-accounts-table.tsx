@@ -15,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { gitAccounts } from '../data/gitAccounts'
 import { DotsHorizontalIcon, ExternalLinkIcon } from '@radix-ui/react-icons'
 import { Link } from 'react-router-dom'
 import {
@@ -24,8 +23,18 @@ import {
   IconBrandBitbucket,
 } from '@tabler/icons-react'
 import { useDeleteModalStore } from '@/store/delete-modal-store'
+import { GitAccount } from '@/types/model'
+import { Loading } from '@/components/custom/loading'
 
-export function GitAccountsTable() {
+interface GitAccountsTableProps {
+  gitAccounts: GitAccount[]
+  loading: boolean
+}
+
+export function GitAccountsTable({
+  gitAccounts,
+  loading,
+}: GitAccountsTableProps) {
   const { setOpen, setDeleteID } = useDeleteModalStore()
 
   const handleDelete = (id: string | number) => {
@@ -46,57 +55,71 @@ export function GitAccountsTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {gitAccounts.map((gitAccount) => (
-          <TableRow key={gitAccount.id}>
-            <TableCell className='font-medium'>{gitAccount.id}</TableCell>
-            <TableCell className='font-medium'>{gitAccount.name}</TableCell>
-            <TableCell className='flex items-center gap-x-2 capitalize'>
-              {gitAccount.type === 'github' ? (
-                <IconBrandGithub />
-              ) : gitAccount.type === 'gitlab' ? (
-                <IconBrandGitlab />
-              ) : (
-                <IconBrandBitbucket />
-              )}
-              {gitAccount.type}
-            </TableCell>
-            <TableCell>
-              <Link
-                to={gitAccount.gitUrl}
-                target='_blank'
-                className='flex items-center gap-x-1 text-blue-500 hover:text-blue-600'
-              >
-                {gitAccount.gitUrl}
-                <ExternalLinkIcon className='h-4 w-4' />
-              </Link>
-            </TableCell>
-            <TableCell>{gitAccount.createdAt.toLocaleDateString()}</TableCell>
-            <TableCell className='flex justify-end'>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    className='flex h-8 w-8 p-0 text-right data-[state=open]:bg-muted'
-                  >
-                    <DotsHorizontalIcon className='h-4 w-4' />
-                    <span className='sr-only'>Open menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-[160px]'>
-                  <DropdownMenuItem asChild>
-                    <Link to={`/git-accounts/edit/${gitAccount.id}`}>Edit</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Make a copy</DropdownMenuItem>
-                  <DropdownMenuItem>Favorite</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleDelete(gitAccount.id)}>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+        {loading ? (
+          <TableRow>
+            <TableCell colSpan={6} className='text-center'>
+              <Loading loading={loading} />
             </TableCell>
           </TableRow>
-        ))}
+        ) : (
+          gitAccounts.map((gitAccount) => (
+            <TableRow key={gitAccount.id}>
+              <TableCell className='font-medium'>{gitAccount.id}</TableCell>
+              <TableCell className='font-medium'>{gitAccount.name}</TableCell>
+              <TableCell className='flex items-center capitalize gap-x-2'>
+                {gitAccount.type === 'github' ? (
+                  <IconBrandGithub />
+                ) : gitAccount.type === 'gitlab' ? (
+                  <IconBrandGitlab />
+                ) : (
+                  <IconBrandBitbucket />
+                )}
+                {gitAccount.type}
+              </TableCell>
+              <TableCell>
+                <Link
+                  to={gitAccount.url}
+                  target='_blank'
+                  className='flex items-center text-blue-500 gap-x-1 hover:text-blue-600'
+                >
+                  {gitAccount.url}
+                  <ExternalLinkIcon className='w-4 h-4' />
+                </Link>
+              </TableCell>
+              <TableCell>
+                {new Date(gitAccount.createdAt).toLocaleDateString()}
+              </TableCell>
+              <TableCell className='flex justify-end'>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant='ghost'
+                      className='flex h-8 w-8 p-0 text-right data-[state=open]:bg-muted'
+                    >
+                      <DotsHorizontalIcon className='w-4 h-4' />
+                      <span className='sr-only'>Open menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align='end' className='w-[160px]'>
+                    <DropdownMenuItem asChild>
+                      <Link to={`/git-accounts/edit/${gitAccount.id}`}>
+                        Edit
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>Make a copy</DropdownMenuItem>
+                    <DropdownMenuItem>Favorite</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => handleDelete(gitAccount.id)}
+                    >
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))
+        )}
       </TableBody>
     </Table>
   )

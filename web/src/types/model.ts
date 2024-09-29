@@ -4,3 +4,13 @@ export interface User {
   name: string
   role: 'admin' | 'user'
 }
+
+export interface GitAccount {
+  id: string
+  name: string
+  url: string
+  type: 'github' | 'gitlab' | 'bitbucket' | 'gitea'
+  token: string
+  createdAt: string
+  updatedAt: string
+}

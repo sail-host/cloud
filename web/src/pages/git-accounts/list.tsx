@@ -7,41 +7,61 @@ import { Button } from '@/components/custom/button'
 import { IconPlus } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
 import { ConfirmationModal } from '@/components/custom/confirmation-modal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useDeleteModalStore } from '@/store/delete-modal-store'
+import { GitAccount } from '@/types/model'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
 
 export default function GitAccounts() {
   const { open, setOpen, deleteID } = useDeleteModalStore()
   const [loading, setLoading] = useState(false)
+  const [loadingDelete, setLoadingDelete] = useState(false)
+  const [data, setData] = useState<GitAccount[]>([])
+
+  const fetchData = () => {
+    setLoading(true)
+    axios
+      .get<BaseResponse<GitAccount[]>>('/api/v1/git/list')
+      .then((res) => {
+        setData(res.data.data)
+      })
+      .finally(() => setLoading(false))
+  }
 
   const handleDelete = () => {
-    setLoading(true)
-    console.log('delete', deleteID)
+    setLoadingDelete(true)
 
-    // TODO: Delete git account
-
-    setTimeout(() => {
-      setLoading(false)
-      setOpen(false)
-
-      toast.success('Git account deleted successfully')
-    }, 2000)
+    axios
+      .delete(`/api/v1/git/delete/${deleteID}`)
+      .then(() => {
+        toast.success('Git account deleted successfully')
+        fetchData()
+      })
+      .finally(() => {
+        setLoadingDelete(false)
+        setOpen(false)
+      })
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
       <Layout.Header sticky>
         <Search />
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className='flex items-center ml-auto space-x-4'>
           <ThemeSwitch />
           <UserNav />
         </div>
       </Layout.Header>
 
       <Layout.Body>
-        <div className='mb-2 flex items-center justify-between space-y-2'>
+        <div className='flex items-center justify-between mb-2 space-y-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Git Accounts</h2>
             <p className='text-muted-foreground'>
@@ -55,8 +75,8 @@ export default function GitAccounts() {
             </Link>
           </Button>
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <GitAccountsTable />
+        <div className='flex-1 px-4 py-1 -mx-4 overflow-auto lg:flex-row lg:space-x-12 lg:space-y-0'>
+          <GitAccountsTable gitAccounts={data} loading={loading} />
         </div>
         <ConfirmationModal
           open={open}
@@ -64,7 +84,7 @@ export default function GitAccounts() {
           confirmFunction={handleDelete}
           title='Delete Git Account'
           description='Are you sure you want to delete this git account?'
-          loading={loading}
+          loading={loadingDelete}
         />
       </Layout.Body>
     </Layout>
