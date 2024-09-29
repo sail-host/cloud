@@ -31,16 +31,21 @@ export const formSchema = z.object({
     message: 'Git URL must be a valid URL.',
   }),
   type: z.enum(['github', 'gitlab', 'bitbucket']),
+  token: z.string().min(1, {
+    message: 'Token must be at least 1 character.',
+  }),
 })
 
 interface GitAccountFormProps {
   defaultValues?: z.infer<typeof formSchema>
   onSubmit: (values: z.infer<typeof formSchema>) => void
+  isLoading?: boolean
 }
 
 export function GitAccountForm({
   defaultValues,
   onSubmit,
+  isLoading,
 }: GitAccountFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,6 +53,7 @@ export function GitAccountForm({
       name: '',
       gitUrl: '',
       type: 'github',
+      token: '',
     },
   })
 
@@ -113,10 +119,25 @@ export function GitAccountForm({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name='token'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Git Token</FormLabel>
+                  <FormControl>
+                    <Input placeholder='1234567890' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className='space-x-3'>
-              <Button type='submit'>Submit</Button>
+              <Button type='submit' loading={isLoading}>
+                Submit
+              </Button>
               <Button type='button' variant='outline'>
-                Test Connection
+                Test Account
               </Button>
             </div>
           </form>
