@@ -1,13 +1,14 @@
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import useAuth from '@/hooks/use-auth'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Loading } from '../custom/loading'
+import { useUserStore } from '@/store/user-store'
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token')
-  config.headers.Authorization = `Bearer ${token}`
-
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 })
 
@@ -16,12 +17,30 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode
 }) {
-  const { user, login, loading } = useAuth()
+  const [loading, setLoading] = useState(true)
+  const { setUser } = useUserStore()
+  const token = localStorage.getItem('auth_token')
+  const navigate = useNavigate()
 
   useEffect(() => {
-    login()
+    if (token) {
+      axios
+        .get('/api/v1/user')
+        .then((res) => {
+          setUser(res.data.data)
+        })
+        .catch(() => {
+          localStorage.removeItem('auth_token')
+          navigate('/login')
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    } else {
+      navigate('/login')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [token, navigate])
 
   if (loading) {
     return (
@@ -29,10 +48,6 @@ export default function AuthProvider({
         <Loading loading={true} />
       </div>
     )
-  }
-
-  if (!login && !user) {
-    return <Navigate to='/login' />
   }
 
   return children

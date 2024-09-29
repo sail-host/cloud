@@ -9,6 +9,11 @@ export default function useAuth() {
     setLoading(true)
     const token = localStorage.getItem('auth_token')
 
+    if (!token) {
+      setLoading(false)
+      return
+    }
+
     axios
       .get('/api/v1/user', {
         headers: {
@@ -29,6 +34,7 @@ export default function useAuth() {
   const logout = () => {
     // TODO: Logout user
     setUser(null)
+    localStorage.removeItem('auth_token')
   }
 
   return { user, login, logout, loading }
