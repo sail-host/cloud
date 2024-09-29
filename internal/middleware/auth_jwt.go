@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
@@ -34,13 +35,26 @@ func AuthJWT(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, dto.BaseError{Status: "error", Message: "Unauthorized"})
 		}
 
-		if token.BaseClaims.ID == 0 {
+		if token.BaseClaims.ID == 0 || token.BaseClaims.Token == "" {
 			return c.JSON(http.StatusUnauthorized, dto.BaseError{Status: "error", Message: "Unauthorized"})
 		}
 
-		// Use the user repository to get the user by ID
+		authRepo := repository.NewIAuthRepo()
+		auth, err := authRepo.GetAuthTokenByToken(token.BaseClaims.Token)
+		if err != nil {
+			return c.JSON(http.StatusUnauthorized, dto.BaseError{Status: "error", Message: "Unauthorized"})
+		}
+
+		if auth.ID == 0 {
+			return c.JSON(http.StatusUnauthorized, dto.BaseError{Status: "error", Message: "Unauthorized"})
+		}
+
+		if auth.ExpiredAt.Before(time.Now()) {
+			return c.JSON(http.StatusUnauthorized, dto.BaseError{Status: "error", Message: "Token expired"})
+		}
+
 		userRepo := repository.NewIUserRepo()
-		user, err := userRepo.GetUserByID(strconv.FormatUint(uint64(token.BaseClaims.ID), 10))
+		user, err := userRepo.GetUserByID(strconv.FormatUint(uint64(auth.UserID), 10))
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, dto.BaseError{Status: "error", Message: "Unauthorized"})
 		}

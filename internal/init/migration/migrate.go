@@ -9,6 +9,7 @@ import (
 func Init() {
 	m := gormigrate.New(global.DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		migrations.CreateUserTable,
+		migrations.CreateAuthTokenTable,
 		migrations.CreateGitTable,
 	})
 

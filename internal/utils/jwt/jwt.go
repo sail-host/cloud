@@ -26,8 +26,9 @@ type CustomClaims struct {
 }
 
 type BaseClaims struct {
-	ID   uint
-	Name string
+	ID    uint
+	Name  string
+	Token string
 }
 
 func NewJWT() *JWT {

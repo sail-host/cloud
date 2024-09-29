@@ -1,11 +1,15 @@
 package service
 
 import (
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
+	"github.com/sail-host/cloud/internal/constants"
 	"github.com/sail-host/cloud/internal/utils/hash"
 	"github.com/sail-host/cloud/internal/utils/jwt"
+	"github.com/sail-host/cloud/internal/utils/random"
 )
 
 type AuthService struct{}
@@ -37,11 +41,27 @@ func (s *AuthService) Login(c echo.Context, request dto.LoginRequest) (*dto.Logi
 		return nil, &baseError
 	}
 
+	randomToken := random.StringGenerator(64)
+
+	authToken := model.AuthToken{
+		UserID:    user.ID,
+		Token:     randomToken,
+		ExpiredAt: time.Now().Add(constants.JWTBufferTime * time.Second),
+	}
+
+	err = authRepo.CreateAuthToken(&authToken)
+	if err != nil {
+		baseError.Status = "error"
+		baseError.Message = "Database error"
+		return nil, &baseError
+	}
+
 	// Generate token
 	token := jwt.NewJWT()
 	claims := token.CreateClaims(jwt.BaseClaims{
-		ID:   user.ID,
-		Name: user.Name,
+		ID:    user.ID,
+		Name:  user.Name,
+		Token: randomToken,
 	})
 
 	tokenString, err := token.CreateToken(claims)
