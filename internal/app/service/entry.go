@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	userRepo = repo.NewIUserRepo()
-	authRepo = repo.NewIAuthRepo()
-	gitRepo  = repo.NewIGitRepo()
+	userRepo   = repo.NewIUserRepo()
+	authRepo   = repo.NewIAuthRepo()
+	gitRepo    = repo.NewIGitRepo()
+	domainRepo = repo.NewIDomainRepo()
 )

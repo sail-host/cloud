@@ -35,3 +35,13 @@ var CreateGitTable = &gormigrate.Migration{
 		return tx.Migrator().DropTable(&model.Git{})
 	},
 }
+
+var CreateDomainTable = &gormigrate.Migration{
+	ID: "20241024-add-table-domain",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.Domain{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.Domain{})
+	},
+}

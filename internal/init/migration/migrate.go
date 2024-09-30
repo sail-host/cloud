@@ -11,6 +11,7 @@ func Init() {
 		migrations.CreateUserTable,
 		migrations.CreateAuthTokenTable,
 		migrations.CreateGitTable,
+		migrations.CreateDomainTable,
 	})
 
 	if err := m.Migrate(); err != nil {
