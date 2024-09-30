@@ -22,31 +22,32 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const formSchema = z
   .object({
     name: z.string().min(2, {
       message: 'Name must be at least 2 characters.',
     }),
     dnsProvider: z.enum(['cloudflare', 'manual']),
-    cloudflareAccountId: z.string().optional(),
-    cloudflareApiToken: z.string().optional(),
+    cloudflareZoneId: z.string().optional(),
+    cloudflareApiKey: z.string().optional(),
   })
   .refine(
     (data) => {
       if (data.dnsProvider === 'cloudflare') {
-        return !!data.cloudflareAccountId && !!data.cloudflareApiToken
+        return !!data.cloudflareZoneId && !!data.cloudflareApiKey
       }
       return true
     },
     {
-      message: 'Cloudflare Account ID and API Token are required.',
-      path: ['cloudflareAccountId'],
+      message: 'Cloudflare Zone ID and API Key are required.',
+      path: ['cloudflareZoneId'],
     }
   )
   .refine(
     (data) => {
       if (data.dnsProvider === 'cloudflare') {
-        return !!data.cloudflareAccountId && !!data.cloudflareApiToken
+        return !!data.cloudflareZoneId && !!data.cloudflareApiKey
       }
       return true
     },
@@ -67,8 +68,8 @@ export function DomainsForm({ defaultValues, onSubmit }: DomainsFormProps) {
     defaultValues: defaultValues ?? {
       name: '',
       dnsProvider: 'cloudflare',
-      cloudflareAccountId: '',
-      cloudflareApiToken: '',
+      cloudflareZoneId: '',
+      cloudflareApiKey: '',
     },
   })
 
@@ -122,13 +123,13 @@ export function DomainsForm({ defaultValues, onSubmit }: DomainsFormProps) {
               <>
                 <FormField
                   control={form.control}
-                  name='cloudflareAccountId'
+                  name='cloudflareZoneId'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cloudflare Account ID</FormLabel>
+                      <FormLabel>Cloudflare Zone ID</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='Your Cloudflare Account ID'
+                          placeholder='Your Cloudflare Zone ID'
                           {...field}
                         />
                       </FormControl>
@@ -138,13 +139,13 @@ export function DomainsForm({ defaultValues, onSubmit }: DomainsFormProps) {
                 />
                 <FormField
                   control={form.control}
-                  name='cloudflareApiToken'
+                  name='cloudflareApiKey'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Cloudflare API Token</FormLabel>
+                      <FormLabel>Cloudflare API Key</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='Your Cloudflare API Token'
+                          placeholder='Your Cloudflare API Key'
                           {...field}
                         />
                       </FormControl>
@@ -157,7 +158,7 @@ export function DomainsForm({ defaultValues, onSubmit }: DomainsFormProps) {
             <div className='space-x-3'>
               <Button type='submit'>Submit</Button>
               <Button type='button' variant='outline'>
-                Test Connection
+                Test API Key
               </Button>
             </div>
           </form>
