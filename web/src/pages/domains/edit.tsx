@@ -32,7 +32,7 @@ export default function EditDomain() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setIsLoading(true)
     axios
-      .post<BaseResponse>(`/api/v1/domain/update/${id}`, {
+      .put<BaseResponse>(`/api/v1/domain/update/${id}`, {
         domain: values.name,
         dns_provider: values.dnsProvider,
         cloudflare_zone_id: values.cloudflareZoneId,
