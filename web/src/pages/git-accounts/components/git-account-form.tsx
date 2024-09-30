@@ -21,6 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useState } from 'react'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
+import { toast } from 'sonner'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const formSchema = z.object({
@@ -47,6 +51,7 @@ export function GitAccountForm({
   onSubmit,
   isLoading,
 }: GitAccountFormProps) {
+  const [isCheckLoading, setIsCheckLoading] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
@@ -56,6 +61,54 @@ export function GitAccountForm({
       token: '',
     },
   })
+
+  const handleCheck = () => {
+    form.clearErrors()
+    if (!form.getValues('gitUrl')) {
+      form.setError('gitUrl', {
+        message: 'Git URL is required.',
+      })
+      return
+    }
+    if (!form.getValues('token')) {
+      form.setError('token', {
+        message: 'Git Token is required.',
+      })
+      return
+    }
+    if (!form.getValues('type')) {
+      form.setError('type', {
+        message: 'Git Type is required.',
+      })
+      return
+    }
+    if (!form.getValues('name')) {
+      form.setError('name', {
+        message: 'Git Name is required.',
+      })
+      return
+    }
+
+    setIsCheckLoading(true)
+    axios
+      .post<BaseResponse>('/api/v1/git/check-account', {
+        url: form.getValues('gitUrl'),
+        token: form.getValues('token'),
+        type: form.getValues('type'),
+        name: form.getValues('name'),
+      })
+      .then((res) => {
+        if (res.data.status === 'success') {
+          toast.success(res.data.message)
+        } else {
+          toast.error(res.data.message)
+        }
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || 'Failed to check account')
+      })
+      .finally(() => setIsCheckLoading(false))
+  }
 
   return (
     <Card>
@@ -136,7 +189,12 @@ export function GitAccountForm({
               <Button type='submit' loading={isLoading}>
                 Submit
               </Button>
-              <Button type='button' variant='outline'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={handleCheck}
+                loading={isCheckLoading}
+              >
                 Test Account
               </Button>
             </div>
