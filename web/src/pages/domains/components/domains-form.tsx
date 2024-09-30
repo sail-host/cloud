@@ -41,7 +41,7 @@ export const formSchema = z
     },
     {
       message: 'Cloudflare Zone ID and API Key are required.',
-      path: ['cloudflareZoneId'],
+      path: ['cloudflareZoneId', 'cloudflareApiKey'],
     }
   )
   .refine(
@@ -60,9 +60,14 @@ export const formSchema = z
 interface DomainsFormProps {
   defaultValues?: z.infer<typeof formSchema>
   onSubmit: (values: z.infer<typeof formSchema>) => void
+  isLoading?: boolean
 }
 
-export function DomainsForm({ defaultValues, onSubmit }: DomainsFormProps) {
+export function DomainsForm({
+  defaultValues,
+  onSubmit,
+  isLoading,
+}: DomainsFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
@@ -156,7 +161,9 @@ export function DomainsForm({ defaultValues, onSubmit }: DomainsFormProps) {
               </>
             )}
             <div className='space-x-3'>
-              <Button type='submit'>Submit</Button>
+              <Button type='submit' loading={isLoading}>
+                Submit
+              </Button>
               <Button type='button' variant='outline'>
                 Test API Key
               </Button>
