@@ -3,21 +3,59 @@ import { Search } from '@/components/search'
 import ThemeSwitch from '@/components/theme-switch'
 import { UserNav } from '@/components/user-nav'
 import { z } from 'zod'
-import { useParams } from 'react-router-dom'
-import { domains } from './data/domains'
+import { useNavigate, useParams } from 'react-router-dom'
 import { DomainsForm, formSchema } from './components/domains-form'
+import { useEffect, useState } from 'react'
+import { Domain } from '@/types/model'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
+import { Loading } from '@/components/custom/loading'
+import { toast } from 'sonner'
 
 export default function EditDomain() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [dataLoading, setDataLoading] = useState(true)
+  const [domain, setDomain] = useState<Domain | null>(null)
   const { id } = useParams()
-  const domain = domains.find((domain) => domain.id === Number(id))
+  const navigate = useNavigate()
 
-  if (!domain) {
-    return <div>Domain not found</div>
+  const fetchData = () => {
+    setDataLoading(true)
+    axios
+      .get<BaseResponse<Domain>>(`/api/v1/domain/show/${id}`)
+      .then((res) => {
+        setDomain(res.data.data)
+      })
+      .finally(() => setDataLoading(false))
   }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+    setIsLoading(true)
+    axios
+      .post<BaseResponse>(`/api/v1/domain/update/${id}`, {
+        domain: values.name,
+        dns_provider: values.dnsProvider,
+        cloudflare_zone_id: values.cloudflareZoneId,
+        cloudflare_api_key: values.cloudflareApiKey,
+      })
+      .then((res) => {
+        if (res.data.status === 'success') {
+          toast.success('Domain updated successfully')
+        } else {
+          toast.error(res.data.message)
+        }
+        navigate('/domains')
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || 'Something went wrong')
+      })
+      .finally(() => setIsLoading(false))
   }
+
+  useEffect(() => {
+    fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Layout>
@@ -38,15 +76,28 @@ export default function EditDomain() {
           </div>
         </div>
         <div className='flex-1 px-4 py-1 -mx-4 overflow-auto lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <DomainsForm
-            onSubmit={onSubmit}
-            defaultValues={{
-              name: domain.name,
-              dnsProvider: domain.dnsProvider,
-              cloudflareZoneId: domain.cloudflareAccountId,
-              cloudflareApiKey: domain.cloudflareApiToken,
-            }}
-          />
+          {dataLoading ? (
+            <Loading loading />
+          ) : (
+            <>
+              {domain ? (
+                <DomainsForm
+                  onSubmit={onSubmit}
+                  defaultValues={{
+                    name: domain.domain,
+                    dnsProvider: domain.dns_provider,
+                    cloudflareZoneId: domain.cloudflare_zone_id,
+                    cloudflareApiKey: domain.cloudflare_api_key,
+                  }}
+                  isLoading={isLoading}
+                />
+              ) : (
+                <div className='mt-10 text-2xl text-center'>
+                  Domain not found
+                </div>
+              )}
+            </>
+          )}
         </div>
       </Layout.Body>
     </Layout>

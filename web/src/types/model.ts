@@ -14,3 +14,13 @@ export interface GitAccount {
   createdAt: string
   updatedAt: string
 }
+
+export interface Domain {
+  id: string
+  domain: string
+  dns_provider: 'cloudflare' | 'manual'
+  cloudflare_zone_id: string
+  cloudflare_api_key: string
+  createdAt: string
+  updatedAt: string
+}
