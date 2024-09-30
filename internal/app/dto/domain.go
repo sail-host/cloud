@@ -6,8 +6,8 @@ type Domain struct {
 	ID          uint      `json:"id"`
 	Domain      string    `json:"domain"`
 	DNSProvider string    `json:"dns_provider"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type DomainListResponse struct {

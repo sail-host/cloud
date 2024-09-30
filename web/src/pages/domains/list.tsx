@@ -6,14 +6,29 @@ import { Button } from '@/components/custom/button'
 import { IconPlus } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
 import { ConfirmationModal } from '@/components/custom/confirmation-modal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useDeleteModalStore } from '@/store/delete-modal-store'
 import { DomainsTable } from './components/domains-table'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
+import { Domain } from '@/types/model'
 
 export default function Domains() {
   const { open, setOpen, deleteID } = useDeleteModalStore()
   const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<Domain[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
+
+  const fetchData = () => {
+    setDataLoading(true)
+    axios
+      .get<BaseResponse<Domain[]>>('/api/v1/domain/list')
+      .then((res) => {
+        setData(res.data.data)
+      })
+      .finally(() => setDataLoading(false))
+  }
 
   const handleDelete = () => {
     setLoading(true)
@@ -29,19 +44,23 @@ export default function Domains() {
     }, 2000)
   }
 
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
       <Layout.Header sticky>
         <Search />
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className='flex items-center ml-auto space-x-4'>
           <ThemeSwitch />
           <UserNav />
         </div>
       </Layout.Header>
 
       <Layout.Body>
-        <div className='mb-2 flex items-center justify-between space-y-2'>
+        <div className='flex items-center justify-between mb-2 space-y-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Domains</h2>
             <p className='text-muted-foreground'>
@@ -55,8 +74,8 @@ export default function Domains() {
             </Link>
           </Button>
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <DomainsTable />
+        <div className='flex-1 px-4 py-1 -mx-4 overflow-auto lg:flex-row lg:space-x-12 lg:space-y-0'>
+          <DomainsTable domains={data} loading={dataLoading} />
         </div>
         <ConfirmationModal
           open={open}
