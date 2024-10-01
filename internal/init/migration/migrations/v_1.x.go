@@ -45,3 +45,53 @@ var CreateDomainTable = &gormigrate.Migration{
 		return tx.Migrator().DropTable(&model.Domain{})
 	},
 }
+
+var CreateProjectTable = &gormigrate.Migration{
+	ID: "20241024-add-table-project",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.Project{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.Project{})
+	},
+}
+
+var CreateEnvironmentVariableTable = &gormigrate.Migration{
+	ID: "20241024-add-table-environment-variable",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.EnvironmentVariable{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.EnvironmentVariable{})
+	},
+}
+
+var CreateDeploymentTable = &gormigrate.Migration{
+	ID: "20241024-add-table-deployment",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.Deployment{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.Deployment{})
+	},
+}
+
+var CreateLogTable = &gormigrate.Migration{
+	ID: "20241024-add-table-log",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.Log{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.Log{})
+	},
+}
+
+var CreateProjectDomainTable = &gormigrate.Migration{
+	ID: "20241024-add-table-project-domain",
+	Migrate: func(tx *gorm.DB) error {
+		return tx.AutoMigrate(&model.ProjectDomain{})
+	},
+	Rollback: func(tx *gorm.DB) error {
+		return tx.Migrator().DropTable(&model.ProjectDomain{})
+	},
+}
