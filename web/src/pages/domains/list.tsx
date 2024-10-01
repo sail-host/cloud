@@ -32,16 +32,14 @@ export default function Domains() {
 
   const handleDelete = () => {
     setLoading(true)
-    console.log('delete', deleteID)
-
-    // TODO: Delete domain
-
-    setTimeout(() => {
-      setLoading(false)
-      setOpen(false)
-
-      toast.success('Domain deleted successfully')
-    }, 2000)
+    axios
+      .delete(`/api/v1/domain/delete/${deleteID}`)
+      .then(() => {
+        toast.success('Domain deleted successfully')
+        setOpen(false)
+        fetchData()
+      })
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
