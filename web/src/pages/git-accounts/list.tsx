@@ -25,7 +25,7 @@ export default function GitAccounts() {
     axios
       .get<BaseResponse<GitAccount[]>>('/api/v1/git/list')
       .then((res) => {
-        setData(res.data.data)
+        setData(res.data.data ?? [])
       })
       .finally(() => setLoading(false))
   }

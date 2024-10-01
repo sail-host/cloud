@@ -18,7 +18,11 @@ import {
 import { DotsHorizontalIcon, ExternalLinkIcon } from '@radix-ui/react-icons'
 import { Link } from 'react-router-dom'
 import { useDeleteModalStore } from '@/store/delete-modal-store'
-import { IconBrandCloudflare, IconWorld } from '@tabler/icons-react'
+import {
+  IconAlertCircle,
+  IconBrandCloudflare,
+  IconWorld,
+} from '@tabler/icons-react'
 import { Domain } from '@/types/model'
 import { Loading } from '@/components/custom/loading'
 
@@ -52,6 +56,15 @@ export function DomainsTable({ domains, loading }: DomainsTableProps) {
           <TableRow>
             <TableCell colSpan={6} className='text-center'>
               <Loading loading />
+            </TableCell>
+          </TableRow>
+        ) : domains?.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={6} className='text-center'>
+              <div className='flex items-center justify-center'>
+                <IconAlertCircle className='w-4 h-4 mr-2' />
+                <span>No domains found</span>
+              </div>
             </TableCell>
           </TableRow>
         ) : (

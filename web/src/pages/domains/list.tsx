@@ -25,7 +25,7 @@ export default function Domains() {
     axios
       .get<BaseResponse<Domain[]>>('/api/v1/domain/list')
       .then((res) => {
-        setData(res.data.data)
+        setData(res.data.data ?? [])
       })
       .finally(() => setDataLoading(false))
   }

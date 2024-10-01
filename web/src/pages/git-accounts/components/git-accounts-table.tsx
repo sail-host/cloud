@@ -21,6 +21,7 @@ import {
   IconBrandGithub,
   IconBrandGitlab,
   IconBrandBitbucket,
+  IconAlertCircle,
 } from '@tabler/icons-react'
 import { useDeleteModalStore } from '@/store/delete-modal-store'
 import { GitAccount } from '@/types/model'
@@ -59,6 +60,15 @@ export function GitAccountsTable({
           <TableRow>
             <TableCell colSpan={6} className='text-center'>
               <Loading loading={loading} />
+            </TableCell>
+          </TableRow>
+        ) : gitAccounts?.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={6} className='text-center'>
+              <div className='flex items-center justify-center'>
+                <IconAlertCircle className='w-4 h-4 mr-2' />
+                <span>No git accounts found</span>
+              </div>
             </TableCell>
           </TableRow>
         ) : (
