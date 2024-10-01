@@ -29,3 +29,9 @@ type UpdateDomainRequest struct {
 	CloudflareZoneID string `json:"cloudflare_zone_id"`
 	CloudflareAPIKey string `json:"cloudflare_api_key"`
 }
+
+type CheckDomainRequest struct {
+	Domain           string `json:"domain" validate:"required"`
+	CloudflareZoneID string `json:"cloudflare_zone_id" validate:"required"`
+	CloudflareAPIKey string `json:"cloudflare_api_key" validate:"required"`
+}

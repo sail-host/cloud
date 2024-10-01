@@ -19,5 +19,6 @@ func (r *DomainRouter) InitRouter(Router *echo.Group) {
 		domainRouter.PUT("/update/:id", domainApi.UpdateDomain)
 		domainRouter.DELETE("/delete/:id", domainApi.DeleteDomain)
 		domainRouter.GET("/show/:id", domainApi.GetDomainByID)
+		domainRouter.POST("/check", domainApi.CheckDomain)
 	}
 }

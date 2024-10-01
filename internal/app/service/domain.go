@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
+	"github.com/sail-host/cloud/internal/utils/cloudflare"
 )
 
 type DomainService struct {
@@ -15,6 +16,7 @@ type IDomainService interface {
 	DeleteDomain(id uint) *dto.BaseError
 	GetListDomain() (*dto.DomainListResponse, *dto.BaseError)
 	GetDomainByID(id uint) (*dto.BaseResponse, *dto.BaseError)
+	CheckDomain(c echo.Context, request dto.CheckDomainRequest) (*dto.BaseResponse, *dto.BaseError)
 }
 
 func NewIDomainService() IDomainService {
@@ -160,5 +162,41 @@ func (s *DomainService) GetDomainByID(id uint) (*dto.BaseResponse, *dto.BaseErro
 	baseResponse.Message = "Domain retrieved successfully"
 	baseResponse.Data = domain
 
+	return &baseResponse, &baseError
+}
+
+func (s *DomainService) CheckDomain(c echo.Context, request dto.CheckDomainRequest) (*dto.BaseResponse, *dto.BaseError) {
+	var baseError dto.BaseError
+	var baseResponse dto.BaseResponse
+
+	err := c.Validate(request)
+	if err != nil {
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return &baseResponse, &baseError
+	}
+
+	manager, err := cloudflare.NewManager(request.CloudflareAPIKey)
+	if err != nil {
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return &baseResponse, &baseError
+	}
+
+	exists, err := manager.CheckZoneID(request.CloudflareZoneID)
+	if err != nil {
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return &baseResponse, &baseError
+	}
+
+	if !exists {
+		baseError.Status = "error"
+		baseError.Message = "Cloudflare zone id not found"
+		return &baseResponse, &baseError
+	}
+
+	baseResponse.Status = "success"
+	baseResponse.Message = "Domain is available"
 	return &baseResponse, &baseError
 }

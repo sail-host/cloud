@@ -95,3 +95,21 @@ func (api *BaseApi) GetDomainByID(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, res)
 }
+
+func (api *BaseApi) CheckDomain(c echo.Context) error {
+	var baseError dto.BaseError
+	request := dto.CheckDomainRequest{}
+
+	if err := c.Bind(&request); err != nil {
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return c.JSON(http.StatusBadRequest, baseError)
+	}
+
+	res, errBase := domainService.CheckDomain(c, request)
+	if errBase != nil && errBase.Status == "error" {
+		return c.JSON(http.StatusBadRequest, errBase)
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
