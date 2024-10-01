@@ -183,16 +183,22 @@ func (s *DomainService) CheckDomain(c echo.Context, request dto.CheckDomainReque
 		return &baseResponse, &baseError
 	}
 
-	exists, err := manager.CheckZoneID(request.CloudflareZoneID)
+	zone, err := manager.ZoneInfo(request.CloudflareZoneID)
 	if err != nil {
 		baseError.Status = "error"
 		baseError.Message = err.Error()
 		return &baseResponse, &baseError
 	}
 
-	if !exists {
+	if zone.ID == "" {
 		baseError.Status = "error"
-		baseError.Message = "Cloudflare zone id not found"
+		baseError.Message = "Cloudflare zone id is invalid"
+		return &baseResponse, &baseError
+	}
+
+	if zone.Name != request.Domain {
+		baseError.Status = "error"
+		baseError.Message = "Domain and cloudflare zone id not match"
 		return &baseResponse, &baseError
 	}
 
