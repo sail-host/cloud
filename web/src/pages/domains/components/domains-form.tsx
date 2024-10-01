@@ -21,6 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import axios from 'axios'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const formSchema = z
@@ -68,6 +71,7 @@ export function DomainsForm({
   onSubmit,
   isLoading,
 }: DomainsFormProps) {
+  const [loadingTestApiKey, setLoadingTestApiKey] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
@@ -77,6 +81,48 @@ export function DomainsForm({
       cloudflareApiKey: '',
     },
   })
+
+  const handleTestApiKey = () => {
+    if (!form.getValues('name')) {
+      form.setError('name', {
+        message: 'Domain name is required.',
+      })
+      return
+    }
+    if (!form.getValues('cloudflareApiKey')) {
+      form.setError('cloudflareApiKey', {
+        message: 'API Key is required.',
+      })
+      return
+    }
+    if (!form.getValues('cloudflareZoneId')) {
+      form.setError('cloudflareZoneId', {
+        message: 'Zone ID is required.',
+      })
+      return
+    }
+
+    setLoadingTestApiKey(true)
+    axios
+      .post('/api/v1/domain/check', {
+        domain: form.getValues('name'),
+        cloudflare_zone_id: form.getValues('cloudflareZoneId'),
+        cloudflare_api_key: form.getValues('cloudflareApiKey'),
+      })
+      .then((res) => {
+        if (res.data.status === 'success') {
+          toast.success('API key is valid')
+        } else {
+          toast.error(res.data.message)
+        }
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || 'Failed to test API key')
+      })
+      .finally(() => {
+        setLoadingTestApiKey(false)
+      })
+  }
 
   return (
     <Card>
@@ -164,9 +210,16 @@ export function DomainsForm({
               <Button type='submit' loading={isLoading}>
                 Submit
               </Button>
-              <Button type='button' variant='outline'>
-                Test API Key
-              </Button>
+              {form.watch('dnsProvider') === 'cloudflare' && (
+                <Button
+                  type='button'
+                  variant='outline'
+                  loading={loadingTestApiKey}
+                  onClick={handleTestApiKey}
+                >
+                  Test API Key
+                </Button>
+              )}
             </div>
           </form>
         </Form>
