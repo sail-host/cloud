@@ -27,3 +27,13 @@ func (g *Github) CheckAccount() (bool, error) {
 
 	return true, nil
 }
+
+func (g *Github) GetRepos() ([]*github.Repository, error) {
+	ctx := context.Background()
+	repos, _, err := g.Client.Repositories.ListByAuthenticatedUser(ctx, &github.RepositoryListByAuthenticatedUserOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return repos, nil
+}
