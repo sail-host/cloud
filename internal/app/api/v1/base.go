@@ -11,7 +11,8 @@ type ApiGroup struct {
 var ApiGroupApp = new(ApiGroup)
 
 var (
-	authService   = service.NewIAuthService()
-	gitService    = service.NewIGitService()
-	domainService = service.NewIDomainService()
+	authService        = service.NewIAuthService()
+	gitService         = service.NewIGitService()
+	domainService      = service.NewIDomainService()
+	gitInternalService = service.NewIGitInternalService()
 )
