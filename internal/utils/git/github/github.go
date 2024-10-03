@@ -2,6 +2,9 @@ package github
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
+	"errors"
 
 	"github.com/google/go-github/v65/github"
 )
@@ -36,4 +39,52 @@ func (g *Github) GetRepos() ([]*github.Repository, error) {
 	}
 
 	return repos, nil
+}
+
+func (g *Github) GetFramework(owner, repo string) (string, error) {
+	ctx := context.Background()
+	content, _, _, err := g.Client.Repositories.GetContents(ctx, owner, repo, "package.json", nil)
+	if err != nil {
+		return "", err
+	}
+
+	if content == nil {
+		return "", errors.New("content not found")
+	}
+
+	decodedContent, err := base64.StdEncoding.DecodeString(*content.Content)
+	if err != nil {
+		return "", err
+	}
+
+	contentStr := string(decodedContent)
+
+	packageJson := make(map[string]interface{})
+	err = json.Unmarshal([]byte(contentStr), &packageJson)
+	if err != nil {
+		return "", err
+	}
+
+	dependencies, ok := packageJson["dependencies"].(map[string]interface{})
+	if !ok {
+		return "", errors.New("dependencies not found or invalid format")
+	}
+
+	frameworks := []string{"next", "react", "nuxt", "vue", "svelte", "remix", "angular"}
+	for _, framework := range frameworks {
+		if _, exists := dependencies[framework]; exists {
+			return framework, nil
+		}
+	}
+
+	devDependencies, ok := packageJson["devDependencies"].(map[string]interface{})
+	if ok {
+		for _, framework := range frameworks {
+			if _, exists := devDependencies[framework]; exists {
+				return framework, nil
+			}
+		}
+	}
+
+	return "", errors.New("framework not found")
 }

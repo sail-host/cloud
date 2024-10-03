@@ -14,6 +14,10 @@ func (gm *GitManager) GetRepos() ([]*github.Repository, error) {
 	return gm.Provider.GetRepos()
 }
 
+func (gm *GitManager) GetFramework(owner, repo string) (string, error) {
+	return gm.Provider.GetFramework(owner, repo)
+}
+
 func NewGitManager(provider GitProvider) *GitManager {
 	return &GitManager{Provider: provider}
 }

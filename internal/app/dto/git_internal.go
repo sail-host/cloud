@@ -19,4 +19,5 @@ type GitInternalRepo struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 	CloneURL      string    `json:"clone_url"`
 	Private       bool      `json:"private"`
+	Framework     string    `json:"framework"`
 }

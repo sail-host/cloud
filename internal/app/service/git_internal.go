@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/sail-host/cloud/internal/app/dto"
+	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/git"
 	"github.com/sail-host/cloud/internal/utils/git/github"
 )
@@ -50,6 +51,12 @@ func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
 
 	// Process the repositories
 	for _, repo := range reposFull {
+		var framework string
+		framework, err = gitManager.GetFramework(*repo.Owner.Login, *repo.Name)
+		if err != nil {
+			global.LOG.Error(err)
+		}
+
 		repos = append(repos, dto.GitInternalRepo{
 			ID:            *repo.ID,
 			Name:          *repo.Name,
@@ -61,6 +68,7 @@ func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
 			Private:       repo.GetPrivate(),
 			CreatedAt:     repo.GetCreatedAt().Time,
 			UpdatedAt:     repo.GetUpdatedAt().Time,
+			Framework:     framework,
 		})
 	}
 
