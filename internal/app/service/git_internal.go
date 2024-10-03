@@ -2,11 +2,13 @@ package service
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/sail-host/cloud/internal/app/dto"
-	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/git"
 	"github.com/sail-host/cloud/internal/utils/git/github"
+
+	githubP "github.com/google/go-github/v65/github"
 )
 
 type GitInternalService struct {
@@ -21,7 +23,6 @@ func NewIGitInternalService() IGitInternalService {
 }
 
 func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
-	var repos []dto.GitInternalRepo
 	var gitManager *git.GitManager
 
 	gitModel, err := gitRepo.GetGitByID(id)
@@ -49,28 +50,39 @@ func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
 		return nil, err
 	}
 
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	repos := make([]dto.GitInternalRepo, 0, len(reposFull))
+
 	// Process the repositories
 	for _, repo := range reposFull {
-		var framework string
-		framework, err = gitManager.GetFramework(*repo.Owner.Login, *repo.Name)
-		if err != nil {
-			global.LOG.Error(err)
-		}
+		wg.Add(1)
+		go func(repo *githubP.Repository) {
+			defer wg.Done()
+			var framework string
+			framework, _ = gitManager.GetFramework(*repo.Owner.Login, *repo.Name)
 
-		repos = append(repos, dto.GitInternalRepo{
-			ID:            *repo.ID,
-			Name:          *repo.Name,
-			FullName:      *repo.FullName,
-			Description:   repo.GetDescription(),
-			URL:           *repo.HTMLURL,
-			DefaultBranch: repo.GetDefaultBranch(),
-			CloneURL:      repo.GetCloneURL(),
-			Private:       repo.GetPrivate(),
-			CreatedAt:     repo.GetCreatedAt().Time,
-			UpdatedAt:     repo.GetUpdatedAt().Time,
-			Framework:     framework,
-		})
+			newRepo := dto.GitInternalRepo{
+				ID:            *repo.ID,
+				Name:          *repo.Name,
+				FullName:      *repo.FullName,
+				Description:   repo.GetDescription(),
+				URL:           *repo.HTMLURL,
+				DefaultBranch: repo.GetDefaultBranch(),
+				CloneURL:      repo.GetCloneURL(),
+				Private:       repo.GetPrivate(),
+				CreatedAt:     repo.GetCreatedAt().Time,
+				UpdatedAt:     repo.GetUpdatedAt().Time,
+				Framework:     framework,
+			}
+
+			mu.Lock()
+			repos = append(repos, newRepo)
+			mu.Unlock()
+		}(repo)
 	}
+
+	wg.Wait()
 
 	return repos, nil
 }
