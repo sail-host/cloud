@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,43 +21,15 @@ import {
   IconBrandGitlab,
   IconCheck,
   IconChevronDown,
-  IconLock,
   IconPlus,
-  IconPointFilled,
   IconSearch,
 } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
-import { projects } from '../data/projects'
-
-interface Account {
-  type: 'github' | 'gitlab' | 'bitbucket'
-  url: string
-  username: string
-}
-
-const accounts: Account[] = [
-  {
-    type: 'github',
-    url: 'https://github.com/johndoe',
-    username: 'johndoe',
-  },
-  {
-    type: 'gitlab',
-    url: 'https://gitlab.com/janedoe',
-    username: 'janedoe',
-  },
-  {
-    type: 'bitbucket',
-    url: 'https://bitbucket.org/alexsmith',
-    username: 'alexsmith',
-  },
-  {
-    type: 'github',
-    url: 'https://github.com/sarahbrown',
-    username: 'sarahbrown',
-  },
-]
+import { GitAccount } from '@/types/model'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
+import { Project, ProjectCardItem } from './project-card-item'
 
 interface CreateNewProjectProps {
   setStep: (step: '1' | '2') => void
@@ -65,21 +37,46 @@ interface CreateNewProjectProps {
 
 export function CreateNewProject({ setStep }: CreateNewProjectProps) {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState('')
+  const [gitAccount, setGitAccount] = useState<GitAccount | null>(null)
+  const [gitAccounts, setGitAccounts] = useState<GitAccount[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
 
-  const handleImport = () => {
-    setStep('2')
+  const fetchGitAccounts = () => {
+    axios.get<BaseResponse<GitAccount[]>>('/api/v1/git/list').then((res) => {
+      setGitAccounts(res.data.data || [])
+    })
   }
 
+  const fetchProjects = () => {
+    axios
+      .get<
+        BaseResponse<Project[]>
+      >(`/api/v1/git-internal/list/${gitAccount?.id}`)
+      .then((res) => {
+        setProjects(res.data.data || [])
+      })
+  }
+
+  useEffect(() => {
+    fetchGitAccounts()
+  }, [])
+
+  useEffect(() => {
+    if (gitAccount) {
+      fetchProjects()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gitAccount])
+
   return (
-    <div className='mt-4 grid w-full grid-cols-12 gap-4'>
+    <div className='grid w-full grid-cols-12 gap-4 mt-4'>
       <Card className='col-span-8'>
         <CardHeader>
           <CardTitle>Import Git Repository</CardTitle>
         </CardHeader>
         <CardContent>
           <div>
-            <div className='flex w-full items-center gap-3'>
+            <div className='flex items-center w-full gap-3'>
               <div className=''>
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
@@ -89,31 +86,25 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                       aria-expanded={open}
                       className='relative w-[300px] justify-between'
                     >
-                      {value && (
+                      {gitAccount && (
                         <div className='flex items-center'>
-                          {accounts.find(
-                            (account) => account.username === value
-                          )?.type == 'github' && (
-                            <IconBrandGithub className='mr-2 h-4 w-4' />
+                          {gitAccount.type == 'github' && (
+                            <IconBrandGithub className='w-4 h-4 mr-2' />
                           )}
-                          {accounts.find(
-                            (account) => account.username === value
-                          )?.type == 'gitlab' && (
-                            <IconBrandGitlab className='mr-2 h-4 w-4' />
+                          {gitAccount.type == 'gitlab' && (
+                            <IconBrandGitlab className='w-4 h-4 mr-2' />
                           )}
-                          {accounts.find(
-                            (account) => account.username === value
-                          )?.type == 'bitbucket' && (
-                            <IconBrandBitbucket className='mr-2 h-4 w-4' />
+                          {gitAccount.type == 'bitbucket' && (
+                            <IconBrandBitbucket className='w-4 h-4 mr-2' />
                           )}
-                          {value}
-                          <IconChevronDown className='absolute right-2 h-4 w-4 shrink-0 opacity-50' />
+                          {gitAccount.name}
+                          <IconChevronDown className='absolute w-4 h-4 opacity-50 right-2 shrink-0' />
                         </div>
                       )}
-                      {!value && (
+                      {!gitAccount && (
                         <>
                           {'Select Git Account...'}
-                          <IconChevronDown className='absolute right-2 h-4 w-4 shrink-0 opacity-50' />
+                          <IconChevronDown className='absolute w-4 h-4 opacity-50 right-2 shrink-0' />
                         </>
                       )}
                     </Button>
@@ -124,32 +115,34 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                       <CommandList>
                         <CommandEmpty>No Git Account found.</CommandEmpty>
                         <CommandGroup>
-                          {accounts.map((account) => (
+                          {gitAccounts.map((account) => (
                             <CommandItem
-                              key={account.username}
-                              value={account.username}
+                              key={account.id}
+                              value={account.id}
                               onSelect={(currentValue) => {
-                                setValue(
-                                  currentValue === value ? '' : currentValue
+                                setGitAccount(
+                                  currentValue === gitAccount?.id
+                                    ? null
+                                    : account
                                 )
                                 setOpen(false)
                               }}
                               className='relative'
                             >
                               {account.type == 'github' && (
-                                <IconBrandGithub className='mr-2 h-4 w-4' />
+                                <IconBrandGithub className='w-4 h-4 mr-2' />
                               )}
                               {account.type == 'gitlab' && (
-                                <IconBrandGitlab className='mr-2 h-4 w-4' />
+                                <IconBrandGitlab className='w-4 h-4 mr-2' />
                               )}
                               {account.type == 'bitbucket' && (
-                                <IconBrandBitbucket className='mr-2 h-4 w-4' />
+                                <IconBrandBitbucket className='w-4 h-4 mr-2' />
                               )}
-                              {account.username}
+                              {account.name}
                               <IconCheck
                                 className={cn(
                                   'absolute right-2 h-4 w-4',
-                                  value === account.username
+                                  gitAccount?.id === account.id
                                     ? 'opacity-100'
                                     : 'opacity-0'
                                 )}
@@ -159,9 +152,9 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                           <CommandItem>
                             <Link
                               to='/git-accounts/create'
-                              className='flex w-full items-center'
+                              className='flex items-center w-full'
                             >
-                              <IconPlus className='mr-2 h-4 w-4' />
+                              <IconPlus className='w-4 h-4 mr-2' />
                               Add Git Account
                             </Link>
                           </CommandItem>
@@ -172,41 +165,13 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                 </Popover>
               </div>
               <div className='relative w-full'>
-                <IconSearch className='absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                <IconSearch className='absolute w-4 h-4 -translate-y-1/2 left-2 top-1/2 text-muted-foreground' />
                 <Input placeholder='Repository URL' className='pl-8' />
               </div>
             </div>
             <Card className='mt-3 !p-0'>
               {projects.map((item, index) => (
-                <div
-                  key={index}
-                  className='flex items-center justify-between border-b last:border-none'
-                >
-                  <div className='flex items-center gap-4 p-4'>
-                    <img
-                      src='https://api-frameworks.vercel.sh/framework-logos/vite.svg'
-                      alt={item.name}
-                      className='h-6 w-6 rounded-full'
-                    />
-                    <div className='flex items-center gap-1'>
-                      <h3 className='text-sm font-medium'>{item.name}</h3>
-                      <IconLock className='h-4 w-4 text-muted-foreground' />
-                      <IconPointFilled className='h-2 w-2 text-muted-foreground/60' />
-                      <span className='text-sm text-muted-foreground'>
-                        {item.git.last_commit.date}
-                      </span>
-                    </div>
-                  </div>
-                  <div className='p-4'>
-                    <Button
-                      className='h-auto px-3 py-1.5 text-sm'
-                      onClick={handleImport}
-                      type='button'
-                    >
-                      Import
-                    </Button>
-                  </div>
-                </div>
+                <ProjectCardItem key={index} item={item} setStep={setStep} />
               ))}
             </Card>
           </div>

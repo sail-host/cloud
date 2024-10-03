@@ -70,7 +70,7 @@ func (g *Github) GetFramework(owner, repo string) (string, error) {
 		return "", errors.New("dependencies not found or invalid format")
 	}
 
-	frameworks := []string{"next", "react", "nuxt", "vue", "svelte", "remix", "angular"}
+	frameworks := []string{"next", "react", "nuxt", "vue", "svelte", "remix", "angular", "lit", "ember", "vanilla", "vite"}
 	for _, framework := range frameworks {
 		if _, exists := dependencies[framework]; exists {
 			return framework, nil
