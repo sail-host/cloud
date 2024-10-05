@@ -11,11 +11,26 @@ import (
 
 type Github struct {
 	Client *github.Client
+	Owner  string
 }
 
-func NewGithub(token string) *Github {
+func NewGithub(token, owner string) *Github {
 	client := github.NewClient(nil).WithAuthToken(token)
-	return &Github{Client: client}
+	return &Github{Client: client, Owner: owner}
+}
+
+// Check if the account is an organization
+func (g *Github) IsOrganization() (bool, error) {
+	ctx := context.Background()
+	user, _, err := g.Client.Users.Get(ctx, g.Owner)
+	if err != nil {
+		return false, err
+	}
+
+	if user.GetType() == "Organization" {
+		return true, nil
+	}
+	return false, nil
 }
 
 func (g *Github) CheckAccount() (bool, error) {
@@ -39,13 +54,33 @@ type ReposResponse struct {
 
 func (g *Github) GetRepos(page, perPage int) (*ReposResponse, error) {
 	ctx := context.Background()
-	repos, response, err := g.Client.Repositories.ListByAuthenticatedUser(ctx, &github.RepositoryListByAuthenticatedUserOptions{
-		ListOptions: github.ListOptions{
-			Page:    page,
-			PerPage: perPage,
-		},
-		Sort: "created",
-	})
+
+	isOrg, err := g.IsOrganization()
+	if err != nil {
+		return nil, err
+	}
+
+	var repos []*github.Repository
+	var response *github.Response
+
+	if isOrg {
+		repos, response, err = g.Client.Repositories.ListByOrg(ctx, g.Owner, &github.RepositoryListByOrgOptions{
+			ListOptions: github.ListOptions{
+				Page:    page,
+				PerPage: perPage,
+			},
+			Sort: "created",
+		})
+	} else {
+		repos, response, err = g.Client.Repositories.ListByUser(ctx, g.Owner, &github.RepositoryListByUserOptions{
+			ListOptions: github.ListOptions{
+				Page:    page,
+				PerPage: perPage,
+			},
+			Sort: "created",
+		})
+	}
+
 	if err != nil {
 		return nil, err
 	}

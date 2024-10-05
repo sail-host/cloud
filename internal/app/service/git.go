@@ -187,8 +187,17 @@ func (s *GitService) CheckAccount(c echo.Context, request dto.CreateGitRequest) 
 	var baseError dto.BaseError
 	response.Data = false
 
+	splitText := strings.Split(request.Url, "/")
+	owner := splitText[len(splitText)-1]
+
+	if owner == "" {
+		baseError.Status = "error"
+		baseError.Message = "Error in parsing owner from url"
+		return nil, &baseError
+	}
+
 	if request.Type == "github" {
-		github := github.NewGithub(request.Token)
+		github := github.NewGithub(request.Token, owner)
 		gitManager := git.NewGitManager(github)
 
 		account, err := gitManager.CheckAccount()

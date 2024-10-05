@@ -34,7 +34,7 @@ func (s *GitInternalService) GetRepos(id uint, page int) (*dto.GitInternalRepoRe
 
 	switch gitModel.Type {
 	case "github":
-		github := github.NewGithub(gitModel.Token)
+		github := github.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 	case "gitlab":
 		return nil, errors.New("gitlab not supported")
