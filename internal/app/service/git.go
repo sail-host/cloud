@@ -1,6 +1,8 @@
 package service
 
 import (
+	"strings"
+
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
@@ -74,11 +76,22 @@ func (s *GitService) CreateGit(c echo.Context, request dto.CreateGitRequest) (*d
 		return nil, &baseError
 	}
 
+	// Parse owner from url. Last /
+	splitText := strings.Split(request.Url, "/")
+	owner := splitText[len(splitText)-1]
+
+	if owner == "" {
+		baseError.Status = "error"
+		baseError.Message = "Error in parsing owner from url"
+		return nil, &baseError
+	}
+
 	git := model.Git{
 		Name:  request.Name,
 		Url:   request.Url,
 		Type:  request.Type,
 		Token: request.Token,
+		Owner: owner,
 	}
 
 	err := gitRepo.CreateGit(&git)
@@ -116,8 +129,18 @@ func (s *GitService) UpdateGit(c echo.Context, id uint, request dto.UpdateGitReq
 		return nil, &baseError
 	}
 
+	splitText := strings.Split(request.Url, "/")
+	owner := splitText[len(splitText)-1]
+
+	if owner == "" {
+		baseError.Status = "error"
+		baseError.Message = "Error in parsing owner from url"
+		return nil, &baseError
+	}
+
 	git.Name = request.Name
 	git.Url = request.Url
+	git.Owner = owner
 	git.Type = request.Type
 	git.Token = request.Token
 
