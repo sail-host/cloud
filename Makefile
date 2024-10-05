@@ -3,8 +3,10 @@
 run:
 	cd web && npm run dev & ~/go/bin/air && fg
 
-dev:
-	cd web && npm run build && cd .. && go run cmd/main.go app --dev
+dev: build-web dev-api
+
+build-web:
+	cd web && npm run build
 
 dev-api:
 	@go run cmd/main.go app --dev
