@@ -77,6 +77,8 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
 
   useEffect(() => {
     if (gitAccount) {
+      setPage(1)
+      setProjects([])
       fetchProjects()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -211,7 +213,7 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
               )}
 
               {page < lastPage && (
-                <div className='flex items-center justify-center mt-4'>
+                <div className='flex items-center justify-center my-4'>
                   <Button
                     type='button'
                     onClick={() => {
