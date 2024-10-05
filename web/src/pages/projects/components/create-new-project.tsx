@@ -31,10 +31,7 @@ import axios from 'axios'
 import { BaseResponse } from '@/types/base'
 import { Project, ProjectCardItem } from './project-card-item'
 import { Loading } from '@/components/custom/loading'
-
-interface CreateNewProjectProps {
-  setStep: (step: '1' | '2') => void
-}
+import { useProjectCreateStore } from '@/store/project-create-store'
 
 interface FetchProjectsResponse {
   status: 'success' | 'error'
@@ -43,10 +40,10 @@ interface FetchProjectsResponse {
   next_page: number
 }
 
-export function CreateNewProject({ setStep }: CreateNewProjectProps) {
+export function CreateNewProject() {
+  const { gitAccount, setGitAccount } = useProjectCreateStore()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [gitAccount, setGitAccount] = useState<GitAccount | null>(null)
   const [gitAccounts, setGitAccounts] = useState<GitAccount[]>([])
   const [projects, setProjects] = useState<Project[]>([])
   const [lastPage, setLastPage] = useState<number>(0)
@@ -187,7 +184,7 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
             </div>
             <Card className='mt-3 !p-0'>
               {projects.map((item, index) => (
-                <ProjectCardItem key={index} item={item} setStep={setStep} />
+                <ProjectCardItem key={index} item={item} />
               ))}
 
               {!gitAccount && (

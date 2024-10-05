@@ -13,6 +13,7 @@ type GitInternalResponse struct {
 type GitInternalRepo struct {
 	ID            int64     `json:"id"`
 	Name          string    `json:"name"`
+	Owner         string    `json:"owner"`
 	FullName      string    `json:"full_name"`
 	Description   string    `json:"description"`
 	URL           string    `json:"url"`

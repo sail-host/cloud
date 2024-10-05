@@ -67,6 +67,7 @@ func (s *GitInternalService) GetRepos(id uint, page int) (*dto.GitInternalRepoRe
 			newRepo := dto.GitInternalRepo{
 				ID:            *repo.ID,
 				Name:          *repo.Name,
+				Owner:         *repo.Owner.Login,
 				FullName:      *repo.FullName,
 				Description:   repo.GetDescription(),
 				URL:           *repo.HTMLURL,

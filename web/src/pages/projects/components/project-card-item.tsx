@@ -1,15 +1,19 @@
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from '@/lib/utils'
+import {
+  useProjectCreateStore,
+  useProjectStore,
+} from '@/store/project-create-store'
 import { IconLock, IconPointFilled } from '@tabler/icons-react'
 
 interface ProjectCardItemProps {
   item: Project
-  setStep: (step: '1' | '2') => void
 }
 
 export interface Project {
   id: number
   name: string
+  owner: string
   full_name: string
   description: string
   url: string
@@ -48,8 +52,12 @@ const iconFramework = {
   vite: 'https://api-frameworks.vercel.sh/framework-logos/vite.svg',
 }
 
-export function ProjectCardItem({ item, setStep }: ProjectCardItemProps) {
+export function ProjectCardItem({ item }: ProjectCardItemProps) {
+  const { setStep } = useProjectCreateStore()
+  const { setProject } = useProjectStore()
+
   const handleImport = () => {
+    setProject(item)
     setStep('2')
   }
 
