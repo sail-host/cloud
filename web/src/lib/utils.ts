@@ -17,3 +17,13 @@ export function randomString(length: number) {
     .toString(36)
     .substring(2, length + 2)
 }
+
+export function slugify(text: string, separator = '-') {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, separator)
+    .replace(/[^\w-]+/g, '')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '')
+}

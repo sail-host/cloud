@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { formatDistanceToNow } from '@/lib/utils'
+import { formatDistanceToNow, slugify } from '@/lib/utils'
 import {
   useProjectCreateStore,
   useProjectStore,
@@ -54,11 +54,12 @@ const iconFramework = {
 
 export function ProjectCardItem({ item }: ProjectCardItemProps) {
   const { setStep } = useProjectCreateStore()
-  const { setProject, setProjectFramework } = useProjectStore()
+  const { setProject, setProjectFramework, setProjectName } = useProjectStore()
 
   const handleImport = () => {
     setProject(item)
     setProjectFramework(item.framework)
+    setProjectName(slugify(item.name))
     setStep('2')
   }
 

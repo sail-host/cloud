@@ -10,9 +10,9 @@ export function ProjectInformation() {
     projectName,
     projectFramework,
     rootDir,
-    setProjectName,
     setProjectFramework,
     setRootDir,
+    setProjectName,
   } = useProjectStore()
   const [editRootDir, setEditRootDir] = useState(false)
 

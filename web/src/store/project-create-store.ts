@@ -27,16 +27,10 @@ interface ProjectCreateStore {
 }
 
 interface ProjectSettingStore {
-  projectName: string
-  projectFramework: string
-  rootDir: string
   buildCommand: string
   outputDir: string
   installCommand: string
   environments: Environment[]
-  setProjectName: (projectName: string) => void
-  setProjectFramework: (projectFramework: string) => void
-  setRootDir: (rootDir: string) => void
   setBuildCommand: (buildCommand: string) => void
   setOutputDir: (outputDir: string) => void
   setInstallCommand: (installCommand: string) => void
@@ -64,16 +58,10 @@ export const useProjectCreateStore = create<ProjectCreateStore>((set) => ({
 export const useProjectSettingStore = create<ProjectSettingStore>((set) => ({
   installCommand: '',
   environments: [],
-  setProjectName: (projectName) => set({ projectName }),
-  setProjectFramework: (projectFramework) => set({ projectFramework }),
-  setRootDir: (rootDir) => set({ rootDir }),
   setBuildCommand: (buildCommand) => set({ buildCommand }),
   setOutputDir: (outputDir) => set({ outputDir }),
   setInstallCommand: (installCommand) => set({ installCommand }),
   setEnvironments: (environments) => set({ environments }),
-  projectName: '',
-  projectFramework: '',
-  rootDir: '',
   buildCommand: '',
   outputDir: '',
 }))
