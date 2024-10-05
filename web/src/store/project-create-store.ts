@@ -12,8 +12,11 @@ interface ProjectStore {
   setProject: (project: Project | null) => void
   project: Project | null
   projectName: string
-  projectFramework: string
+  projectFramework: string | null
   rootDir: string
+  setProjectName: (projectName: string) => void
+  setProjectFramework: (projectFramework: string | null) => void
+  setRootDir: (rootDir: string) => void
 }
 
 interface ProjectCreateStore {
@@ -45,7 +48,10 @@ export const useProjectStore = create<ProjectStore>((set) => ({
   setProject: (project) => set({ project }),
   projectName: '',
   projectFramework: '',
-  rootDir: '',
+  rootDir: './',
+  setProjectName: (projectName) => set({ projectName }),
+  setProjectFramework: (projectFramework) => set({ projectFramework }),
+  setRootDir: (rootDir) => set({ rootDir }),
 }))
 
 export const useProjectCreateStore = create<ProjectCreateStore>((set) => ({

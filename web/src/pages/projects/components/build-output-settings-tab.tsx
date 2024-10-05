@@ -14,14 +14,28 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { Input } from '@/components/ui/input'
+import { useProjectSettingStore } from '@/store/project-create-store'
+import { useState } from 'react'
 
 export function BuildOutputSettingsTab() {
+  const {
+    buildCommand,
+    setBuildCommand,
+    outputDir,
+    setOutputDir,
+    installCommand,
+    setInstallCommand,
+  } = useProjectSettingStore()
+  const [buildEnabled, setBuildEnabled] = useState(false)
+  const [outputDirEnabled, setOutputDirEnabled] = useState(false)
+  const [installCommandEnabled, setInstallCommandEnabled] = useState(false)
+
   return (
     <Accordion type='single' collapsible className='px-3 border rounded-md'>
       <AccordionItem value='item-1'>
         <AccordionTrigger>Build and Output Settings</AccordionTrigger>
         <AccordionContent>
-          <div className='mt-3 space-y-4'>
+          <div className='pl-1 mt-3 space-y-4'>
             <div className='flex flex-col gap-2'>
               <Label className='flex items-center gap-1'>
                 Build Command
@@ -43,11 +57,22 @@ export function BuildOutputSettingsTab() {
                 <Input
                   placeholder='npm run build or yarn build'
                   className='col-span-10'
-                  disabled
+                  disabled={!buildEnabled}
+                  value={buildCommand}
+                  onChange={(e) => setBuildCommand(e.target.value)}
                 />
                 <div className='flex items-center space-x-2'>
-                  <Label htmlFor='override-build-command'>Override</Label>{' '}
-                  <Switch id='override-build-command' />
+                  <Label htmlFor='override-build-command'>Override</Label>
+                  <Switch
+                    id='override-build-command'
+                    checked={buildEnabled}
+                    onClick={() => {
+                      if (buildEnabled) {
+                        setBuildCommand('')
+                      }
+                      setBuildEnabled(!buildEnabled)
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -73,11 +98,22 @@ export function BuildOutputSettingsTab() {
                 <Input
                   placeholder='public or dist'
                   className='col-span-10'
-                  disabled
+                  disabled={!outputDirEnabled}
+                  value={outputDir}
+                  onChange={(e) => setOutputDir(e.target.value)}
                 />
                 <div className='flex items-center space-x-2'>
-                  <Label htmlFor='override-output-directory'>Override</Label>{' '}
-                  <Switch id='override-output-directory' />
+                  <Label htmlFor='override-output-directory'>Override</Label>
+                  <Switch
+                    id='override-output-directory'
+                    checked={outputDirEnabled}
+                    onClick={() => {
+                      if (outputDirEnabled) {
+                        setOutputDir('')
+                      }
+                      setOutputDirEnabled(!outputDirEnabled)
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -104,11 +140,22 @@ export function BuildOutputSettingsTab() {
                 <Input
                   placeholder='npm install, yarn install, pnpm install, bun install, etc.'
                   className='col-span-10'
-                  disabled
+                  disabled={!installCommandEnabled}
+                  value={installCommand}
+                  onChange={(e) => setInstallCommand(e.target.value)}
                 />
                 <div className='flex items-center space-x-2'>
-                  <Label htmlFor='override-install-command'>Override</Label>{' '}
-                  <Switch id='override-install-command' />
+                  <Label htmlFor='override-install-command'>Override</Label>
+                  <Switch
+                    id='override-install-command'
+                    checked={installCommandEnabled}
+                    onClick={() => {
+                      if (installCommandEnabled) {
+                        setInstallCommand('')
+                      }
+                      setInstallCommandEnabled(!installCommandEnabled)
+                    }}
+                  />
                 </div>
               </div>
             </div>

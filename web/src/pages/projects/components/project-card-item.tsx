@@ -54,10 +54,11 @@ const iconFramework = {
 
 export function ProjectCardItem({ item }: ProjectCardItemProps) {
   const { setStep } = useProjectCreateStore()
-  const { setProject } = useProjectStore()
+  const { setProject, setProjectFramework } = useProjectStore()
 
   const handleImport = () => {
     setProject(item)
+    setProjectFramework(item.framework)
     setStep('2')
   }
 

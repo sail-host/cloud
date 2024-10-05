@@ -3,22 +3,35 @@ import { Label } from '@/components/ui/label'
 import { SelectFramework } from './select-framework'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { useProjectStore } from '@/store/project-create-store'
 
 export function ProjectInformation() {
-  const [selectedFramework, setSelectedFramework] = useState<string | null>('')
+  const {
+    projectName,
+    projectFramework,
+    rootDir,
+    setProjectName,
+    setProjectFramework,
+    setRootDir,
+  } = useProjectStore()
+  const [editRootDir, setEditRootDir] = useState(false)
 
   return (
     <>
       <div className='flex flex-col gap-2'>
         <Label>Project Name</Label>
-        <Input placeholder='my-project' />
+        <Input
+          placeholder='my-project'
+          value={projectName}
+          onChange={(e) => setProjectName(e.target.value)}
+        />
       </div>
 
       <div className='flex flex-col gap-2'>
         <Label>Project Framework</Label>
         <SelectFramework
-          selectedFramework={selectedFramework}
-          setSelectedFramework={setSelectedFramework}
+          selectedFramework={projectFramework}
+          setSelectedFramework={setProjectFramework}
         />
       </div>
 
@@ -28,11 +41,22 @@ export function ProjectInformation() {
           <Input
             placeholder='src'
             className='col-span-11'
-            disabled
-            value='./'
+            disabled={!editRootDir}
+            value={rootDir}
+            onChange={(e) => setRootDir(e.target.value)}
           />
-          <Button variant='outline' className='col-span-1'>
-            Edit
+          <Button
+            variant='outline'
+            className='col-span-1'
+            onClick={() => {
+              if (editRootDir) {
+                setRootDir(rootDir)
+              }
+              setEditRootDir(!editRootDir)
+            }}
+            type='button'
+          >
+            {editRootDir ? 'Save' : 'Edit'}
           </Button>
         </div>
       </div>
