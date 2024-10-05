@@ -31,14 +31,30 @@ func (g *Github) CheckAccount() (bool, error) {
 	return true, nil
 }
 
-func (g *Github) GetRepos() ([]*github.Repository, error) {
+type ReposResponse struct {
+	Repos    []*github.Repository
+	LastPage int
+	NextPage int
+}
+
+func (g *Github) GetRepos(page, perPage int) (*ReposResponse, error) {
 	ctx := context.Background()
-	repos, _, err := g.Client.Repositories.ListByAuthenticatedUser(ctx, &github.RepositoryListByAuthenticatedUserOptions{})
+	repos, response, err := g.Client.Repositories.ListByAuthenticatedUser(ctx, &github.RepositoryListByAuthenticatedUserOptions{
+		ListOptions: github.ListOptions{
+			Page:    page,
+			PerPage: perPage,
+		},
+		Sort: "created",
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return repos, nil
+	return &ReposResponse{
+		Repos:    repos,
+		LastPage: response.LastPage,
+		NextPage: response.NextPage,
+	}, nil
 }
 
 func (g *Github) GetFramework(owner, repo string) (string, error) {

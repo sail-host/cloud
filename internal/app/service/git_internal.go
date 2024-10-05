@@ -11,18 +11,20 @@ import (
 	githubP "github.com/google/go-github/v65/github"
 )
 
+const PER_PAGE = 10
+
 type GitInternalService struct {
 }
 
 type IGitInternalService interface {
-	GetRepos(id uint) ([]dto.GitInternalRepo, error)
+	GetRepos(id uint, page int) (*dto.GitInternalRepoResponse, error)
 }
 
 func NewIGitInternalService() IGitInternalService {
 	return &GitInternalService{}
 }
 
-func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
+func (s *GitInternalService) GetRepos(id uint, page int) (*dto.GitInternalRepoResponse, error) {
 	var gitManager *git.GitManager
 
 	gitModel, err := gitRepo.GetGitByID(id)
@@ -45,17 +47,17 @@ func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
 	}
 
 	// Get Repositories
-	reposFull, err := gitManager.GetRepos()
+	res, err := gitManager.GetRepos(page, PER_PAGE)
 	if err != nil {
 		return nil, err
 	}
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	repos := make([]dto.GitInternalRepo, 0, len(reposFull))
+	repos := make([]dto.GitInternalRepo, 0, len(res.Repos))
 
 	// Process the repositories
-	for _, repo := range reposFull {
+	for _, repo := range res.Repos {
 		wg.Add(1)
 		go func(repo *githubP.Repository) {
 			defer wg.Done()
@@ -84,5 +86,10 @@ func (s *GitInternalService) GetRepos(id uint) ([]dto.GitInternalRepo, error) {
 
 	wg.Wait()
 
-	return repos, nil
+	var response dto.GitInternalRepoResponse
+	response.Data = repos
+	response.NextPage = res.NextPage
+	response.LastPage = res.LastPage
+
+	return &response, nil
 }

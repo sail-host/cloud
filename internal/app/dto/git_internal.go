@@ -3,9 +3,11 @@ package dto
 import "time"
 
 type GitInternalResponse struct {
-	Status  string            `json:"status"`
-	Message string            `json:"message"`
-	Data    []GitInternalRepo `json:"data"`
+	Status   string            `json:"status"`
+	Message  string            `json:"message"`
+	Data     []GitInternalRepo `json:"data"`
+	NextPage int               `json:"next_page"`
+	LastPage int               `json:"last_page"`
 }
 
 type GitInternalRepo struct {
@@ -20,4 +22,10 @@ type GitInternalRepo struct {
 	CloneURL      string    `json:"clone_url"`
 	Private       bool      `json:"private"`
 	Framework     string    `json:"framework"`
+}
+
+type GitInternalRepoResponse struct {
+	NextPage int `json:"next_page"`
+	LastPage int `json:"last_page"`
+	Data     []GitInternalRepo
 }

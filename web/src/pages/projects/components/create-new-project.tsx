@@ -36,12 +36,21 @@ interface CreateNewProjectProps {
   setStep: (step: '1' | '2') => void
 }
 
+interface FetchProjectsResponse {
+  status: 'success' | 'error'
+  data: Project[]
+  last_page: number
+  next_page: number
+}
+
 export function CreateNewProject({ setStep }: CreateNewProjectProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [gitAccount, setGitAccount] = useState<GitAccount | null>(null)
   const [gitAccounts, setGitAccounts] = useState<GitAccount[]>([])
   const [projects, setProjects] = useState<Project[]>([])
+  const [lastPage, setLastPage] = useState<number>(0)
+  const [page, setPage] = useState<number>(1)
 
   const fetchGitAccounts = () => {
     axios.get<BaseResponse<GitAccount[]>>('/api/v1/git/list').then((res) => {
@@ -52,11 +61,12 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
   const fetchProjects = () => {
     setLoading(true)
     axios
-      .get<BaseResponse<Project[]>>(
-        `/api/v1/git-internal/list/${gitAccount?.id}`
+      .get<FetchProjectsResponse>(
+        `/api/v1/git-internal/list/${gitAccount?.id}?page=${page}`
       )
       .then((res) => {
-        setProjects(res.data.data || [])
+        setProjects((i) => [...i, ...(res.data.data || [])])
+        setLastPage(res.data.last_page)
       })
       .finally(() => setLoading(false))
   }
@@ -194,11 +204,26 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                 </div>
               )}
 
-              {loading && (
+              {loading && projects.length > 0 && (
                 <div className='flex items-center justify-center p-4'>
                   <Loading loading />
                 </div>
               )}
+
+              <div className='flex items-center justify-center'>
+                {page < lastPage && (
+                  <Button
+                    type='button'
+                    onClick={() => {
+                      setPage((i) => i + 1)
+                      fetchProjects()
+                    }}
+                    loading={loading}
+                  >
+                    Load More
+                  </Button>
+                )}
+              </div>
             </Card>
           </div>
         </CardContent>
