@@ -30,6 +30,7 @@ import { GitAccount } from '@/types/model'
 import axios from 'axios'
 import { BaseResponse } from '@/types/base'
 import { Project, ProjectCardItem } from './project-card-item'
+import { Loading } from '@/components/custom/loading'
 
 interface CreateNewProjectProps {
   setStep: (step: '1' | '2') => void
@@ -37,6 +38,7 @@ interface CreateNewProjectProps {
 
 export function CreateNewProject({ setStep }: CreateNewProjectProps) {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [gitAccount, setGitAccount] = useState<GitAccount | null>(null)
   const [gitAccounts, setGitAccounts] = useState<GitAccount[]>([])
   const [projects, setProjects] = useState<Project[]>([])
@@ -48,13 +50,15 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
   }
 
   const fetchProjects = () => {
+    setLoading(true)
     axios
-      .get<
-        BaseResponse<Project[]>
-      >(`/api/v1/git-internal/list/${gitAccount?.id}`)
+      .get<BaseResponse<Project[]>>(
+        `/api/v1/git-internal/list/${gitAccount?.id}`
+      )
       .then((res) => {
         setProjects(res.data.data || [])
       })
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -173,6 +177,28 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
               {projects.map((item, index) => (
                 <ProjectCardItem key={index} item={item} setStep={setStep} />
               ))}
+
+              {!gitAccount && (
+                <div className='flex items-center justify-center p-4'>
+                  <p className='text-muted-foreground'>
+                    Please select a Git account to view repositories.
+                  </p>
+                </div>
+              )}
+
+              {gitAccount && projects.length === 0 && !loading && (
+                <div className='flex items-center justify-center p-4'>
+                  <p className='text-muted-foreground'>
+                    No repositories found.
+                  </p>
+                </div>
+              )}
+
+              {loading && (
+                <div className='flex items-center justify-center p-4'>
+                  <Loading loading />
+                </div>
+              )}
             </Card>
           </div>
         </CardContent>
