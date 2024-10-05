@@ -204,14 +204,14 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                 </div>
               )}
 
-              {loading && projects.length > 0 && (
+              {loading && projects.length === 0 && (
                 <div className='flex items-center justify-center p-4'>
                   <Loading loading />
                 </div>
               )}
 
-              <div className='flex items-center justify-center'>
-                {page < lastPage && (
+              {page < lastPage && (
+                <div className='flex items-center justify-center mt-4'>
                   <Button
                     type='button'
                     onClick={() => {
@@ -222,8 +222,8 @@ export function CreateNewProject({ setStep }: CreateNewProjectProps) {
                   >
                     Load More
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </Card>
           </div>
         </CardContent>
