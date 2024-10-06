@@ -9,6 +9,7 @@ type Project struct {
 
 	// Git info
 	GitUrl           string `json:"git_url"`
+	GitRepo          string `json:"git_repo"`
 	ProductionBranch string `json:"production_branch"`
 	GitID            uint   `json:"git_id"`
 	Git              Git    `json:"git" gorm:"foreignKey:GitID"`

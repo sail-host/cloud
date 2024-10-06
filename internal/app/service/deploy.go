@@ -35,6 +35,7 @@ func (d *DeployService) CreateProject(c echo.Context, project *dto.CreateProject
 		Name:             project.Name,
 		Framework:        project.Framework,
 		GitUrl:           project.GitUrl,
+		GitRepo:          project.GitRepo,
 		ProductionBranch: project.ProductionBranch,
 		GitID:            project.GitID,
 		BuildCommand:     project.BuildCommand,
@@ -65,7 +66,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 	gitInternalService := NewIGitInternalService()
 
 	// Get last commit
-	commit, err := gitInternalService.GetLastCommitInBranch(gitModel.ID, project.ProductionBranch)
+	commit, err := gitInternalService.GetLastCommitInBranch(gitModel.ID, gitModel.Owner, project.GitRepo, project.ProductionBranch)
 	if err != nil {
 		global.LOG.Error("Error getting last commit", err)
 		return
@@ -116,7 +117,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 		Configured: true,
 		Valid:      false,
 	}
-	projectDomain, err = projectRepo.CreateProjectDomain(projectDomain)
+	_, err = projectRepo.CreateProjectDomain(projectDomain)
 	if err != nil {
 		global.LOG.Error("Error creating project domain", err)
 		return

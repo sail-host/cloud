@@ -19,7 +19,7 @@ type GitInternalService struct {
 type IGitInternalService interface {
 	GetRepos(id uint, page int) (*dto.GitInternalRepoResponse, error)
 	GetRepo(id uint) (*githubP.Repository, error)
-	GetLastCommitInBranch(id uint, branch string) (*githubP.RepositoryCommit, error)
+	GetLastCommitInBranch(id uint, owner, repo, branch string) (*githubP.RepositoryCommit, error)
 }
 
 func NewIGitInternalService() IGitInternalService {
@@ -119,7 +119,7 @@ func (s *GitInternalService) GetRepo(id uint) (*githubP.Repository, error) {
 	return nil, nil
 }
 
-func (s *GitInternalService) GetLastCommitInBranch(id uint, branch string) (*githubP.RepositoryCommit, error) {
+func (s *GitInternalService) GetLastCommitInBranch(id uint, owner, repo, branch string) (*githubP.RepositoryCommit, error) {
 	var gitManager *git.GitManager
 	gitModel, err := gitRepo.GetGitByID(id)
 	if err != nil {
@@ -130,7 +130,7 @@ func (s *GitInternalService) GetLastCommitInBranch(id uint, branch string) (*git
 	case "github":
 		github := github.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
-		commit, err := gitManager.GetLastCommitInBranch(gitModel.Owner, gitModel.Name, branch)
+		commit, err := gitManager.GetLastCommitInBranch(owner, repo, branch)
 		if err != nil {
 			return nil, err
 		}
