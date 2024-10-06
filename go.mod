@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/go-github/v65 v65.0.0
+	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.9.3
@@ -20,6 +21,7 @@ require (
 	golang.org/x/crypto v0.27.0
 	golang.org/x/sys v0.25.0
 	gorm.io/gorm v1.25.12
+	k8s.io/apimachinery v0.31.1
 )
 
 require (
@@ -38,7 +40,6 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/flatbuffers v1.12.1 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/google/uuid v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -68,7 +69,7 @@ require (
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.22.5 // indirect

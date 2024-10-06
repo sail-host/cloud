@@ -1,9 +1,14 @@
 package git
 
-import "github.com/sail-host/cloud/internal/utils/git/github"
+import (
+	git "github.com/google/go-github/v65/github"
+	"github.com/sail-host/cloud/internal/utils/git/github"
+)
 
 type GitProvider interface {
 	CheckAccount() (bool, error)
 	GetRepos(page, perPage int) (*github.ReposResponse, error)
 	GetFramework(owner, repo string) (string, error)
+	GetRepo(owner, repo string) (*git.Repository, error)
+	GetLastCommitInBranch(owner, repo, branch string) (*git.RepositoryCommit, error)
 }

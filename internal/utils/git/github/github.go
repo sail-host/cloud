@@ -139,3 +139,26 @@ func (g *Github) GetFramework(owner, repo string) (string, error) {
 
 	return "", errors.New("framework not found")
 }
+
+func (g *Github) GetRepo(owner, repo string) (*github.Repository, error) {
+	ctx := context.Background()
+	repository, _, err := g.Client.Repositories.Get(ctx, owner, repo)
+	if err != nil {
+		return nil, err
+	}
+
+	return repository, nil
+}
+
+func (g *Github) GetLastCommitInBranch(owner, repo, branch string) (*github.RepositoryCommit, error) {
+	ctx := context.Background()
+
+	commits, _, err := g.Client.Repositories.ListCommits(ctx, owner, repo, &github.CommitsListOptions{
+		SHA: branch,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return commits[0], nil
+}

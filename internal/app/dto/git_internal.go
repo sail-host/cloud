@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/go-github/v65/github"
+)
 
 type GitInternalResponse struct {
 	Status   string            `json:"status"`
@@ -29,4 +33,8 @@ type GitInternalRepoResponse struct {
 	NextPage int `json:"next_page"`
 	LastPage int `json:"last_page"`
 	Data     []GitInternalRepo
+}
+
+type GitInternalData struct {
+	*github.Repository
 }

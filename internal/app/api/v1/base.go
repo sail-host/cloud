@@ -15,4 +15,5 @@ var (
 	gitService         = service.NewIGitService()
 	domainService      = service.NewIDomainService()
 	gitInternalService = service.NewIGitInternalService()
+	projectService     = service.NewIDeployService()
 )

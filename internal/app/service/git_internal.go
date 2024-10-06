@@ -18,6 +18,8 @@ type GitInternalService struct {
 
 type IGitInternalService interface {
 	GetRepos(id uint, page int) (*dto.GitInternalRepoResponse, error)
+	GetRepo(id uint) (*githubP.Repository, error)
+	GetLastCommitInBranch(id uint, branch string) (*githubP.RepositoryCommit, error)
 }
 
 func NewIGitInternalService() IGitInternalService {
@@ -93,4 +95,47 @@ func (s *GitInternalService) GetRepos(id uint, page int) (*dto.GitInternalRepoRe
 	response.LastPage = res.LastPage
 
 	return &response, nil
+}
+
+func (s *GitInternalService) GetRepo(id uint) (*githubP.Repository, error) {
+	var gitManager *git.GitManager
+	gitModel, err := gitRepo.GetGitByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	switch gitModel.Type {
+	case "github":
+		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		gitManager = git.NewGitManager(github)
+		repo, err := gitManager.GetRepo(gitModel.Owner, gitModel.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		return repo, nil
+	}
+
+	return nil, nil
+}
+
+func (s *GitInternalService) GetLastCommitInBranch(id uint, branch string) (*githubP.RepositoryCommit, error) {
+	var gitManager *git.GitManager
+	gitModel, err := gitRepo.GetGitByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	switch gitModel.Type {
+	case "github":
+		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		gitManager = git.NewGitManager(github)
+		commit, err := gitManager.GetLastCommitInBranch(gitModel.Owner, gitModel.Name, branch)
+		if err != nil {
+			return nil, err
+		}
+		return commit, nil
+	}
+
+	return nil, nil
 }
