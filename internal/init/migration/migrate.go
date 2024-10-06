@@ -13,7 +13,9 @@ func Init() {
 		migrations.CreateGitTable,
 		migrations.CreateDomainTable,
 		migrations.CreateProjectTable,
+		migrations.CreateEnvironmentVariableTable,
 		migrations.CreateDeploymentTable,
+		migrations.CreateLogTable,
 		migrations.CreateProjectDomainTable,
 	})
 
