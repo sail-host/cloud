@@ -9,12 +9,17 @@ import (
 
 func (b *BaseApi) CreateProject(echo echo.Context) error {
 	var request dto.CreateProjectRequest
+	var baseError dto.BaseError
 	if err := echo.Bind(&request); err != nil {
-		return echo.JSON(http.StatusBadRequest, err)
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
 	}
 	err := projectService.CreateProject(echo, &request)
 	if err != nil {
-		return echo.JSON(http.StatusBadRequest, err)
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
 	}
 	var baseResponse dto.BaseResponse
 	baseResponse.Status = "success"
