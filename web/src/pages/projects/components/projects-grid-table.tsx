@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Project } from '../data/projects'
 import {
   IconDotsVertical,
   IconFolderCode,
@@ -15,6 +14,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
+import { Project } from '../list'
+import { formatDistanceToNow } from '@/lib/utils'
 
 interface Props {
   projects: Project[]
@@ -48,7 +49,12 @@ function ProjectCard({ project }: { project: Project }) {
             >
               {project.name}
             </Link>
-            <a href='#' className='font-extralight hover:underline'>
+            <a
+              href={`https://${project.domain}`}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='font-extralight hover:underline'
+            >
               {project.domain}
             </a>
           </div>
@@ -70,14 +76,12 @@ function ProjectCard({ project }: { project: Project }) {
         </DropdownMenu>
       </CardHeader>
       <CardContent className='p-3 pt-0'>
-        <div className='text-sm font-light'>
-          {project.git.last_commit.message}
-        </div>
+        <div className='text-sm font-light'>{project.git_commit}</div>
         <p className='flex items-center font-light text-muted-foreground'>
-          {project.git.last_commit.date} ago on
+          {formatDistanceToNow(new Date(project.git_date))} ago on
           <span className='ml-1 font-semibold text-foreground'>
             <IconGitBranch size={16} className='-mt-0.5 mr-1 inline-block' />
-            {project.git.branch}
+            {project.git_branch}
           </span>
         </p>
       </CardContent>
