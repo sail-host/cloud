@@ -20,7 +20,7 @@ type IDeployService interface {
 	CreateProject(c echo.Context, project *dto.CreateProjectRequest) error
 	Deploy(project *model.Project)
 	ListProjects() (*dto.ListProjectResponse, error)
-	GetProjectWithName(projectName string) (*model.Project, error)
+	GetProjectWithName(projectName string) (*dto.BaseResponse, error)
 }
 
 func NewIDeployService() IDeployService {
@@ -205,11 +205,16 @@ func (d *DeployService) ListProjects() (*dto.ListProjectResponse, error) {
 	}, nil
 }
 
-func (d *DeployService) GetProjectWithName(projectName string) (*model.Project, error) {
+func (d *DeployService) GetProjectWithName(projectName string) (*dto.BaseResponse, error) {
 	project, err := projectRepo.GetProjectWithName(projectName)
 	if err != nil {
 		return nil, err
 	}
 
-	return project, nil
+	var baseResponse dto.BaseResponse
+	baseResponse.Status = "success"
+	baseResponse.Message = "Project listed"
+	baseResponse.Data = project
+
+	return &baseResponse, nil
 }

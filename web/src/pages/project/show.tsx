@@ -8,47 +8,106 @@ import { DeploymentsTab } from './components/depoloyments-tab'
 import { LogsTab } from './components/logs-tab'
 import { StorageTab } from './components/storage-tab'
 import { SettingsTab } from './settings/settings-tab'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useParams } from 'react-router-dom'
+import { Loading } from '@/components/custom/loading'
+import NotFoundError from '../errors/not-found-error'
+import { BaseResponse } from '@/types/base'
+
+interface Project {
+  id: number
+  createdAt: string
+  updatedAt: string
+  name: string
+  framework: string
+  git_url: string
+  git_repo: string
+  production_branch: string
+  git_id: number
+}
 
 export default function ProjectShow() {
+  const { uuid } = useParams()
+  const [project, setProject] = useState<Project | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const fetchProject = () => {
+    setLoading(true)
+    axios
+      .get<BaseResponse<Project>>(`/api/v1/project/show/${uuid}`)
+      .then((res) => {
+        if (res.data.status === 'success') {
+          setProject(res.data.data)
+        } else {
+          setError(true)
+        }
+      })
+      .catch((err) => {
+        setError(true)
+        console.error(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    fetchProject()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <Layout>
-      {/* ===== Top Heading ===== */}
-      <Layout.Header sticky>
-        <Search />
-        <div className='flex items-center ml-auto space-x-4'>
-          <ThemeSwitch />
-          <UserNav />
-        </div>
-      </Layout.Header>
+      {!error && (
+        <Layout.Header sticky>
+          <Search />
+          <div className='flex items-center ml-auto space-x-4'>
+            <ThemeSwitch />
+            <UserNav />
+          </div>
+        </Layout.Header>
+      )}
 
       <Layout.Body>
-        <div className='flex items-center justify-between mb-2 space-y-2'>
-          <h1 className='text-2xl font-bold tracking-tight'>
-            solvie-dashboard
-          </h1>
-        </div>
-        <div className='mt-4'>
-          <Tabs
-            orientation='vertical'
-            defaultValue='project'
-            className='space-y-4'
-          >
-            <div className='w-full pb-2 overflow-x-auto'>
-              <TabsList>
-                <TabsTrigger value='project'>Project</TabsTrigger>
-                <TabsTrigger value='deployments'>Deployments</TabsTrigger>
-                <TabsTrigger value='logs'>Logs</TabsTrigger>
-                <TabsTrigger value='storage'>Storage</TabsTrigger>
-                <TabsTrigger value='settings'>Settings</TabsTrigger>
-              </TabsList>
+        {loading ? (
+          <div className='flex h-[80svh] items-center justify-center'>
+            <Loading loading />
+          </div>
+        ) : error ? (
+          <NotFoundError />
+        ) : (
+          <>
+            <div className='flex items-center justify-between mb-2 space-y-2'>
+              <h1 className='text-2xl font-bold tracking-tight'>
+                {project?.name}
+              </h1>
             </div>
-            <ProjectTab />
-            <DeploymentsTab />
-            <LogsTab />
-            <StorageTab />
-            <SettingsTab />
-          </Tabs>
-        </div>
+            <div className='mt-4'>
+              <Tabs
+                orientation='vertical'
+                defaultValue='project'
+                className='space-y-4'
+              >
+                <div className='w-full pb-2 overflow-x-auto'>
+                  <TabsList>
+                    <TabsTrigger value='project'>Project</TabsTrigger>
+                    <TabsTrigger value='deployments'>Deployments</TabsTrigger>
+                    <TabsTrigger value='logs'>Logs</TabsTrigger>
+                    <TabsTrigger value='storage'>Storage</TabsTrigger>
+                    <TabsTrigger value='settings'>Settings</TabsTrigger>
+                  </TabsList>
+                </div>
+                <ProjectTab uuid={uuid as string} />
+                <DeploymentsTab />
+                <LogsTab />
+                <StorageTab />
+                <SettingsTab />
+              </Tabs>
+            </div>
+          </>
+        )}
       </Layout.Body>
     </Layout>
   )
