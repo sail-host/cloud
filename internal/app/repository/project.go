@@ -12,17 +12,20 @@ type IProjectRepo interface {
 	CreateProject(project *model.Project) (*model.Project, error)
 	GetProjectByID(id uint) (*model.Project, error)
 	UpdateProject(project *model.Project) error
+	ListProjects() ([]*model.Project, error)
 	DeleteProject(id uint) error
 
 	CreateDeployment(deployment *model.Deployment) (*model.Deployment, error)
 	GetDeploymentByID(id uint) (*model.Deployment, error)
 	UpdateDeployment(deployment *model.Deployment) error
 	DeleteDeployment(id uint) error
+	GetLastDeployment(id uint) (*model.Deployment, error)
 
 	CreateProjectDomain(projectDomain *model.ProjectDomain) (*model.ProjectDomain, error)
 	GetProjectDomainByID(id uint) (*model.ProjectDomain, error)
 	UpdateProjectDomain(projectDomain *model.ProjectDomain) error
 	DeleteProjectDomain(id uint) error
+	GetLastDomain(id uint) (*model.ProjectDomain, error)
 }
 
 func NewIProjectRepo() IProjectRepo {
@@ -111,4 +114,25 @@ func (p *ProjectRepo) GetProjectDomainByID(id uint) (*model.ProjectDomain, error
 func (p *ProjectRepo) UpdateProjectDomain(projectDomain *model.ProjectDomain) error {
 	db := global.DB
 	return db.Model(projectDomain).Updates(projectDomain).Error
+}
+
+func (p *ProjectRepo) ListProjects() ([]*model.Project, error) {
+	var projects []*model.Project
+	db := global.DB
+	err := db.Find(&projects).Error
+	return projects, err
+}
+
+func (p *ProjectRepo) GetLastDomain(id uint) (*model.ProjectDomain, error) {
+	var projectDomain model.ProjectDomain
+	db := global.DB
+	err := db.Where("project_id = ?", id).Order("created_at DESC").First(&projectDomain).Error
+	return &projectDomain, err
+}
+
+func (p *ProjectRepo) GetLastDeployment(id uint) (*model.Deployment, error) {
+	var deployment model.Deployment
+	db := global.DB
+	err := db.Where("project_id = ?", id).Order("created_at DESC").First(&deployment).Error
+	return &deployment, err
 }

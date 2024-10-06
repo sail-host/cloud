@@ -13,5 +13,6 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 	projectApi := apiV1.ApiGroupApp.BaseApi
 	{
 		projectRouter.POST("/create", projectApi.CreateProject)
+		projectRouter.GET("/list", projectApi.ListProjects)
 	}
 }

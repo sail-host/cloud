@@ -19,6 +19,7 @@ type DeployService struct{}
 type IDeployService interface {
 	CreateProject(c echo.Context, project *dto.CreateProjectRequest) error
 	Deploy(project *model.Project)
+	ListProjects() (*dto.ListProjectResponse, error)
 }
 
 func NewIDeployService() IDeployService {
@@ -167,4 +168,38 @@ func generateDomain(projectName string) string {
 	}
 
 	return domain
+}
+
+func (d *DeployService) ListProjects() (*dto.ListProjectResponse, error) {
+	projects, err := projectRepo.ListProjects()
+	if err != nil {
+		return nil, err
+	}
+
+	var projectListResponse []*dto.ProjectListResponse
+	for _, project := range projects {
+		lastDomain, err := projectRepo.GetLastDomain(project.ID)
+		if err != nil {
+			return nil, err
+		}
+		lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
+		if err != nil {
+			return nil, err
+		}
+		projectListResponse = append(projectListResponse, &dto.ProjectListResponse{
+			ID:        project.ID,
+			Name:      project.Name,
+			Domain:    lastDomain.Domain,
+			GitHash:   lastDeployment.GitHash,
+			GitDate:   lastDeployment.GitDate,
+			GitBranch: project.ProductionBranch,
+			GitCommit: lastDeployment.GitMessage,
+		})
+	}
+
+	return &dto.ListProjectResponse{
+		Status:  "success",
+		Message: "Projects listed",
+		Data:    projectListResponse,
+	}, nil
 }
