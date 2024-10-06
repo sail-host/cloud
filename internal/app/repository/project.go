@@ -14,6 +14,7 @@ type IProjectRepo interface {
 	UpdateProject(project *model.Project) error
 	ListProjects() ([]*model.Project, error)
 	DeleteProject(id uint) error
+	GetProjectWithName(name string) (*model.Project, error)
 
 	CreateDeployment(deployment *model.Deployment) (*model.Deployment, error)
 	GetDeploymentByID(id uint) (*model.Deployment, error)
@@ -135,4 +136,11 @@ func (p *ProjectRepo) GetLastDeployment(id uint) (*model.Deployment, error) {
 	db := global.DB
 	err := db.Where("project_id = ?", id).Order("created_at DESC").First(&deployment).Error
 	return &deployment, err
+}
+
+func (p *ProjectRepo) GetProjectWithName(name string) (*model.Project, error) {
+	var project model.Project
+	db := global.DB
+	err := db.Where("name = ?", name).First(&project).Error
+	return &project, err
 }

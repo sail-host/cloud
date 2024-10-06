@@ -14,5 +14,6 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 	{
 		projectRouter.POST("/create", projectApi.CreateProject)
 		projectRouter.GET("/list", projectApi.ListProjects)
+		projectRouter.GET("/show/:name", projectApi.GetProjectWithName)
 	}
 }

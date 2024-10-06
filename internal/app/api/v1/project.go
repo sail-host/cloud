@@ -37,3 +37,16 @@ func (b *BaseApi) ListProjects(echo echo.Context) error {
 	}
 	return echo.JSON(http.StatusOK, projects)
 }
+
+func (b *BaseApi) GetProjectWithName(echo echo.Context) error {
+	projectName := echo.Param("name")
+	project, err := projectService.GetProjectWithName(projectName)
+	if err != nil {
+		var baseError dto.BaseError
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
+	}
+
+	return echo.JSON(http.StatusOK, project)
+}
