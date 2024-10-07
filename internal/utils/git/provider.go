@@ -11,4 +11,5 @@ type GitProvider interface {
 	GetFramework(owner, repo string) (string, error)
 	GetRepo(owner, repo string) (*git.Repository, error)
 	GetLastCommitInBranch(owner, repo, branch string) (*git.RepositoryCommit, error)
+	CloneRepo(owner, repo, path, branch, token, username string) error
 }

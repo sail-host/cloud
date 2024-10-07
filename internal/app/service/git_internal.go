@@ -2,9 +2,11 @@ package service
 
 import (
 	"errors"
+	"path"
 	"sync"
 
 	"github.com/sail-host/cloud/internal/app/dto"
+	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/git"
 	"github.com/sail-host/cloud/internal/utils/git/github"
 
@@ -20,6 +22,7 @@ type IGitInternalService interface {
 	GetRepos(id uint, page int) (*dto.GitInternalRepoResponse, error)
 	GetRepo(id uint) (*githubP.Repository, error)
 	GetLastCommitInBranch(id uint, owner, repo, branch string) (*githubP.RepositoryCommit, error)
+	CloneRepo(id uint, repo, branch, uuid string) error
 }
 
 func NewIGitInternalService() IGitInternalService {
@@ -138,4 +141,26 @@ func (s *GitInternalService) GetLastCommitInBranch(id uint, owner, repo, branch 
 	}
 
 	return nil, nil
+}
+
+func (s *GitInternalService) CloneRepo(id uint, repo, branch, uuid string) error {
+	var gitManager *git.GitManager
+	gitModel, err := gitRepo.GetGitByID(id)
+	if err != nil {
+		return err
+	}
+
+	deployDir := path.Join(global.CONF.System.DeployDir, uuid)
+
+	switch gitModel.Type {
+	case "github":
+		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		gitManager = git.NewGitManager(github)
+		err = gitManager.CloneRepo(gitModel.Owner, repo, deployDir, branch, gitModel.Token, gitModel.Owner)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

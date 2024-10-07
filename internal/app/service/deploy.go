@@ -99,9 +99,14 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	// Create new log
 	global.LOG.Info("Creating new log", deployment)
+	err = gitInternalService.CloneRepo(gitModel.ID, project.GitRepo, project.ProductionBranch, deployment.UUID)
+	if err != nil {
+		global.LOG.Error("Error cloning repo", err)
+		return
+	}
 
 	// Clone repo
-	// TODO: Clone repo
+	global.LOG.Info("Cloning git repo")
 
 	// Run install command
 	// TODO: Run install command

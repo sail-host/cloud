@@ -5,7 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/google/go-github/v65/github"
 )
 
@@ -161,4 +165,34 @@ func (g *Github) GetLastCommitInBranch(owner, repo, branch string) (*github.Repo
 	}
 
 	return commits[0], nil
+}
+
+func (g *Github) CloneRepo(owner, repo, path, branch, token, username string) error {
+	ctx := context.Background()
+
+	repository, _, err := g.Client.Repositories.Get(ctx, owner, repo)
+	if err != nil {
+		return err
+	}
+
+	cloneURL := repository.GetCloneURL()
+	if cloneURL == "" {
+		return errors.New("failed to get clone URL for repository")
+	}
+
+	_, err = git.PlainClone(path, false, &git.CloneOptions{
+		URL:           cloneURL,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", branch)),
+		SingleBranch:  true,
+		Depth:         1,
+		Auth: &http.BasicAuth{
+			Username: username,
+			Password: token,
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("git clone failed: %w", err)
+	}
+
+	return nil
 }

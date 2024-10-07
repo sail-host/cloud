@@ -16,4 +16,5 @@ type System struct {
 	BaseDir     string `mapstructure:"base_dir"`
 	Mode        string `mapstructure:"mode"`
 	Version     string `mapstructure:"version"`
+	DeployDir   string `mapstructure:"deploy_dir"`
 }

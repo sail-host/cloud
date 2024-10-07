@@ -29,6 +29,10 @@ func (gm *GitManager) GetLastCommitInBranch(owner, repo, branch string) (*git.Re
 	return gm.Provider.GetLastCommitInBranch(owner, repo, branch)
 }
 
+func (gm *GitManager) CloneRepo(owner, repo, path, branch, token, username string) error {
+	return gm.Provider.CloneRepo(owner, repo, path, branch, token, username)
+}
+
 func NewGitManager(provider GitProvider) *GitManager {
 	return &GitManager{Provider: provider}
 }
