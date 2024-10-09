@@ -19,8 +19,19 @@ func NewNodejsManager(version string, path string) INodejsManager {
 	}
 }
 
+// TODO: Remove this line
+// Nodejsda projectni commandlarni run qilishdan oldin nodejs pathni env PATHga qushib
+// ishlatb bo'lgandan keyin uni pathdan olib tashlash kerak
+// Nodejs uzini ham ishlatishigan oldin shundan qilsh kerak bo'ladi!
+// Bu ishini barcha binary dasturlar uchun ishlatish mumkin.
+// Projectda barcha qushimcha dasturlar bir folderda yig'ishga
+// harakat qilish kerak. Dastur o'chirilgan vaqtida barchasini uchirish
+// qulaylashadi. Ularning barchasi systemdagi dasturlardan bog'liqsiz
+// ishlashi kerak.
+
 func (nm *NodejsManager) CheckVersionExist() (bool, error) {
 	// Create this version path full
+	// nodePath := path.Join(nm.Path, fmt.Sprintf("nodejs/%s", nm.Version))
 
 	// Check node binary file exist this path folder
 
