@@ -91,6 +91,7 @@ func setViperConfig(cfg config.Config) {
 	viper.Set("system.version", cfg.System.Version)
 	viper.Set("system.encrypt_key", cfg.System.EncryptKey)
 	viper.Set("system.deploy_dir", cfg.System.DeployDir)
+	viper.Set("system.utils_dir", cfg.System.UtilsDir)
 }
 
 // Create config file
@@ -124,6 +125,7 @@ func createConfig(devMode bool, configDir string) config.Config {
 	rootConfig.System.DbPath = path.Join(configDir, "db")
 	rootConfig.System.LogPath = path.Join(configDir, "log")
 	rootConfig.System.DeployDir = path.Join(configDir, "deploy")
+	rootConfig.System.UtilsDir = path.Join(configDir, "utils")
 	rootConfig.System.Version = constants.Version
 	rootConfig.System.EncryptKey = random.StringGenerator(32)
 
