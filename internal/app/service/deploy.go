@@ -10,6 +10,7 @@ import (
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
+	"github.com/sail-host/cloud/internal/utils/nodejs"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
 	"k8s.io/apimachinery/pkg/util/rand"
 )
@@ -107,6 +108,22 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	// Clone repo
 	global.LOG.Info("Cloning git repo")
+
+	// Check if node is installed
+	nodeManager := nodejs.NewNodejsManager("v20", global.CONF.System.UtilsDir)
+	exists, err := nodeManager.CheckVersionExist()
+	if err != nil {
+		global.LOG.Error("Error checking Nodejs version", err)
+		return
+	}
+	if !exists {
+		global.LOG.Info("Nodejs not installed, installing...")
+		err = nodeManager.InstallVersion()
+		if err != nil {
+			global.LOG.Error("Error installing Nodejs", err)
+			return
+		}
+	}
 
 	// Run install command
 	// TODO: Run install command
