@@ -137,10 +137,18 @@ func (nm *NodejsManager) InstallVersion() error {
 		global.LOG.Error("Error removing Nodejs zip file", err)
 	}
 
+	// Install or update npm
+	_, err = nm.Bash("npm install --global npm")
+	if err != nil {
+		global.LOG.Error("Error install or update npm :", err)
+		return err
+	}
+
+	// TODO: Remove all old codes
 	pathENV := fmt.Sprintf("%s/bin", nodePath)
 
 	// Download or update npx
-	cmd := exec.Command("npm", "--version")
+	cmd := exec.Command("npm", "install", "--global", "npm")
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s", pathENV))
 	versionNpm, err := cmd.Output()
 	if err != nil {
@@ -150,7 +158,7 @@ func (nm *NodejsManager) InstallVersion() error {
 	global.LOG.Info("Npm version----------", string(versionNpm))
 
 	// Download yarn and bun
-	cmd = exec.Command("/bin/sh", "-c", fmt.Sprintf("PATH=%s:$PATH npm install -g yarn@latest", pathENV))
+	cmd = exec.Command("npm", "install", "--global", "yarn")
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s", pathENV))
 	if err := cmd.Run(); err != nil {
 		global.LOG.Error("Error installing yarn", err)
@@ -174,6 +182,24 @@ func (nm *NodejsManager) InstallVersion() error {
 	global.LOG.Info("Nodejs version", string(versionBytes))
 
 	return nil
+}
+
+func (nm *NodejsManager) Bash(command string) (string, error) {
+	nodePath := filepath.Join(nm.Path, fmt.Sprintf("nodejs/%s/bin", nm.Version))
+
+	cmd := exec.Command("/bin/bash", "-c", command)
+	cmd.Env = append(cmd.Env, fmt.Sprintf("PATH=%s", nodePath))
+
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	out, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	return string(out), nil
 }
 
 func getNodePath(version string) (string, error) {
