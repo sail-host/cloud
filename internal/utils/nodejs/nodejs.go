@@ -144,42 +144,28 @@ func (nm *NodejsManager) InstallVersion() error {
 		return err
 	}
 
-	// TODO: Remove all old codes
-	pathENV := fmt.Sprintf("%s/bin", nodePath)
-
-	// Download or update npx
-	cmd := exec.Command("npm", "install", "--global", "npm")
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s", pathENV))
-	versionNpm, err := cmd.Output()
+	// Install yarn
+	_, err = nm.Bash("npm install --global yarn")
 	if err != nil {
-		global.LOG.Error("Error installing npx", err)
-		return err
-	}
-	global.LOG.Info("Npm version----------", string(versionNpm))
-
-	// Download yarn and bun
-	cmd = exec.Command("npm", "install", "--global", "yarn")
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s", pathENV))
-	if err := cmd.Run(); err != nil {
-		global.LOG.Error("Error installing yarn", err)
+		global.LOG.Error("Error install yarn :", err)
 		return err
 	}
 
-	cmd = exec.Command("/bin/sh", "-c", fmt.Sprintf("PATH=%s:$PATH npm install -g bun@latest", pathENV))
-	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s", pathENV))
-	if err := cmd.Run(); err != nil {
-		global.LOG.Error("Error installing bun", err)
+	// Install bun
+	_, err = nm.Bash("npm install --global bun")
+	if err != nil {
+		global.LOG.Error("Error install bun :", err)
 		return err
 	}
 
 	// Confirm installation. Check new version
-	versionBytes, err := exec.Command(nodePath, "bin/node", "--version").Output()
+	versionBytes, err := nm.Bash("node --version")
 	if err != nil {
-		global.LOG.Error("Error getting Nodejs version", err)
+		global.LOG.Error("Error check nodejs version", err)
 		return err
 	}
 
-	global.LOG.Info("Nodejs version", string(versionBytes))
+	global.LOG.Info("Nodejs version", versionBytes)
 
 	return nil
 }
