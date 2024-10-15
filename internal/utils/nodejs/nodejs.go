@@ -27,8 +27,9 @@ type NodejsManager struct {
 type INodejsManager interface {
 	CheckVersionExist() (bool, error)
 	InstallVersion() error
-	CmdNpmRun(command string) (string, error) // TODO: This return type string changed for correct return type!
+	CmdNpmRun(command string) (string, error)
 	CmdBunRun(command string) (string, error)
+	CmdYarnRun(command string) (string, error)
 }
 
 func NewNodejsManager(version string, utilsPath string) INodejsManager {
@@ -188,6 +189,7 @@ func (nm *NodejsManager) Bash(command string) (string, error) {
 	return string(out), nil
 }
 
+// Parse nodejs versions and return last version
 func getNodePath(version string) (string, error) {
 	resp, err := http.Get(NODEJS_API_URL)
 	if err != nil {
@@ -219,6 +221,7 @@ func getNodePath(version string) (string, error) {
 	return latestVersion, nil
 }
 
+// Get Nodejs download url
 func getDownloadURL(version, os, arch string) string {
 	fileFormat := "tar.gz"
 	if os == "windows" {
@@ -249,6 +252,7 @@ func downloadFile(url, filepath string) error {
 	return nil
 }
 
+// Unzip downloaded nodejs zip file
 func unzipFile(filepath string, destPath string) error {
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -307,13 +311,22 @@ func unzipFile(filepath string, destPath string) error {
 }
 
 func (nm *NodejsManager) CmdNpmRun(command string) (string, error) {
-	// TODO: Implement this method
+	// If exists spesific commands for npm check this...
+	out, err := nm.Bash(fmt.Sprintf("npm %s", command))
 
-	return "", nil
+	return string(out), err
 }
 
 func (nm *NodejsManager) CmdBunRun(command string) (string, error) {
-	// TODO: Implement this method
+	// Only exists bun spesifix commands add this...
+	out, err := nm.Bash(fmt.Sprintf("bun %s", command))
 
-	return "", nil
+	return string(out), err
+}
+
+func (nm *NodejsManager) CmdYarnRun(command string) (string, error) {
+	// Only exists yarn spesifix commands add this...
+	out, err := nm.Bash(fmt.Sprintf("yarn %s", command))
+
+	return string(out), err
 }
