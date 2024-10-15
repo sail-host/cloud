@@ -1,12 +1,13 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
 )
 
-type ProjectRepo struct {
-}
+type ProjectRepo struct{}
 
 type IProjectRepo interface {
 	CreateProject(project *model.Project) (*model.Project, error)
@@ -27,6 +28,8 @@ type IProjectRepo interface {
 	UpdateProjectDomain(projectDomain *model.ProjectDomain) error
 	DeleteProjectDomain(id uint) error
 	GetLastDomain(id uint) (*model.ProjectDomain, error)
+
+	CreateLog(dep *model.Deployment, log ...string) error
 }
 
 func NewIProjectRepo() IProjectRepo {
@@ -143,4 +146,25 @@ func (p *ProjectRepo) GetProjectWithName(name string) (*model.Project, error) {
 	db := global.DB
 	err := db.Where("name = ?", name).First(&project).Error
 	return &project, err
+}
+
+func (p *ProjectRepo) CreateLog(dep *model.Deployment, log ...string) error {
+	var logModel model.Log
+	db := global.DB
+
+	var message string
+	for _, i := range log {
+		message = fmt.Sprintf("%s\n%s", message, i)
+	}
+
+	logModel.Message = message
+	logModel.DeploymentID = dep.ID
+	global.LOG.Info(message)
+
+	err := db.Create(logModel).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

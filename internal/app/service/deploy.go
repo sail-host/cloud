@@ -100,14 +100,23 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	// Create new log
 	global.LOG.Info("Creating new log", deployment)
+	err = projectRepo.CreateLog(deployment, "Clone git repository.")
+	if err != nil {
+		global.LOG.Error("Error creating deployment log", err)
+		return
+	}
+
 	err = gitInternalService.CloneRepo(gitModel.ID, project.GitRepo, project.ProductionBranch, deployment.UUID)
 	if err != nil {
 		global.LOG.Error("Error cloning repo", err)
 		return
 	}
 
-	// Clone repo
-	global.LOG.Info("Cloning git repo")
+	err = projectRepo.CreateLog(deployment, "Git respository success clone.")
+	if err != nil {
+		global.LOG.Error("Error creating deployment log", err)
+		return
+	}
 
 	// Check if node is installed
 	nodeManager := nodejs.NewNodejsManager("v20", global.CONF.System.UtilsDir)
@@ -117,7 +126,11 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 	if !exists {
-		global.LOG.Info("Nodejs not installed, installing...")
+		err = projectRepo.CreateLog(deployment, "Nodejs version not exists. Installing...")
+		if err != nil {
+			global.LOG.Error("Error creating deployment log", err)
+			return
+		}
 		err = nodeManager.InstallVersion()
 		if err != nil {
 			global.LOG.Error("Error installing Nodejs", err)
