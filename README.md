@@ -18,12 +18,21 @@ Then, install the dependencies:
 go mod tidy
 ```
 
+Install the web dependencies:
+```bash
+cd web && bun install
+```
+
 ## Running the project
 
 To run the project, you need to have Go installed on your machine.
-
 ```bash
-make run
+make dev
+```
+
+Run only backend golang service:
+```bash
+make dev-api
 ```
 
 ## License
