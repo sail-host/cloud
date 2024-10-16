@@ -149,7 +149,7 @@ func (p *ProjectRepo) GetProjectWithName(name string) (*model.Project, error) {
 }
 
 func (p *ProjectRepo) CreateLog(dep *model.Deployment, log ...string) error {
-	var logModel model.Log
+	logModel := model.Log{}
 	db := global.DB
 
 	var message string
@@ -161,7 +161,7 @@ func (p *ProjectRepo) CreateLog(dep *model.Deployment, log ...string) error {
 	logModel.DeploymentID = dep.ID
 	global.LOG.Info(message)
 
-	err := db.Create(logModel).Error
+	err := db.Create(&logModel).Error
 	if err != nil {
 		return err
 	}

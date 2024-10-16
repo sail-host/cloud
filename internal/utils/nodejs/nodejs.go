@@ -2,6 +2,7 @@ package nodejs
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
@@ -139,7 +140,7 @@ func (nm *NodejsManager) InstallVersion() error {
 	}
 
 	// Install or update npm
-	_, err = nm.Bash("npm install --global npm")
+	_, err = nm.Bash("npm install --global npm@latest")
 	if err != nil {
 		global.LOG.Error("Error install or update npm :", err)
 		return err
@@ -175,18 +176,18 @@ func (nm *NodejsManager) Bash(command string) (string, error) {
 	nodePath := filepath.Join(nm.Path, fmt.Sprintf("nodejs/%s/bin", nm.Version))
 
 	cmd := exec.Command("/bin/bash", "-c", command)
-	cmd.Env = append(cmd.Env, fmt.Sprintf("PATH=%s", nodePath))
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s:%s", nodePath, os.Getenv("PATH")))
 
-	if err := cmd.Run(); err != nil {
-		return "", err
-	}
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
 
-	out, err := cmd.Output()
+	err := cmd.Run()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("command failed: %v\nStderr: %s", err, stderr.String())
 	}
 
-	return string(out), nil
+	return stdout.String(), nil
 }
 
 // Parse nodejs versions and return last version
