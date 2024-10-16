@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -15,6 +16,7 @@ import (
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/nodejs"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
+	"gorm.io/gorm"
 	"k8s.io/apimachinery/pkg/util/rand"
 )
 
@@ -25,6 +27,7 @@ type IDeployService interface {
 	Deploy(project *model.Project)
 	ListProjects() (*dto.ListProjectResponse, error)
 	GetProjectWithName(projectName string) (*dto.BaseResponse, error)
+	CheckProjectName(projectName string) (*dto.BaseResponse, error)
 }
 
 func NewIDeployService() IDeployService {
@@ -289,6 +292,30 @@ func (d *DeployService) GetProjectWithName(projectName string) (*dto.BaseRespons
 	baseResponse.Status = "success"
 	baseResponse.Message = "Project listed"
 	baseResponse.Data = project
+
+	return &baseResponse, nil
+}
+
+func (d *DeployService) CheckProjectName(projectName string) (*dto.BaseResponse, error) {
+	var baseResponse dto.BaseResponse
+	// TODO: Check this code ...
+	project, err := projectRepo.GetProjectWithName(projectName)
+	baseResponse.Status = "success"
+	if err != nil {
+		// Check if error is not found
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			baseResponse.Message = "Project name is available"
+			baseResponse.Data = true
+		} else {
+			baseResponse.Message = "Error checking project name"
+			baseResponse.Data = false
+		}
+	}
+
+	if project != nil {
+		baseResponse.Message = "Project name is already used"
+		baseResponse.Data = false
+	}
 
 	return &baseResponse, nil
 }
