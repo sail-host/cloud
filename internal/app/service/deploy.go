@@ -2,7 +2,9 @@ package service
 
 import (
 	"fmt"
+	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"time"
 
@@ -141,6 +143,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	// Run install command
 	runPath := path.Join(global.CONF.System.DeployDir, deployment.UUID)
+	// TODO: Update this code for framework
 	_, err = nodeManager.CmdNpmRun("install", runPath)
 	if err != nil {
 		global.LOG.Error("Error running install command", err)
@@ -148,7 +151,12 @@ func (d *DeployService) Deploy(project *model.Project) {
 	}
 
 	// Run build command
-	// TODO: Run build command
+	// TODO: Update this code for framework
+	_, err = nodeManager.CmdNpmRun("run build", runPath)
+	if err != nil {
+		global.LOG.Error("Error running build command", err)
+		return
+	}
 
 	// Generate domain
 	domain := generateDomain(project.Name)
@@ -172,18 +180,43 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
-	// Complete
 	// Update deployment
 	deployment.Status = "success"
 	deployment.DeploymentTime = uint(time.Since(startTime).Seconds())
-	// TODO: Get deployment size
-	deployment.DeploymentSize = 0
+	// Calculate deployment size
+	deploymentPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, "dist")
+	var size int64
+	err = filepath.Walk(deploymentPath, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return nil
+	})
+	if err != nil {
+		global.LOG.Error("Error calculating deployment size", err)
+	}
+	deployment.DeploymentSize = uint(size)
+
 	deployment.Ready = true
 	err = projectRepo.UpdateDeployment(deployment)
 	if err != nil {
 		global.LOG.Error("Error updating deployment", err)
 		return
 	}
+
+	// TODO: Write new service if exists run command
+
+	// TODO: Write new nginx config for deployment
+
+	// TODO: Restart nginx
+
+	// TODO: Create new record for cloudflare dns if domain
+
+	// TODO: Complete deployment
+
 	global.LOG.Info("Deployment completed", deployment)
 }
 
