@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 	"time"
 
@@ -139,7 +140,12 @@ func (d *DeployService) Deploy(project *model.Project) {
 	}
 
 	// Run install command
-	// TODO: Run install command
+	runPath := path.Join(global.CONF.System.DeployDir, deployment.UUID)
+	_, err = nodeManager.CmdNpmRun("install", runPath)
+	if err != nil {
+		global.LOG.Error("Error running install command", err)
+		return
+	}
 
 	// Run build command
 	// TODO: Run build command

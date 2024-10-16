@@ -28,9 +28,9 @@ type NodejsManager struct {
 type INodejsManager interface {
 	CheckVersionExist() (bool, error)
 	InstallVersion() error
-	CmdNpmRun(command string) (string, error)
-	CmdBunRun(command string) (string, error)
-	CmdYarnRun(command string) (string, error)
+	CmdNpmRun(command string, runPath string) (string, error)
+	CmdBunRun(command string, runPath string) (string, error)
+	CmdYarnRun(command string, runPath string) (string, error)
 }
 
 func NewNodejsManager(version string, utilsPath string) INodejsManager {
@@ -41,44 +41,25 @@ func NewNodejsManager(version string, utilsPath string) INodejsManager {
 }
 
 func (nm *NodejsManager) CheckVersionExist() (bool, error) {
-	// Create this version path full
-	nodePath := path.Join(nm.Path, fmt.Sprintf("nodejs/%s", nm.Version))
-
-	// Check node binary file exist this path folder
-	nodeBinary := path.Join(nodePath, "bin/node")
-	if _, err := os.Stat(nodeBinary); os.IsNotExist(err) {
-		return false, nil
-	}
-
-	// Check Version this nodejs binary file
-	version, err := exec.Command(nodeBinary, "--version").Output()
+	version, err := nm.Bash("node --version", "")
 	if err != nil {
-		return false, nil
+		return false, err
+	}
+	global.LOG.Info("Nodejs version", version)
+
+	_, err = nm.Bash("npm --version", "")
+	if err != nil {
+		return false, err
 	}
 
-	global.LOG.Info("Nodejs version", string(version))
-
-	// Check npm exists
-	npmBinary := path.Join(nodePath, "bin/npm")
-	if _, err := os.Stat(npmBinary); os.IsNotExist(err) {
-		return false, nil
+	_, err = nm.Bash("bun --version", "")
+	if err != nil {
+		return false, err
 	}
 
-	// Check npx exists
-	npxBinary := path.Join(nodePath, "bin/npx")
-	if _, err := os.Stat(npxBinary); os.IsNotExist(err) {
-		return false, nil
-	}
-
-	// Check yarn exists
-	yarnBinary := path.Join(nodePath, "bin/yarn")
-	if _, err := os.Stat(yarnBinary); os.IsNotExist(err) {
-		return false, nil
-	}
-
-	// Check bun exists
-	if _, err := os.Stat(path.Join(nodePath, "bin/bun")); os.IsNotExist(err) {
-		return false, nil
+	_, err = nm.Bash("yarn --version", "")
+	if err != nil {
+		return false, err
 	}
 
 	return true, nil
@@ -140,28 +121,28 @@ func (nm *NodejsManager) InstallVersion() error {
 	}
 
 	// Install or update npm
-	_, err = nm.Bash("npm install --global npm@latest")
+	_, err = nm.Bash("npm install --global npm@latest", "")
 	if err != nil {
 		global.LOG.Error("Error install or update npm :", err)
 		return err
 	}
 
 	// Install yarn
-	_, err = nm.Bash("npm install --global yarn")
+	_, err = nm.Bash("npm install --global yarn", "")
 	if err != nil {
 		global.LOG.Error("Error install yarn :", err)
 		return err
 	}
 
 	// Install bun
-	_, err = nm.Bash("npm install --global bun")
+	_, err = nm.Bash("npm install --global bun", "")
 	if err != nil {
 		global.LOG.Error("Error install bun :", err)
 		return err
 	}
 
 	// Confirm installation. Check new version
-	versionBytes, err := nm.Bash("node --version")
+	versionBytes, err := nm.Bash("node --version", "")
 	if err != nil {
 		global.LOG.Error("Error check nodejs version", err)
 		return err
@@ -172,10 +153,11 @@ func (nm *NodejsManager) InstallVersion() error {
 	return nil
 }
 
-func (nm *NodejsManager) Bash(command string) (string, error) {
+func (nm *NodejsManager) Bash(command string, runPath string) (string, error) {
 	nodePath := filepath.Join(nm.Path, fmt.Sprintf("nodejs/%s/bin", nm.Version))
 
 	cmd := exec.Command("/bin/bash", "-c", command)
+	cmd.Dir = runPath
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PATH=%s:%s", nodePath, os.Getenv("PATH")))
 
 	var stdout, stderr bytes.Buffer
@@ -311,23 +293,14 @@ func unzipFile(filepath string, destPath string) error {
 	return nil
 }
 
-func (nm *NodejsManager) CmdNpmRun(command string) (string, error) {
-	// If exists spesific commands for npm check this...
-	out, err := nm.Bash(fmt.Sprintf("npm %s", command))
-
-	return string(out), err
+func (nm *NodejsManager) CmdNpmRun(command string, runPath string) (string, error) {
+	return nm.Bash(fmt.Sprintf("npm %s", command), runPath)
 }
 
-func (nm *NodejsManager) CmdBunRun(command string) (string, error) {
-	// Only exists bun spesifix commands add this...
-	out, err := nm.Bash(fmt.Sprintf("bun %s", command))
-
-	return string(out), err
+func (nm *NodejsManager) CmdBunRun(command string, runPath string) (string, error) {
+	return nm.Bash(fmt.Sprintf("bun %s", command), runPath)
 }
 
-func (nm *NodejsManager) CmdYarnRun(command string) (string, error) {
-	// Only exists yarn spesifix commands add this...
-	out, err := nm.Bash(fmt.Sprintf("yarn %s", command))
-
-	return string(out), err
+func (nm *NodejsManager) CmdYarnRun(command string, runPath string) (string, error) {
+	return nm.Bash(fmt.Sprintf("yarn %s", command), runPath)
 }
