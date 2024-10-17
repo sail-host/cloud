@@ -298,24 +298,23 @@ func (d *DeployService) GetProjectWithName(projectName string) (*dto.BaseRespons
 
 func (d *DeployService) CheckProjectName(projectName string) (*dto.BaseResponse, error) {
 	var baseResponse dto.BaseResponse
-	// TODO: Check this code ...
-	project, err := projectRepo.GetProjectWithName(projectName)
+	_, err := projectRepo.GetProjectWithName(projectName)
 	baseResponse.Status = "success"
+
 	if err != nil {
-		// Check if error is not found
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			baseResponse.Message = "Project name is available"
 			baseResponse.Data = true
-		} else {
-			baseResponse.Message = "Error checking project name"
-			baseResponse.Data = false
+			return &baseResponse, nil
 		}
+		baseResponse.Status = "error"
+		baseResponse.Message = "Error checking project name"
+		baseResponse.Data = false
+		return &baseResponse, err
 	}
 
-	if project != nil {
-		baseResponse.Message = "Project name is already used"
-		baseResponse.Data = false
-	}
+	baseResponse.Message = "Project name is already used"
+	baseResponse.Data = false
 
 	return &baseResponse, nil
 }
