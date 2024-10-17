@@ -2,8 +2,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SelectFramework } from './select-framework'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useProjectStore } from '@/store/project-create-store'
+import axios from 'axios'
+import { debounce } from 'lodash'
 
 export function ProjectInformation() {
   const {
@@ -15,6 +17,21 @@ export function ProjectInformation() {
     setProjectName,
   } = useProjectStore()
   const [editRootDir, setEditRootDir] = useState(false)
+  const [projectNameAvailable, setProjectNameAvailable] = useState(true)
+
+  useEffect(() => {
+    const checkProjectName = debounce(() => {
+      axios.get(`/api/v1/project/check?name=${projectName}`).then((res) => {
+        setProjectNameAvailable(res.data.data)
+      })
+    }, 300)
+
+    checkProjectName()
+
+    return () => {
+      checkProjectName.cancel()
+    }
+  }, [projectName])
 
   return (
     <>
@@ -25,6 +42,9 @@ export function ProjectInformation() {
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
         />
+        {!projectNameAvailable && (
+          <p className='text-sm text-red-500'>Project name is already used</p>
+        )}
       </div>
 
       <div className='flex flex-col gap-2'>
