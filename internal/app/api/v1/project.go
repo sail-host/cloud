@@ -50,3 +50,15 @@ func (b *BaseApi) GetProjectWithName(echo echo.Context) error {
 
 	return echo.JSON(http.StatusOK, project)
 }
+
+func (b *BaseApi) CheckProjectName(echo echo.Context) error {
+	projectName := echo.QueryParam("name")
+	project, err := projectService.CheckProjectName(projectName)
+	if err != nil {
+		var baseError dto.BaseError
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
+	}
+	return echo.JSON(http.StatusOK, project)
+}
