@@ -19,7 +19,13 @@ type PackageManager struct {
 func (pm *NodejsPackageManager) Check() (*PackageManager, error) {
 	var manager PackageManager
 
-	// TODO: Impltement this method
+	// Check bun.lockb file for bun package manager
+
+	// Check pnpm-lock.yaml for pnpm package manager
+
+	// Check yarn.lock file for yarn package manager
+
+	// Check packege.json file and set default npm for package manager
 
 	return &manager, nil
 }
