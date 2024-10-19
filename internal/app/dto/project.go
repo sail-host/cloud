@@ -58,6 +58,7 @@ type ListDeploymentResponse struct {
 	GitCommit string    `json:"git_commit"`
 	GitBranch string    `json:"git_branch"`
 	GitDate   time.Time `json:"git_date"`
+	GitUrl    string    `json:"git_url"`
 	IsCurrent bool      `json:"is_current"`
 	Size      int64     `json:"size"`
 	User      string    `json:"user"`

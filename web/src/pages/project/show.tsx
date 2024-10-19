@@ -2,7 +2,7 @@ import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/search'
 import ThemeSwitch from '@/components/theme-switch'
 import { UserNav } from '@/components/user-nav'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProjectTab } from './components/project-tab'
 import { DeploymentsTab } from './components/depoloyments-tab'
 import { LogsTab } from './components/logs-tab'
@@ -88,8 +88,11 @@ export default function ProjectShow() {
                     <TabsTrigger value='settings'>Settings</TabsTrigger>
                   </TabsList>
                 </div>
+
                 <ProjectTab />
-                <DeploymentsTab />
+                <TabsContent value='deployments' className='space-y-4'>
+                  <DeploymentsTab uuid={uuid} />
+                </TabsContent>
                 <LogsTab />
                 <StorageTab />
                 <SettingsTab />

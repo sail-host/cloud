@@ -157,6 +157,7 @@ func (p *ProjectService) GetProjectDeployments(projectName string) ([]*dto.ListD
 			IsCurrent: deployment.ID == lastDeployment.ID,
 			Size:      int64(deployment.DeploymentSize),
 			User:      deployment.GitAuthor,
+			GitUrl:    project.GitUrl + "/" + project.GitRepo,
 		})
 	}
 
