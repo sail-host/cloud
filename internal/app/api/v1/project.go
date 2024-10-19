@@ -62,3 +62,19 @@ func (b *BaseApi) CheckProjectName(echo echo.Context) error {
 	}
 	return echo.JSON(http.StatusOK, project)
 }
+
+func (b *BaseApi) GetProjectDeployments(echo echo.Context) error {
+	projectName := echo.Param("name")
+	deployments, err := projectService.GetProjectDeployments(projectName)
+	if err != nil {
+		var baseError dto.BaseError
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
+	}
+	var baseResponse dto.BaseResponse
+	baseResponse.Status = "success"
+	baseResponse.Message = "Deployments fetched"
+	baseResponse.Data = deployments
+	return echo.JSON(http.StatusOK, baseResponse)
+}

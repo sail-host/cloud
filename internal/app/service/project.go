@@ -15,6 +15,7 @@ type IProjectService interface {
 	GetProjectWithName(projectName string) (*dto.BaseResponse, error)
 	CheckProjectName(projectName string) (*dto.BaseResponse, error)
 	ListProjects() (*dto.ListProjectResponse, error)
+	GetProjectDeployments(projectName string) ([]*dto.ListDeploymentResponse, error)
 }
 
 func NewIProjectService() IProjectService {
@@ -127,4 +128,37 @@ func (p *ProjectService) ListProjects() (*dto.ListProjectResponse, error) {
 		Message: "Projects listed",
 		Data:    projectListResponse,
 	}, nil
+}
+
+func (p *ProjectService) GetProjectDeployments(projectName string) ([]*dto.ListDeploymentResponse, error) {
+	var deploymentListResponse []*dto.ListDeploymentResponse
+	project, err := projectRepo.GetProjectWithName(projectName)
+	if err != nil {
+		return nil, err
+	}
+	deployments, err := projectRepo.ListProjectDeployments(project.ID)
+	if err != nil {
+		return nil, err
+	}
+	lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, deployment := range deployments {
+		deploymentListResponse = append(deploymentListResponse, &dto.ListDeploymentResponse{
+			ID:        deployment.ID,
+			Status:    deployment.Status,
+			CreatedAt: deployment.CreatedAt,
+			GitHash:   deployment.GitHash,
+			GitCommit: deployment.GitMessage,
+			GitBranch: project.ProductionBranch,
+			GitDate:   deployment.GitDate,
+			IsCurrent: deployment.ID == lastDeployment.ID,
+			Size:      int64(deployment.DeploymentSize),
+			User:      deployment.GitAuthor,
+		})
+	}
+
+	return deploymentListResponse, nil
 }

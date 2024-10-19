@@ -22,6 +22,7 @@ type IProjectRepo interface {
 	UpdateDeployment(deployment *model.Deployment) error
 	DeleteDeployment(id uint) error
 	GetLastDeployment(id uint) (*model.Deployment, error)
+	ListProjectDeployments(id uint) ([]*model.Deployment, error)
 
 	CreateProjectDomain(projectDomain *model.ProjectDomain) (*model.ProjectDomain, error)
 	GetProjectDomainByID(id uint) (*model.ProjectDomain, error)
@@ -175,4 +176,11 @@ func (p *ProjectRepo) ListProjectDomains(id uint) ([]*model.ProjectDomain, error
 	db := global.DB
 	err := db.Where("project_id = ?", id).Find(&projectDomains).Error
 	return projectDomains, err
+}
+
+func (p *ProjectRepo) ListProjectDeployments(id uint) ([]*model.Deployment, error) {
+	var deployments []*model.Deployment
+	db := global.DB
+	err := db.Where("project_id = ?", id).Find(&deployments).Error
+	return deployments, err
 }
