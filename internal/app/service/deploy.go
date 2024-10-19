@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -16,7 +15,6 @@ import (
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/nodejs"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
-	"gorm.io/gorm"
 	"k8s.io/apimachinery/pkg/util/rand"
 )
 
@@ -25,9 +23,6 @@ type DeployService struct{}
 type IDeployService interface {
 	CreateProject(c echo.Context, project *dto.CreateProjectRequest) error
 	Deploy(project *model.Project)
-	ListProjects() (*dto.ListProjectResponse, error)
-	GetProjectWithName(projectName string) (*dto.BaseResponse, error)
-	CheckProjectName(projectName string) (*dto.BaseResponse, error)
 }
 
 func NewIDeployService() IDeployService {
@@ -287,78 +282,4 @@ func generateDomain(projectName string) string {
 	}
 
 	return domain
-}
-
-func (d *DeployService) ListProjects() (*dto.ListProjectResponse, error) {
-	projects, err := projectRepo.ListProjects()
-	if err != nil {
-		global.LOG.Error("Error listing projects", err)
-		return nil, err
-	}
-
-	var projectListResponse []*dto.ProjectListResponse
-	for _, project := range projects {
-		lastDomain, err := projectRepo.GetLastDomain(project.ID)
-		if err != nil {
-			global.LOG.Error("Error getting last domain", err)
-			return nil, err
-		}
-		lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
-		if err != nil {
-			global.LOG.Error("Error getting last deployment", err)
-			return nil, err
-		}
-		projectListResponse = append(projectListResponse, &dto.ProjectListResponse{
-			ID:        project.ID,
-			Name:      project.Name,
-			Domain:    lastDomain.Domain,
-			GitHash:   lastDeployment.GitHash,
-			GitDate:   lastDeployment.GitDate,
-			GitBranch: project.ProductionBranch,
-			GitCommit: lastDeployment.GitMessage,
-		})
-	}
-
-	return &dto.ListProjectResponse{
-		Status:  "success",
-		Message: "Projects listed",
-		Data:    projectListResponse,
-	}, nil
-}
-
-func (d *DeployService) GetProjectWithName(projectName string) (*dto.BaseResponse, error) {
-	project, err := projectRepo.GetProjectWithName(projectName)
-	if err != nil {
-		return nil, err
-	}
-
-	var baseResponse dto.BaseResponse
-	baseResponse.Status = "success"
-	baseResponse.Message = "Project listed"
-	baseResponse.Data = project
-
-	return &baseResponse, nil
-}
-
-func (d *DeployService) CheckProjectName(projectName string) (*dto.BaseResponse, error) {
-	var baseResponse dto.BaseResponse
-	_, err := projectRepo.GetProjectWithName(projectName)
-	baseResponse.Status = "success"
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			baseResponse.Message = "Project name is available"
-			baseResponse.Data = true
-			return &baseResponse, nil
-		}
-		baseResponse.Status = "error"
-		baseResponse.Message = "Error checking project name"
-		baseResponse.Data = false
-		return &baseResponse, err
-	}
-
-	baseResponse.Message = "Project name is already used"
-	baseResponse.Data = false
-
-	return &baseResponse, nil
 }

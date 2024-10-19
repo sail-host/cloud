@@ -15,7 +15,7 @@ func (b *BaseApi) CreateProject(echo echo.Context) error {
 		baseError.Message = err.Error()
 		return echo.JSON(http.StatusBadRequest, baseError)
 	}
-	err := projectService.CreateProject(echo, &request)
+	err := deployService.CreateProject(echo, &request)
 	if err != nil {
 		baseError.Status = "error"
 		baseError.Message = err.Error()
