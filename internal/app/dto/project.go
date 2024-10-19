@@ -51,15 +51,16 @@ type DomainList struct {
 }
 
 type ListDeploymentResponse struct {
-	ID        uint      `json:"id"`
-	Status    string    `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
-	GitHash   string    `json:"git_hash"`
-	GitCommit string    `json:"git_commit"`
-	GitBranch string    `json:"git_branch"`
-	GitDate   time.Time `json:"git_date"`
-	GitUrl    string    `json:"git_url"`
-	IsCurrent bool      `json:"is_current"`
-	Size      int64     `json:"size"`
-	User      string    `json:"user"`
+	ID             uint      `json:"id"`
+	Status         string    `json:"status"`
+	CreatedAt      time.Time `json:"created_at"`
+	GitHash        string    `json:"git_hash"`
+	GitCommit      string    `json:"git_commit"`
+	GitBranch      string    `json:"git_branch"`
+	GitDate        time.Time `json:"git_date"`
+	GitUrl         string    `json:"git_url"`
+	IsCurrent      bool      `json:"is_current"`
+	Size           int64     `json:"size"`
+	DeploymentTime uint      `json:"deployment_time"`
+	User           string    `json:"user"`
 }

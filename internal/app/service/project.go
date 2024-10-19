@@ -147,17 +147,18 @@ func (p *ProjectService) GetProjectDeployments(projectName string) ([]*dto.ListD
 
 	for _, deployment := range deployments {
 		deploymentListResponse = append(deploymentListResponse, &dto.ListDeploymentResponse{
-			ID:        deployment.ID,
-			Status:    deployment.Status,
-			CreatedAt: deployment.CreatedAt,
-			GitHash:   deployment.GitHash,
-			GitCommit: deployment.GitMessage,
-			GitBranch: project.ProductionBranch,
-			GitDate:   deployment.GitDate,
-			IsCurrent: deployment.ID == lastDeployment.ID,
-			Size:      int64(deployment.DeploymentSize),
-			User:      deployment.GitAuthor,
-			GitUrl:    project.GitUrl + "/" + project.GitRepo,
+			ID:             deployment.ID,
+			Status:         deployment.Status,
+			CreatedAt:      deployment.CreatedAt,
+			GitHash:        deployment.GitHash,
+			GitCommit:      deployment.GitMessage,
+			GitBranch:      project.ProductionBranch,
+			GitDate:        deployment.GitDate,
+			IsCurrent:      deployment.ID == lastDeployment.ID,
+			Size:           int64(deployment.DeploymentSize),
+			User:           deployment.GitAuthor,
+			GitUrl:         project.GitUrl + "/" + project.GitRepo,
+			DeploymentTime: deployment.DeploymentTime,
 		})
 	}
 
