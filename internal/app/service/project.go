@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/global"
@@ -21,15 +22,49 @@ func NewIProjectService() IProjectService {
 }
 
 func (p *ProjectService) GetProjectWithName(projectName string) (*dto.BaseResponse, error) {
+	var projectResponse dto.GetProjectResponse
 	project, err := projectRepo.GetProjectWithName(projectName)
 	if err != nil {
 		return nil, err
 	}
 
+	lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	projectResponse.ID = project.ID
+	projectResponse.Name = project.Name
+	projectResponse.Status = lastDeployment.Status
+	projectResponse.CreatedAt = project.CreatedAt
+	projectResponse.GitBranch = project.ProductionBranch
+	projectResponse.GitCommit = lastDeployment.GitMessage
+	projectResponse.GitUrl = project.GitUrl + "/" + project.GitRepo
+	projectResponse.GitHash = lastDeployment.GitHash
+
+	domains, err := projectRepo.ListProjectDomains(project.ID)
+	if err != nil {
+		return nil, err
+	}
+	for _, domain := range domains {
+		isDeployment := false
+		// Check domain end with .sailhost.app
+		if strings.HasSuffix(domain.Domain, ".sailhost.app") {
+			isDeployment = true
+		}
+
+		projectResponse.Domains = append(projectResponse.Domains, dto.DomainList{
+			ID:           domain.ID,
+			Domain:       domain.Domain,
+			IsDeployment: isDeployment,
+			CreatedAt:    domain.CreatedAt,
+		})
+	}
+
 	var baseResponse dto.BaseResponse
 	baseResponse.Status = "success"
 	baseResponse.Message = "Project listed"
-	baseResponse.Data = project
+	baseResponse.Data = projectResponse
 
 	return &baseResponse, nil
 }

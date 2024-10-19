@@ -30,3 +30,22 @@ type ProjectListResponse struct {
 	GitBranch string    `json:"git_branch"`
 	GitCommit string    `json:"git_commit"`
 }
+
+type GetProjectResponse struct {
+	ID        uint         `json:"id"`
+	Name      string       `json:"name"`
+	Status    string       `json:"status"`
+	CreatedAt time.Time    `json:"created_at"`
+	GitBranch string       `json:"git_branch"`
+	GitCommit string       `json:"git_commit"`
+	GitUrl    string       `json:"git_url"`
+	GitHash   string       `json:"git_hash"`
+	Domains   []DomainList `json:"domains"`
+}
+
+type DomainList struct {
+	ID           uint      `json:"id"`
+	Domain       string    `json:"domain"`
+	IsDeployment bool      `json:"is_deployment"`
+	CreatedAt    time.Time `json:"created_at"`
+}
