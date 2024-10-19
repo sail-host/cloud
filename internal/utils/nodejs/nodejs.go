@@ -44,28 +44,28 @@ func NewNodejsManager(version string, utilsPath string) INodejsManager {
 func (nm *NodejsManager) CheckVersionExist() (bool, error) {
 	version, err := nm.Bash("node --version", "")
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 	global.LOG.Info("Nodejs version", version)
 
 	_, err = nm.Bash("npm --version", "")
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 
 	_, err = nm.Bash("bun --version", "")
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 
 	_, err = nm.Bash("yarn --version", "")
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 
 	_, err = nm.Bash("pnpm --version", "")
 	if err != nil {
-		return false, err
+		return false, nil
 	}
 
 	return true, nil
