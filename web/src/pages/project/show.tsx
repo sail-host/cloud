@@ -14,24 +14,13 @@ import { useParams } from 'react-router-dom'
 import { Loading } from '@/components/custom/loading'
 import NotFoundError from '../errors/not-found-error'
 import { BaseResponse } from '@/types/base'
-
-interface Project {
-  id: number
-  createdAt: string
-  updatedAt: string
-  name: string
-  framework: string
-  git_url: string
-  git_repo: string
-  production_branch: string
-  git_id: number
-}
+import { Project, useProjectStore } from '@/store/project-store'
 
 export default function ProjectShow() {
   const { uuid } = useParams()
-  const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const { project, setProject } = useProjectStore()
 
   const fetchProject = () => {
     setLoading(true)
@@ -99,7 +88,7 @@ export default function ProjectShow() {
                     <TabsTrigger value='settings'>Settings</TabsTrigger>
                   </TabsList>
                 </div>
-                <ProjectTab uuid={uuid as string} />
+                <ProjectTab />
                 <DeploymentsTab />
                 <LogsTab />
                 <StorageTab />

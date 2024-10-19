@@ -14,9 +14,16 @@ import {
   IconReload,
 } from '@tabler/icons-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useProjectStore } from '@/store/project-store'
 
-export function ProjectTab({ uuid }: { uuid: string }) {
-  console.log(uuid)
+export function ProjectTab() {
+  const { project } = useProjectStore()
+
+  const deploymentUrl =
+    project?.domains && project.domains.length > 0
+      ? `https://${project.domains[0].domain}`
+      : ''
+
   return (
     <TabsContent value='project' className=''>
       <Card>
@@ -30,9 +37,11 @@ export function ProjectTab({ uuid }: { uuid: string }) {
             </CardDescription>
           </div>
           <div className='flex items-center gap-x-4'>
-            <Button variant='outline'>
-              <IconGitBranch className='w-4 h-4 mr-2' />
-              Repository
+            <Button variant='outline' asChild>
+              <a href={project?.git_url} target='_blank' rel='noreferrer'>
+                <IconGitBranch className='w-4 h-4 mr-2' />
+                Repository
+              </a>
             </Button>
             <Button variant='outline'>
               <IconReload className='w-4 h-4 mr-2' />
@@ -50,30 +59,24 @@ export function ProjectTab({ uuid }: { uuid: string }) {
               <p className='mb-1 font-light text-muted-foreground'>
                 Deployment URL
               </p>
-              <a href='#' className='hover:underline'>
-                https://solvie-dashboard.vercel.app
+              <a href={deploymentUrl} className='hover:underline'>
+                {deploymentUrl}
               </a>
             </div>
 
             <div>
               <p className='mb-1 font-light text-muted-foreground'>Domains</p>
               <div className='flex flex-wrap gap-2'>
-                <a
-                  href='https://solvie-dashboard.vercel.app'
-                  target='_blank'
-                  className='flex items-center hover:underline'
-                >
-                  solvie-dashboard.vercel.app
-                  <IconExternalLink className='w-4 h-4 ml-1' />
-                </a>
-                <a
-                  href='https://solvie-dashboard.vercel.app'
-                  target='_blank'
-                  className='flex items-center hover:underline'
-                >
-                  solvie-dashboard.vercel.app
-                  <IconExternalLink className='w-4 h-4 ml-1' />
-                </a>
+                {project?.domains.map((domain) => (
+                  <a
+                    href={`https://${domain.domain}`}
+                    target='_blank'
+                    className='flex items-center hover:underline'
+                  >
+                    {domain.domain}
+                    <IconExternalLink className='w-4 h-4 ml-1' />
+                  </a>
+                ))}
               </div>
             </div>
 
@@ -87,11 +90,43 @@ export function ProjectTab({ uuid }: { uuid: string }) {
 
               <div className='col-span-1'>
                 <div className='flex items-center'>
-                  <div className='w-2 h-2 bg-green-500 rounded-full' />
-                  <span className='ml-1'>Active</span>
+                  {project?.status === 'success' && (
+                    <>
+                      <div className='w-2 h-2 bg-green-500 rounded-full' />
+                      <span className='ml-1'>Active</span>
+                    </>
+                  )}
+                  {project?.status === 'error' && (
+                    <>
+                      <div className='w-2 h-2 bg-red-500 rounded-full' />
+                      <span className='ml-1'>Error</span>
+                    </>
+                  )}
+                  {project?.status === 'pending' && (
+                    <>
+                      <div className='w-2 h-2 bg-yellow-500 rounded-full' />
+                      <span className='ml-1'>Pending</span>
+                    </>
+                  )}
+                  {project?.status === 'building' && (
+                    <>
+                      <div className='w-2 h-2 bg-blue-500 rounded-full' />
+                      <span className='ml-1'>Building</span>
+                    </>
+                  )}
+                  {project?.status === 'deploying' && (
+                    <>
+                      <div className='w-2 h-2 bg-purple-500 rounded-full' />
+                      <span className='ml-1'>Deploying</span>
+                    </>
+                  )}
                 </div>
               </div>
-              <div className='col-span-7'>April 9, 2024 at 11:34 AM</div>
+              <div className='col-span-7'>
+                {project?.created_at
+                  ? new Date(project.created_at).toLocaleString()
+                  : ''}
+              </div>
             </div>
 
             <div>
@@ -100,14 +135,14 @@ export function ProjectTab({ uuid }: { uuid: string }) {
                 <div className='flex items-center gap-x-2'>
                   <IconGitBranch className='w-4 h-4' />
                   <a href='#' className='hover:underline'>
-                    <span>master</span>
+                    {project?.git_branch}
                   </a>
                 </div>
                 <div className='flex items-center gap-x-2'>
                   <IconGitCommit className='w-4 h-4 rotate-90' />
                   <a href='#' className='space-x-3 hover:underline'>
-                    <span>d093751</span>
-                    <span>Update npmrc and package.json scripts</span>
+                    <span>{project?.git_hash?.substring(0, 10)}</span>
+                    <span>{project?.git_commit}</span>
                   </a>
                 </div>
               </div>
