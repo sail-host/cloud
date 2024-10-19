@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import byteSize from 'byte-size'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -26,4 +27,8 @@ export function slugify(text: string, separator = '-') {
     .replace(/[^\w-]+/g, '')
     .replace(/^-+/, '')
     .replace(/-+$/, '')
+}
+
+export function formatBytes(bytes: number) {
+  return byteSize(bytes)
 }
