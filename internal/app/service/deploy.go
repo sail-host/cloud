@@ -118,7 +118,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
-	err = projectRepo.CreateLog(deployment, "Git respository success clone.")
+	err = projectRepo.CreateLog(deployment, "Git repository cloned.")
 	if err != nil {
 		global.LOG.Error("Error creating deployment log", err)
 		return
@@ -207,6 +207,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 	// Create domain for project
 	projectDomain := &model.ProjectDomain{
 		ProjectID:  project.ID,
+		Project:    *project,
 		Domain:     domain,
 		Configured: true,
 		Valid:      false,
@@ -291,6 +292,7 @@ func generateDomain(projectName string) string {
 func (d *DeployService) ListProjects() (*dto.ListProjectResponse, error) {
 	projects, err := projectRepo.ListProjects()
 	if err != nil {
+		global.LOG.Error("Error listing projects", err)
 		return nil, err
 	}
 
@@ -298,10 +300,12 @@ func (d *DeployService) ListProjects() (*dto.ListProjectResponse, error) {
 	for _, project := range projects {
 		lastDomain, err := projectRepo.GetLastDomain(project.ID)
 		if err != nil {
+			global.LOG.Error("Error getting last domain", err)
 			return nil, err
 		}
 		lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
 		if err != nil {
+			global.LOG.Error("Error getting last deployment", err)
 			return nil, err
 		}
 		projectListResponse = append(projectListResponse, &dto.ProjectListResponse{

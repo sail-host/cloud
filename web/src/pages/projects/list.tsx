@@ -33,7 +33,7 @@ export default function Projects() {
     axios
       .get<BaseResponse<Project[]>>('/api/v1/project/list')
       .then((res) => {
-        setProjects(res.data.data)
+        setProjects(res.data.data || [])
       })
       .catch(() => {
         toast.error('Error fetching projects')
