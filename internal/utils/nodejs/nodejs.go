@@ -31,6 +31,7 @@ type INodejsManager interface {
 	CmdNpmRun(command string, runPath string) (string, error)
 	CmdBunRun(command string, runPath string) (string, error)
 	CmdYarnRun(command string, runPath string) (string, error)
+	CmdPnpmRun(command string, runPath string) (string, error)
 }
 
 func NewNodejsManager(version string, utilsPath string) INodejsManager {
@@ -58,6 +59,11 @@ func (nm *NodejsManager) CheckVersionExist() (bool, error) {
 	}
 
 	_, err = nm.Bash("yarn --version", "")
+	if err != nil {
+		return false, err
+	}
+
+	_, err = nm.Bash("pnpm --version", "")
 	if err != nil {
 		return false, err
 	}
@@ -138,6 +144,13 @@ func (nm *NodejsManager) InstallVersion() error {
 	_, err = nm.Bash("npm install --global bun", "")
 	if err != nil {
 		global.LOG.Error("Error install bun :", err)
+		return err
+	}
+
+	// Install pnpm
+	_, err = nm.Bash("npm install --global pnpm", "")
+	if err != nil {
+		global.LOG.Error("Error install pnpm :", err)
 		return err
 	}
 
@@ -303,4 +316,8 @@ func (nm *NodejsManager) CmdBunRun(command string, runPath string) (string, erro
 
 func (nm *NodejsManager) CmdYarnRun(command string, runPath string) (string, error) {
 	return nm.Bash(fmt.Sprintf("yarn %s", command), runPath)
+}
+
+func (nm *NodejsManager) CmdPnpmRun(command string, runPath string) (string, error) {
+	return nm.Bash(fmt.Sprintf("pnpm %s", command), runPath)
 }
