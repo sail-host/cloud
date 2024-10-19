@@ -15,7 +15,7 @@ import {
 } from '@tabler/icons-react'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { formatBytes, formatDistanceToNow } from '@/lib/utils'
+import { formatBytes, formatDistanceToNow, formatTime } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { BaseResponse } from '@/types/base'
@@ -34,6 +34,7 @@ interface Deployment {
   is_current: boolean
   size: number
   user: string
+  deployment_time: number
 }
 
 export function DeploymentsTab({ uuid }: { uuid?: string }) {
@@ -144,7 +145,8 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
                         <div className='text-muted-foreground'>
                           {deployment.status === 'success' ? (
                             <p>
-                              10s ({formatBytes(deployment.size).toString()})
+                              {formatTime(deployment.deployment_time)} (
+                              {formatBytes(deployment.size).toString()})
                             </p>
                           ) : (
                             <p>Failed</p>
