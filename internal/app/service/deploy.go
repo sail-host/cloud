@@ -222,7 +222,8 @@ func (d *DeployService) Deploy(project *model.Project) {
 	// Update deployment
 	deployment.Status = "success"
 	deployment.DeploymentTime = uint(time.Since(startTime).Seconds())
-	// Calculate deployment size
+
+	// TODO: Calculate deployment size
 	deploymentPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, "dist")
 	var size int64
 	err = filepath.Walk(deploymentPath, func(_ string, info os.FileInfo, err error) error {
