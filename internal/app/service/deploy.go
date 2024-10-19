@@ -143,22 +143,62 @@ func (d *DeployService) Deploy(project *model.Project) {
 			return
 		}
 	}
-
-	// Run install command
 	runPath := path.Join(global.CONF.System.DeployDir, deployment.UUID)
-	// TODO: Update this code for framework
-	_, err = nodeManager.CmdNpmRun("install", runPath)
+
+	packageManager := nodejs.NewNodejsPackageManager(runPath)
+	managers, err := packageManager.Check()
 	if err != nil {
-		global.LOG.Error("Error running install command", err)
+		global.LOG.Error("Error checking nodejs package manager", err)
 		return
 	}
 
-	// Run build command
-	// TODO: Update this code for framework
-	_, err = nodeManager.CmdNpmRun("run build", runPath)
-	if err != nil {
-		global.LOG.Error("Error running build command", err)
-		return
+	// Check user write install command
+	if project.InstallCommand != "" {
+		_, err = nodeManager.CmdNpmRun(project.InstallCommand, runPath)
+		if err != nil {
+			global.LOG.Error("Error running install command", err)
+			return
+		}
+	} else {
+		// Check nodejs package manager
+
+		switch managers.Manager[0] {
+		case "bun":
+			_, err = nodeManager.CmdBunRun("install", runPath)
+		case "pnpm":
+			_, err = nodeManager.CmdPnpmRun("install", runPath)
+		case "yarn":
+			_, err = nodeManager.CmdYarnRun("install", runPath)
+		default:
+			_, err = nodeManager.CmdNpmRun("install", runPath)
+		}
+		if err != nil {
+			global.LOG.Error("Error installing nodejs package manager", err)
+			return
+		}
+	}
+
+	if project.BuildCommand != "" {
+		_, err = nodeManager.CmdNpmRun(project.BuildCommand, runPath)
+		if err != nil {
+			global.LOG.Error("Error running build command", err)
+			return
+		}
+	} else {
+		switch managers.Manager[0] {
+		case "bun":
+			_, err = nodeManager.CmdBunRun("run build", runPath)
+		case "pnpm":
+			_, err = nodeManager.CmdPnpmRun("run build", runPath)
+		case "yarn":
+			_, err = nodeManager.CmdYarnRun("run build", runPath)
+		default:
+			_, err = nodeManager.CmdNpmRun("run build", runPath)
+		}
+		if err != nil {
+			global.LOG.Error("Error running build command", err)
+			return
+		}
 	}
 
 	// Generate domain
