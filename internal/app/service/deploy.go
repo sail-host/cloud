@@ -1,11 +1,9 @@
 package service
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,9 +11,6 @@ import (
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
-	"github.com/sail-host/cloud/internal/utils/nodejs"
-	"github.com/sail-host/cloud/internal/utils/sailhost"
-	"k8s.io/apimachinery/pkg/util/rand"
 )
 
 type DeployService struct{}
@@ -72,6 +67,13 @@ func (d *DeployService) Redeploy(c echo.Context, projectName string) error {
 func (d *DeployService) Deploy(project *model.Project) {
 	global.LOG.Info("Deploying project", project)
 	startTime := time.Now()
+	lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
+	if err != nil {
+		global.LOG.Error("Error getting last deployment", err)
+		return
+	}
+
+	isRedeploy := lastDeployment.ID != 0
 
 	// Get git info
 	gitModel, err := gitRepo.GetGitByID(project.GitID)
@@ -133,104 +135,28 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
-	// Check if node is installed
-	nodeManager := nodejs.NewNodejsManager("v20", global.CONF.System.UtilsDir)
-	exists, err := nodeManager.CheckVersionExist()
-	if err != nil {
-		global.LOG.Error("Error checking Nodejs version", err)
-		return
-	}
-	if !exists {
-		err = projectRepo.CreateLog(deployment, "Nodejs version not exists. Installing...")
-		if err != nil {
-			global.LOG.Error("Error creating deployment log", err)
-			return
-		}
-		err = nodeManager.InstallVersion()
-		if err != nil {
-			global.LOG.Error("Error installing Nodejs", err)
-			return
-		}
-	}
-	runPath := path.Join(global.CONF.System.DeployDir, deployment.UUID)
+	nodejsDeploymentService := NewINodejsDeploymentService()
 
-	packageManager := nodejs.NewNodejsPackageManager(runPath)
-	managers, err := packageManager.Check()
+	err = nodejsDeploymentService.InstallDependencies(deployment)
 	if err != nil {
-		global.LOG.Error("Error checking nodejs package manager", err)
+		global.LOG.Error("Error installing dependencies", err)
 		return
 	}
 
-	// Check user write install command
-	if project.InstallCommand != "" {
-		_, err = nodeManager.CmdNpmRun(project.InstallCommand, runPath)
-		if err != nil {
-			global.LOG.Error("Error running install command", err)
-			return
-		}
-	} else {
-		// Check nodejs package manager
-
-		switch managers.Manager[0] {
-		case "bun":
-			_, err = nodeManager.CmdBunRun("install", runPath)
-		case "pnpm":
-			_, err = nodeManager.CmdPnpmRun("install", runPath)
-		case "yarn":
-			_, err = nodeManager.CmdYarnRun("install", runPath)
-		default:
-			_, err = nodeManager.CmdNpmRun("install", runPath)
-		}
-		if err != nil {
-			global.LOG.Error("Error installing nodejs package manager", err)
-			return
-		}
-	}
-
-	if project.BuildCommand != "" {
-		_, err = nodeManager.CmdNpmRun(project.BuildCommand, runPath)
-		if err != nil {
-			global.LOG.Error("Error running build command", err)
-			return
-		}
-	} else {
-		switch managers.Manager[0] {
-		case "bun":
-			_, err = nodeManager.CmdBunRun("run build", runPath)
-		case "pnpm":
-			_, err = nodeManager.CmdPnpmRun("run build", runPath)
-		case "yarn":
-			_, err = nodeManager.CmdYarnRun("run build", runPath)
-		default:
-			_, err = nodeManager.CmdNpmRun("run build", runPath)
-		}
-		if err != nil {
-			global.LOG.Error("Error running build command", err)
-			return
-		}
-	}
-
-	// Generate domain
-	domain := generateDomain(project.Name)
-
-	// Create domain for project
-	projectDomain := &model.ProjectDomain{
-		ProjectID:  project.ID,
-		Project:    *project,
-		Domain:     domain,
-		Configured: true,
-		Valid:      false,
-	}
-	_, err = projectRepo.CreateProjectDomain(projectDomain)
+	err = nodejsDeploymentService.Build(deployment)
 	if err != nil {
-		global.LOG.Error("Error creating project domain", err)
+		global.LOG.Error("Error building project", err)
 		return
 	}
-	// Configure domain
-	err = sailhost.ConfigureDomain(domain)
-	if err != nil {
-		global.LOG.Error("Error configuring domain", err)
-		return
+
+	deploymentDomainService := NewIDeploymentDomainService()
+
+	if !isRedeploy {
+		err = deploymentDomainService.CreateSailHostDomain(deployment)
+		if err != nil {
+			global.LOG.Error("Error creating deployment domain", err)
+			return
+		}
 	}
 
 	// Update deployment
@@ -279,29 +205,4 @@ func (d *DeployService) Deploy(project *model.Project) {
 	// TODO: Complete deployment
 
 	global.LOG.Info("Deployment completed", deployment)
-}
-
-func generateDomain(projectName string) string {
-	// Generate domain
-	// Remove special characters and symbols from project name
-	sanitizedName := regexp.MustCompile(`[^a-zA-Z0-9]+`).ReplaceAllString(projectName, "")
-	// Ensure the domain name is not empty and starts with a letter or number
-	if sanitizedName == "" || !regexp.MustCompile(`^[a-zA-Z0-9]`).MatchString(sanitizedName) {
-		sanitizedName = "project" + sanitizedName
-	}
-	domain := fmt.Sprintf("%s.%s", sanitizedName, "sailhost.app")
-
-	// Check if domain is already used
-	used, err := sailhost.CheckDomainUsed(domain)
-	if err != nil {
-		global.LOG.Error("Error checking domain", err)
-		panic(err)
-	}
-	// If domain is used, generate new domain
-	if used {
-		randomString := rand.String(5)
-		domain = fmt.Sprintf("%s-%s.%s", sanitizedName, randomString, "sailhost.app")
-	}
-
-	return domain
 }
