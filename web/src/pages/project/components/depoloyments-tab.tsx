@@ -40,6 +40,22 @@ interface Deployment {
 export function DeploymentsTab({ uuid }: { uuid?: string }) {
   const [loading, setLoading] = useState(true)
   const [deployments, setDeployments] = useState<Deployment[]>([])
+  const [redeployLoading, setRedeployLoading] = useState(false)
+
+  const handleRedeploy = () => {
+    setRedeployLoading(true)
+    axios
+      .post(`/api/v1/project/redeploy/${uuid}`)
+      .then((res) => {
+        toast.success(res.data.message)
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || 'Something went wrong')
+      })
+      .finally(() => {
+        setRedeployLoading(false)
+      })
+  }
 
   const fetchDeployments = () => {
     axios
@@ -74,7 +90,12 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
           </CardDescription>
         </div>
         <div className='flex items-center gap-x-4'>
-          <Button variant='outline'>
+          <Button
+            variant='outline'
+            type='button'
+            onClick={handleRedeploy}
+            loading={redeployLoading}
+          >
             <IconReload className='w-4 h-4 mr-2' />
             Redeploy
           </Button>

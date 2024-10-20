@@ -23,6 +23,7 @@ type DeployService struct{}
 type IDeployService interface {
 	CreateProject(c echo.Context, project *dto.CreateProjectRequest) error
 	Deploy(project *model.Project)
+	Redeploy(c echo.Context, projectName string) error
 }
 
 func NewIDeployService() IDeployService {
@@ -52,6 +53,18 @@ func (d *DeployService) CreateProject(c echo.Context, project *dto.CreateProject
 
 	global.LOG.Info("Project created and deploy started", projectModel)
 	go d.Deploy(projectModel)
+
+	return nil
+}
+
+func (d *DeployService) Redeploy(c echo.Context, projectName string) error {
+	project, err := projectRepo.GetProjectWithName(projectName)
+	if err != nil {
+		return err
+	}
+
+	global.LOG.Info("Project redeploy started", project)
+	go d.Deploy(project)
 
 	return nil
 }

@@ -19,5 +19,6 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 		projectRouter.GET("/show/:name", projectApi.GetProjectWithName)
 		projectRouter.GET("/check", projectApi.CheckProjectName)
 		projectRouter.GET("/deployments/:name", projectApi.GetProjectDeployments)
+		projectRouter.POST("/redeploy/:name", projectApi.RedeployProject)
 	}
 }

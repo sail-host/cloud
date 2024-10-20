@@ -35,6 +35,7 @@ func (b *BaseApi) ListProjects(echo echo.Context) error {
 		baseError.Message = err.Error()
 		return echo.JSON(http.StatusBadRequest, baseError)
 	}
+
 	return echo.JSON(http.StatusOK, projects)
 }
 
@@ -60,6 +61,7 @@ func (b *BaseApi) CheckProjectName(echo echo.Context) error {
 		baseError.Message = err.Error()
 		return echo.JSON(http.StatusBadRequest, baseError)
 	}
+
 	return echo.JSON(http.StatusOK, project)
 }
 
@@ -72,9 +74,28 @@ func (b *BaseApi) GetProjectDeployments(echo echo.Context) error {
 		baseError.Message = err.Error()
 		return echo.JSON(http.StatusBadRequest, baseError)
 	}
+
 	var baseResponse dto.BaseResponse
 	baseResponse.Status = "success"
 	baseResponse.Message = "Deployments fetched"
 	baseResponse.Data = deployments
+
+	return echo.JSON(http.StatusOK, baseResponse)
+}
+
+func (b *BaseApi) RedeployProject(echo echo.Context) error {
+	projectName := echo.Param("name")
+	err := deployService.Redeploy(echo, projectName)
+	if err != nil {
+		var baseError dto.BaseError
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
+	}
+
+	var baseResponse dto.BaseResponse
+	baseResponse.Status = "success"
+	baseResponse.Message = "Project redeploy started"
+
 	return echo.JSON(http.StatusOK, baseResponse)
 }

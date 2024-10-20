@@ -175,14 +175,14 @@ func (p *ProjectRepo) CreateLog(dep *model.Deployment, log ...string) error {
 func (p *ProjectRepo) ListProjectDomains(id uint) ([]*model.ProjectDomain, error) {
 	var projectDomains []*model.ProjectDomain
 	db := global.DB
-	err := db.Where("project_id = ?", id).Find(&projectDomains).Error
+	err := db.Where("project_id = ?", id).Order("created_at DESC").Find(&projectDomains).Error
 	return projectDomains, err
 }
 
 func (p *ProjectRepo) ListProjectDeployments(id uint) ([]*model.Deployment, error) {
 	var deployments []*model.Deployment
 	db := global.DB
-	err := db.Where("project_id = ?", id).Find(&deployments).Error
+	err := db.Where("project_id = ?", id).Order("created_at DESC").Find(&deployments).Error
 	return deployments, err
 }
 
