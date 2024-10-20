@@ -83,6 +83,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 		UUID:           uuid.New().String(),
 		Active:         true,
 		Ready:          false,
+		IsCurrent:      true,
 		DeploymentTime: 0,
 		DeploymentSize: 0,
 
@@ -244,6 +245,13 @@ func (d *DeployService) Deploy(project *model.Project) {
 	err = projectRepo.UpdateDeployment(deployment)
 	if err != nil {
 		global.LOG.Error("Error updating deployment", err)
+		return
+	}
+
+	// Update other deployments to not be current
+	err = projectRepo.UpdateDeploymentIsCurrent(deployment.ID)
+	if err != nil {
+		global.LOG.Error("Error updating deployment is current", err)
 		return
 	}
 

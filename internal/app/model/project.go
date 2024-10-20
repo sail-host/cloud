@@ -40,6 +40,7 @@ type Deployment struct {
 	DeploymentSize uint    `json:"deployment_size"` // Size in bytes
 	Active         bool    `json:"active"`
 	Ready          bool    `json:"ready"`
+	IsCurrent      bool    `json:"is_current"`
 
 	// Git info
 	GitHash     string    `json:"git_hash"`

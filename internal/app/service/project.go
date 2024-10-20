@@ -140,10 +140,6 @@ func (p *ProjectService) GetProjectDeployments(projectName string) ([]*dto.ListD
 	if err != nil {
 		return nil, err
 	}
-	lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
-	if err != nil {
-		return nil, err
-	}
 
 	for _, deployment := range deployments {
 		deploymentListResponse = append(deploymentListResponse, &dto.ListDeploymentResponse{
@@ -154,7 +150,7 @@ func (p *ProjectService) GetProjectDeployments(projectName string) ([]*dto.ListD
 			GitCommit:      deployment.GitMessage,
 			GitBranch:      project.ProductionBranch,
 			GitDate:        deployment.GitDate,
-			IsCurrent:      deployment.ID == lastDeployment.ID,
+			IsCurrent:      deployment.IsCurrent,
 			Size:           int64(deployment.DeploymentSize),
 			User:           deployment.GitAuthor,
 			GitUrl:         project.GitUrl + "/" + project.GitRepo,
