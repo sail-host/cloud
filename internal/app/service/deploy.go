@@ -196,7 +196,15 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	// TODO: Write new service if exists run command
 
-	// TODO: Write new nginx config for deployment
+	// Write new nginx config for deployment
+	if !isRedeploy {
+		nginxService := NewINginxService()
+		err = nginxService.CreateNginxConfig(deployment)
+		if err != nil {
+			global.LOG.Error("Error creating nginx config", err)
+			return
+		}
+	}
 
 	// TODO: Restart nginx
 
