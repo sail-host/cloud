@@ -7,7 +7,6 @@ import (
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/utils/git"
-	"github.com/sail-host/cloud/internal/utils/git/github"
 )
 
 type GitService struct {
@@ -197,7 +196,7 @@ func (s *GitService) CheckAccount(c echo.Context, request dto.CreateGitRequest) 
 	}
 
 	if request.Type == "github" {
-		github := github.NewGithub(request.Token, owner)
+		github := git.NewGithub(request.Token, owner)
 		gitManager := git.NewGitManager(github)
 
 		account, err := gitManager.CheckAccount()

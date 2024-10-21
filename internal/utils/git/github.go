@@ -1,4 +1,4 @@
-package github
+package git
 
 import (
 	"context"
@@ -194,5 +194,26 @@ func (g *Github) CloneRepo(owner, repo, path, branch, token, username string) er
 		return fmt.Errorf("git clone failed: %w", err)
 	}
 
+	return nil
+}
+
+func (g *Github) CreateDeployment(owner, repo string, deployment *github.DeploymentRequest) error {
+	ctx := context.Background()
+	_, _, err := g.Client.Repositories.CreateDeployment(ctx, owner, repo, deployment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Github) UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error {
+	ctx := context.Background()
+	_, _, err := g.Client.Repositories.CreateDeploymentStatus(ctx, owner, repo, deploymentID, &github.DeploymentStatusRequest{
+		State:       &status,
+		Description: &message,
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
