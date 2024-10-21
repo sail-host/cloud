@@ -20,6 +20,10 @@ export interface Project {
     is_deployment: boolean
     created_at: string
   }[]
+  project_framework: string
+  build_command: string
+  output_dir: string
+  install_command: string
 }
 
 export const useProjectStore = create<ProjectStore>((set) => ({

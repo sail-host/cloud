@@ -31,8 +31,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import { useProjectStore } from '@/store/project-store'
 import { IconChevronDown, IconCheck, IconHelpCircle } from '@tabler/icons-react'
+import axios from 'axios'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 interface Framework {
   name: string
@@ -85,9 +89,41 @@ const frameworks: Framework[] = [
 
 export function GeneralTab() {
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
   const [selectedFramework, setSelectedFramework] = useState<
     Framework['value'] | null
   >(null)
+
+  const { project, setProject } = useProjectStore()
+
+  const [projectName, setProjectName] = useState(project?.name || '')
+  const [projectNameLoading, setProjectNameLoading] = useState(false)
+
+  const handleSaveProjectName = () => {
+    if (project && project.id) {
+      setProjectNameLoading(true)
+
+      axios
+        .put(`/api/v1/project-setting/update-name/${project.name}`, {
+          name: projectName,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            setProject({ ...project, name: projectName })
+            toast.success('Project name updated')
+
+            // Update the project name in the URL
+            navigate(`/projects/${projectName}`)
+          }
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message)
+        })
+        .finally(() => {
+          setProjectNameLoading(false)
+        })
+    }
+  }
 
   return (
     <div className='w-full space-y-6'>
@@ -97,10 +133,20 @@ export function GeneralTab() {
           <CardDescription>Change the name of your project.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Input placeholder='Project Name' value='solvie-dashboard' />
+          <Input
+            placeholder='Project Name'
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+          />
         </CardContent>
         <CardFooter className='flex justify-end p-3 pr-6 border-t rounded-b-xl bg-muted dark:bg-muted/40'>
-          <Button>Save</Button>
+          <Button
+            onClick={handleSaveProjectName}
+            type='button'
+            loading={projectNameLoading}
+          >
+            Save
+          </Button>
         </CardFooter>
       </Card>
 

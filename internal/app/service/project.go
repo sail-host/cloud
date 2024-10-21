@@ -43,6 +43,11 @@ func (p *ProjectService) GetProjectWithName(projectName string) (*dto.BaseRespon
 	projectResponse.GitUrl = project.GitUrl + "/" + project.GitRepo
 	projectResponse.GitHash = lastDeployment.GitHash
 
+	projectResponse.ProjectFramework = project.Framework
+	projectResponse.BuildCommand = project.BuildCommand
+	projectResponse.OutputDir = project.OutputDir
+	projectResponse.InstallCommand = project.InstallCommand
+
 	domains, err := projectRepo.ListProjectDomains(project.ID)
 	if err != nil {
 		return nil, err

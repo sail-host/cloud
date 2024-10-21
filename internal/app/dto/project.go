@@ -41,6 +41,11 @@ type GetProjectResponse struct {
 	GitUrl    string       `json:"git_url"`
 	GitHash   string       `json:"git_hash"`
 	Domains   []DomainList `json:"domains"`
+
+	ProjectFramework string `json:"project_framework"`
+	BuildCommand     string `json:"build_command"`
+	OutputDir        string `json:"output_dir"`
+	InstallCommand   string `json:"install_command"`
 }
 
 type DomainList struct {

@@ -21,4 +21,10 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 		projectRouter.GET("/deployments/:name", projectApi.GetProjectDeployments)
 		projectRouter.POST("/redeploy/:name", projectApi.RedeployProject)
 	}
+
+	projectSettingRouter := Router.Group("/project-setting")
+	projectSettingApi := apiV1.ApiGroupApp.BaseApi
+	{
+		projectSettingRouter.PUT("/update-name/:name", projectSettingApi.UpdateProjectName)
+	}
 }
