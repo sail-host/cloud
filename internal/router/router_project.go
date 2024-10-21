@@ -26,5 +26,6 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 	projectSettingApi := apiV1.ApiGroupApp.BaseApi
 	{
 		projectSettingRouter.PUT("/update-name/:name", projectSettingApi.UpdateProjectName)
+		projectSettingRouter.PUT("/update-build-and-output-dir/:name", projectSettingApi.UpdateBuildAndOutputDir)
 	}
 }
