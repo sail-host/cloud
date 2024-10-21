@@ -104,13 +104,11 @@ func (p *ProjectService) ListProjects() (*dto.ListProjectResponse, error) {
 	for _, project := range projects {
 		lastDomain, err := projectRepo.GetLastDomain(project.ID)
 		if err != nil {
-			global.LOG.Error("Error getting last domain", err)
-			return nil, err
+			global.LOG.Warn("Error getting last domain", err)
 		}
 		lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
 		if err != nil {
-			global.LOG.Error("Error getting last deployment", err)
-			return nil, err
+			global.LOG.Warn("Error getting last deployment", err)
 		}
 		projectListResponse = append(projectListResponse, &dto.ProjectListResponse{
 			ID:        project.ID,
