@@ -18,6 +18,9 @@ type Project struct {
 	BuildCommand   string `json:"build_command" gorm:"nullable"`
 	OutputDir      string `json:"output_dir" gorm:"nullable"`
 	InstallCommand string `json:"install_command" gorm:"nullable"`
+
+	// Nodejs
+	NodeVersion string `json:"node_version" gorm:"nullable"`
 }
 
 // Environment variables

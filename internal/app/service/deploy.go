@@ -42,6 +42,7 @@ func (d *DeployService) CreateProject(c echo.Context, project *dto.CreateProject
 		BuildCommand:     project.BuildCommand,
 		OutputDir:        project.OutputDir,
 		InstallCommand:   project.InstallCommand,
+		NodeVersion:      "v20",
 	})
 	if err != nil {
 		return err

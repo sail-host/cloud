@@ -20,8 +20,14 @@ func NewINodejsDeploymentService() INodejsDeploymentService {
 }
 
 func (n *NodejsDeploymentService) InstallDependencies(deployment *model.Deployment) error {
+	project, err := projectRepo.GetProjectByID(deployment.ProjectID)
+	if err != nil {
+		global.LOG.Error("Error getting project", err)
+		return err
+	}
+
 	// Check if node is installed
-	nodeManager := nodejs.NewNodejsManager("v20", global.CONF.System.UtilsDir)
+	nodeManager := nodejs.NewNodejsManager(project.NodeVersion, global.CONF.System.UtilsDir)
 
 	exists, err := nodeManager.CheckVersionExist()
 	if err != nil {
@@ -46,12 +52,6 @@ func (n *NodejsDeploymentService) InstallDependencies(deployment *model.Deployme
 	managers, err := packageManager.Check()
 	if err != nil {
 		global.LOG.Error("Error checking nodejs package manager", err)
-		return err
-	}
-
-	project, err := projectRepo.GetProjectByID(deployment.ProjectID)
-	if err != nil {
-		global.LOG.Error("Error getting project", err)
 		return err
 	}
 
