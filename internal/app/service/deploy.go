@@ -212,12 +212,23 @@ func (d *DeployService) Deploy(project *model.Project) {
 	}
 
 	// TODO: Write new service if exists run command
+	systemdService := NewIDeploymentSystemdService()
+	if !isRedeploy {
 
-	// TODO: Restart nginx
-
-	// TODO: Create new record for cloudflare dns if domain
-
-	// TODO: Complete deployment
+		err = systemdService.CreateConfig(deployment, deploymentPath)
+		if err != nil {
+			global.LOG.Error("Error creating systemd service", err)
+			gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error creating systemd service", gitDeploymentID)
+			return
+		}
+	} else {
+		err = systemdService.RestartService(deployment, deploymentPath)
+		if err != nil {
+			global.LOG.Error("Error restarting systemd service", err)
+			gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error restarting systemd service", gitDeploymentID)
+			return
+		}
+	}
 
 	global.LOG.Info("Deployment completed", deployment)
 	gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "success", "Deployment completed", gitDeploymentID)
