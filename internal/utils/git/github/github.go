@@ -196,3 +196,12 @@ func (g *Github) CloneRepo(owner, repo, path, branch, token, username string) er
 
 	return nil
 }
+
+func (g *Github) CreateDeployment(owner, repo string, deployment *github.DeploymentRequest) error {
+	ctx := context.Background()
+	_, _, err := g.Client.Repositories.CreateDeployment(ctx, owner, repo, deployment)
+	if err != nil {
+		return err
+	}
+	return nil
+}

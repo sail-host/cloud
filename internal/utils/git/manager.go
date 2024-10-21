@@ -33,6 +33,10 @@ func (gm *GitManager) CloneRepo(owner, repo, path, branch, token, username strin
 	return gm.Provider.CloneRepo(owner, repo, path, branch, token, username)
 }
 
+func (gm *GitManager) CreateDeployment(owner, repo string, deployment *git.DeploymentRequest) error {
+	return gm.Provider.CreateDeployment(owner, repo, deployment)
+}
+
 func NewGitManager(provider GitProvider) *GitManager {
 	return &GitManager{Provider: provider}
 }
