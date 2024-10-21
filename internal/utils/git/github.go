@@ -207,7 +207,13 @@ func (g *Github) CreateDeployment(owner, repo string, deployment *github.Deploym
 }
 
 func (g *Github) UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error {
-	// TODO: Implement this method
-
+	ctx := context.Background()
+	_, _, err := g.Client.Repositories.CreateDeploymentStatus(ctx, owner, repo, deploymentID, &github.DeploymentStatusRequest{
+		State:       &status,
+		Description: &message,
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
