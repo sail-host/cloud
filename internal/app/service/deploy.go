@@ -11,6 +11,7 @@ import (
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
+	"github.com/sail-host/cloud/internal/utils/framework"
 )
 
 type DeployService struct{}
@@ -178,8 +179,14 @@ func (d *DeployService) Deploy(project *model.Project) {
 	deployment.Status = "success"
 	deployment.DeploymentTime = uint(time.Since(startTime).Seconds())
 
-	// TODO: Calculate deployment size
-	deploymentPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, "dist")
+	// Calculate deployment size
+	var buildDir string
+	if project.OutputDir != "" {
+		buildDir = project.OutputDir
+	} else {
+		buildDir = framework.OutputDir(project.Framework)
+	}
+	deploymentPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, buildDir)
 	var size int64
 	err = filepath.Walk(deploymentPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -211,7 +218,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
-	// TODO: Write new service if exists run command
+	// Write new service if exists run command
 	systemdService := NewIDeploymentSystemdService()
 	if !isRedeploy {
 

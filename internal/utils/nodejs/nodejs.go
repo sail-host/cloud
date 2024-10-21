@@ -32,6 +32,7 @@ type INodejsManager interface {
 	CmdBunRun(command string, runPath string) (string, error)
 	CmdYarnRun(command string, runPath string) (string, error)
 	CmdPnpmRun(command string, runPath string) (string, error)
+	Bash(command string, runPath string) (string, error)
 }
 
 func NewNodejsManager(version string, utilsPath string) INodejsManager {

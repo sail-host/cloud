@@ -57,7 +57,7 @@ func (n *NodejsDeploymentService) InstallDependencies(deployment *model.Deployme
 
 	// Check user write install command
 	if project.InstallCommand != "" {
-		_, err = nodeManager.CmdNpmRun(project.InstallCommand, runPath)
+		_, err = nodeManager.Bash(project.InstallCommand, runPath)
 		if err != nil {
 			global.LOG.Error("Error running install command", err)
 			return err
@@ -113,7 +113,7 @@ func (n *NodejsDeploymentService) Build(deployment *model.Deployment) error {
 		case "pnpm":
 			_, err = nodeManager.CmdPnpmRun("run build", runPath)
 		case "yarn":
-			_, err = nodeManager.CmdYarnRun("run build", runPath)
+			_, err = nodeManager.CmdYarnRun("build", runPath)
 		default:
 			_, err = nodeManager.CmdNpmRun("run build", runPath)
 		}
