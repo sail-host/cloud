@@ -38,7 +38,7 @@ export function ConfigureNewProject() {
       })
       .then((res) => {
         console.log(res)
-        toast.success('Project created successfully')
+        toast.success('New project successfully created. Deploying project...')
       })
       .catch((err) => {
         toast.error(err.response?.data?.message || 'Failed to create project')

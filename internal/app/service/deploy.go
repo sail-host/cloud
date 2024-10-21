@@ -70,7 +70,6 @@ func (d *DeployService) Deploy(project *model.Project) {
 	lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
 	if err != nil {
 		global.LOG.Error("Error getting last deployment", err)
-		return
 	}
 
 	isRedeploy := lastDeployment.ID != 0
@@ -195,16 +194,6 @@ func (d *DeployService) Deploy(project *model.Project) {
 	}
 
 	// TODO: Write new service if exists run command
-
-	// Write new nginx config for deployment
-	if !isRedeploy {
-		nginxService := NewINginxService()
-		err = nginxService.CreateNginxConfig(deployment)
-		if err != nil {
-			global.LOG.Error("Error creating nginx config", err)
-			return
-		}
-	}
 
 	// TODO: Restart nginx
 

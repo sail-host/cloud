@@ -2,10 +2,12 @@ package service
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
+	"github.com/sail-host/cloud/internal/utils/caddy"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
 	"k8s.io/apimachinery/pkg/util/rand"
 )
@@ -44,10 +46,41 @@ func (d *DeploymentDomainService) CreateSailHostDomain(deployment *model.Deploym
 		global.LOG.Error("Error creating project domain", err)
 		return err
 	}
+
 	// Configure domain
 	err = sailhost.ConfigureDomain(domain)
 	if err != nil {
 		global.LOG.Error("Error configuring domain", err)
+		return err
+	}
+
+	// Create project root directory
+	publicPath := "dist"
+	// TODO: Update this code using framework build path
+	if project.Framework == "nextjs" {
+		publicPath = ""
+	} else if project.Framework == "react" {
+		publicPath = "build"
+	} else if project.Framework == "vue" {
+		publicPath = "dist"
+	} else if project.Framework == "svelte" {
+		publicPath = "build"
+	} else if project.Framework == "vite" {
+		publicPath = "dist"
+	}
+
+	rootPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, publicPath)
+
+	// Create Caddy site
+	// TODO: Update Caddy URL using global config
+	webServer := caddy.NewCaddy("localhost:2019")
+	err = webServer.CreateSite(&caddy.SiteConfig{
+		Domain: domain,
+		Root:   rootPath,
+		SSL:    false,
+	})
+	if err != nil {
+		global.LOG.Error("Error creating Caddy site", err)
 		return err
 	}
 
@@ -62,7 +95,14 @@ func generateDomain(projectName string) string {
 	if sanitizedName == "" || !regexp.MustCompile(`^[a-zA-Z0-9]`).MatchString(sanitizedName) {
 		sanitizedName = "project" + sanitizedName
 	}
-	domain := fmt.Sprintf("%s.%s", sanitizedName, "sailhost.app")
+
+	// Production domain
+	sailhostDomain := "sailhost.app"
+	if global.CONF.System.Mode == "dev" {
+		sailhostDomain = "sailhost.local"
+	}
+
+	domain := fmt.Sprintf("%s.%s", sanitizedName, sailhostDomain)
 
 	// Check if domain is already used
 	used, err := sailhost.CheckDomainUsed(domain)
@@ -73,7 +113,7 @@ func generateDomain(projectName string) string {
 	// If domain is used, generate new domain
 	if used {
 		randomString := rand.String(5)
-		domain = fmt.Sprintf("%s-%s.%s", sanitizedName, randomString, "sailhost.app")
+		domain = fmt.Sprintf("%s-%s.%s", sanitizedName, randomString, sailhostDomain)
 	}
 
 	return domain
