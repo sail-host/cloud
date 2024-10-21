@@ -32,7 +32,7 @@ func (gm *GitManager) CloneRepo(owner, repo, path, branch, token, username strin
 	return gm.Provider.CloneRepo(owner, repo, path, branch, token, username)
 }
 
-func (gm *GitManager) CreateDeployment(owner, repo string, deployment *git.DeploymentRequest) error {
+func (gm *GitManager) CreateDeployment(owner, repo string, deployment *git.DeploymentRequest) (int64, error) {
 	return gm.Provider.CreateDeployment(owner, repo, deployment)
 }
 

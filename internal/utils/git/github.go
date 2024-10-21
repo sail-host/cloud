@@ -197,13 +197,13 @@ func (g *Github) CloneRepo(owner, repo, path, branch, token, username string) er
 	return nil
 }
 
-func (g *Github) CreateDeployment(owner, repo string, deployment *github.DeploymentRequest) error {
+func (g *Github) CreateDeployment(owner, repo string, deployment *github.DeploymentRequest) (int64, error) {
 	ctx := context.Background()
-	_, _, err := g.Client.Repositories.CreateDeployment(ctx, owner, repo, deployment)
+	deploymentResponse, _, err := g.Client.Repositories.CreateDeployment(ctx, owner, repo, deployment)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return deploymentResponse.GetID(), nil
 }
 
 func (g *Github) UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error {

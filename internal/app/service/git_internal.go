@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/sail-host/cloud/internal/app/dto"
+	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/git"
 
@@ -22,6 +23,8 @@ type IGitInternalService interface {
 	GetRepo(id uint) (*githubP.Repository, error)
 	GetLastCommitInBranch(id uint, owner, repo, branch string) (*githubP.RepositoryCommit, error)
 	CloneRepo(id uint, repo, branch, uuid string) error
+	CreateDeployment(id uint, repo, uuid string, deployment model.Deployment) (int64, error)
+	UpdateDeploymentStatus(id uint, repo, status, message string, deploymentID int64) error
 }
 
 func NewIGitInternalService() IGitInternalService {
@@ -156,6 +159,57 @@ func (s *GitInternalService) CloneRepo(id uint, repo, branch, uuid string) error
 		github := git.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 		err = gitManager.CloneRepo(gitModel.Owner, repo, deployDir, branch, gitModel.Token, gitModel.Owner)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *GitInternalService) CreateDeployment(id uint, repo, uuid string, deployment model.Deployment) (int64, error) {
+	var gitManager *git.GitManager
+	gitModel, err := gitRepo.GetGitByID(id)
+	if err != nil {
+		return 0, err
+	}
+
+	project, err := projectRepo.GetProjectByID(deployment.ProjectID)
+	if err != nil {
+		return 0, err
+	}
+
+	switch gitModel.Type {
+	case "github":
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
+		gitManager = git.NewGitManager(github)
+		gitDeploymentID, err := gitManager.CreateDeployment(gitModel.Owner, repo, &githubP.DeploymentRequest{
+			Ref:         &project.ProductionBranch,
+			Description: &deployment.GitMessage,
+			Payload:     &deployment.GitAuthor,
+		})
+		if err != nil {
+			return 0, err
+		}
+
+		return gitDeploymentID, nil
+	}
+
+	return 0, nil
+}
+
+func (s *GitInternalService) UpdateDeploymentStatus(id uint, repo, status, message string, deploymentID int64) error {
+	var gitManager *git.GitManager
+	gitModel, err := gitRepo.GetGitByID(id)
+	if err != nil {
+		return err
+	}
+
+	switch gitModel.Type {
+	case "github":
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
+		gitManager = git.NewGitManager(github)
+		err = gitManager.UpdateDeploymentStatus(gitModel.Owner, repo, status, message, deploymentID)
 		if err != nil {
 			return err
 		}

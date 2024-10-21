@@ -122,15 +122,28 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
+	// Create new github deployment
+	var gitDeploymentID int64
+	gitDeploymentID, err = gitInternalService.CreateDeployment(gitModel.ID, project.GitRepo, deployment.UUID, *deployment)
+	if err != nil {
+		global.LOG.Error("Error creating github deployment", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error creating github deployment", 0)
+		return
+	}
+
+	gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "in_progress", "Deployment in progress", gitDeploymentID)
+
 	err = gitInternalService.CloneRepo(gitModel.ID, project.GitRepo, project.ProductionBranch, deployment.UUID)
 	if err != nil {
 		global.LOG.Error("Error cloning repo", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error cloning repo", gitDeploymentID)
 		return
 	}
 
 	err = projectRepo.CreateLog(deployment, "Git repository cloned.")
 	if err != nil {
 		global.LOG.Error("Error creating deployment log", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error creating deployment log", gitDeploymentID)
 		return
 	}
 
@@ -139,12 +152,14 @@ func (d *DeployService) Deploy(project *model.Project) {
 	err = nodejsDeploymentService.InstallDependencies(deployment)
 	if err != nil {
 		global.LOG.Error("Error installing dependencies", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error installing dependencies", gitDeploymentID)
 		return
 	}
 
 	err = nodejsDeploymentService.Build(deployment)
 	if err != nil {
 		global.LOG.Error("Error building project", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error building project", gitDeploymentID)
 		return
 	}
 
@@ -154,6 +169,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 		err = deploymentDomainService.CreateSailHostDomain(deployment)
 		if err != nil {
 			global.LOG.Error("Error creating deployment domain", err)
+			gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error creating deployment domain", gitDeploymentID)
 			return
 		}
 	}
@@ -183,6 +199,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 	err = projectRepo.UpdateDeployment(deployment)
 	if err != nil {
 		global.LOG.Error("Error updating deployment", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error updating deployment", gitDeploymentID)
 		return
 	}
 
@@ -190,6 +207,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 	err = projectRepo.UpdateDeploymentIsCurrent(deployment.ID)
 	if err != nil {
 		global.LOG.Error("Error updating deployment is current", err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error updating deployment is current", gitDeploymentID)
 		return
 	}
 
@@ -202,4 +220,5 @@ func (d *DeployService) Deploy(project *model.Project) {
 	// TODO: Complete deployment
 
 	global.LOG.Info("Deployment completed", deployment)
+	gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "success", "Deployment completed", gitDeploymentID)
 }
