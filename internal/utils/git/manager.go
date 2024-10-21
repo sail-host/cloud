@@ -2,7 +2,6 @@ package git
 
 import (
 	git "github.com/google/go-github/v65/github"
-	"github.com/sail-host/cloud/internal/utils/git/github"
 )
 
 type GitManager struct {
@@ -13,7 +12,7 @@ func (gm *GitManager) CheckAccount() (bool, error) {
 	return gm.Provider.CheckAccount()
 }
 
-func (gm *GitManager) GetRepos(page, perPage int) (*github.ReposResponse, error) {
+func (gm *GitManager) GetRepos(page, perPage int) (*ReposResponse, error) {
 	return gm.Provider.GetRepos(page, perPage)
 }
 

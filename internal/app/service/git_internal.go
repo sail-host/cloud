@@ -8,7 +8,6 @@ import (
 	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/git"
-	"github.com/sail-host/cloud/internal/utils/git/github"
 
 	githubP "github.com/google/go-github/v65/github"
 )
@@ -39,7 +38,7 @@ func (s *GitInternalService) GetRepos(id uint, page int) (*dto.GitInternalRepoRe
 
 	switch gitModel.Type {
 	case "github":
-		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 	case "gitlab":
 		return nil, errors.New("gitlab not supported")
@@ -109,7 +108,7 @@ func (s *GitInternalService) GetRepo(id uint) (*githubP.Repository, error) {
 
 	switch gitModel.Type {
 	case "github":
-		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 		repo, err := gitManager.GetRepo(gitModel.Owner, gitModel.Name)
 		if err != nil {
@@ -131,7 +130,7 @@ func (s *GitInternalService) GetLastCommitInBranch(id uint, owner, repo, branch 
 
 	switch gitModel.Type {
 	case "github":
-		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 		commit, err := gitManager.GetLastCommitInBranch(owner, repo, branch)
 		if err != nil {
@@ -154,7 +153,7 @@ func (s *GitInternalService) CloneRepo(id uint, repo, branch, uuid string) error
 
 	switch gitModel.Type {
 	case "github":
-		github := github.NewGithub(gitModel.Token, gitModel.Owner)
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 		err = gitManager.CloneRepo(gitModel.Owner, repo, deployDir, branch, gitModel.Token, gitModel.Owner)
 		if err != nil {
