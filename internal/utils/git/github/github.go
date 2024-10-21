@@ -205,3 +205,9 @@ func (g *Github) CreateDeployment(owner, repo string, deployment *github.Deploym
 	}
 	return nil
 }
+
+func (g *Github) UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error {
+	// TODO: Implement this method
+
+	return nil
+}

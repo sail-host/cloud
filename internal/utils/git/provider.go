@@ -13,4 +13,5 @@ type GitProvider interface {
 	GetLastCommitInBranch(owner, repo, branch string) (*git.RepositoryCommit, error)
 	CloneRepo(owner, repo, path, branch, token, username string) error
 	CreateDeployment(owner, repo string, deployment *git.DeploymentRequest) error
+	UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error
 }

@@ -37,6 +37,10 @@ func (gm *GitManager) CreateDeployment(owner, repo string, deployment *git.Deplo
 	return gm.Provider.CreateDeployment(owner, repo, deployment)
 }
 
+func (gm *GitManager) UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error {
+	return gm.Provider.UpdateDeploymentStatus(owner, repo, status, message, deploymentID)
+}
+
 func NewGitManager(provider GitProvider) *GitManager {
 	return &GitManager{Provider: provider}
 }
