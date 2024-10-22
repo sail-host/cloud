@@ -42,6 +42,7 @@ func (d *DeployService) CreateProject(c echo.Context, project *dto.CreateProject
 		BuildCommand:     project.BuildCommand,
 		OutputDir:        project.OutputDir,
 		InstallCommand:   project.InstallCommand,
+		RootDir:          project.RootDir,
 		NodeVersion:      "v20",
 	})
 	if err != nil {
@@ -187,7 +188,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 	} else {
 		buildDir = framework.OutputDir(project.Framework)
 	}
-	deploymentPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, buildDir)
+	deploymentPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, project.RootDir, buildDir)
 	var size int64
 	err = filepath.Walk(deploymentPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {

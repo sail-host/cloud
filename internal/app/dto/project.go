@@ -12,6 +12,7 @@ type CreateProjectRequest struct {
 	BuildCommand     string `json:"build_command"`
 	OutputDir        string `json:"output_dir"`
 	InstallCommand   string `json:"install_command"`
+	RootDir          string `json:"root_dir"`
 	// TODO: Check request dto!
 }
 
