@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
@@ -96,6 +97,27 @@ func (b *BaseApi) RedeployProject(echo echo.Context) error {
 	var baseResponse dto.BaseResponse
 	baseResponse.Status = "success"
 	baseResponse.Message = "Project redeploy started"
+
+	return echo.JSON(http.StatusOK, baseResponse)
+}
+
+func (b *BaseApi) GetProjectLogs(echo echo.Context) error {
+	projectName := echo.Param("name")
+	var baseResponse dto.BaseResponse
+	page, err := strconv.Atoi(echo.QueryParam("page"))
+	if err != nil {
+		page = 1
+	}
+	logs, err := projectService.GetProjectLogs(projectName, page)
+	if err != nil {
+		baseResponse.Status = "error"
+		baseResponse.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseResponse)
+	}
+
+	baseResponse.Status = "success"
+	baseResponse.Message = "Logs fetched"
+	baseResponse.Data = logs
 
 	return echo.JSON(http.StatusOK, baseResponse)
 }

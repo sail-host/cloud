@@ -20,6 +20,7 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 		projectRouter.GET("/check", projectApi.CheckProjectName)
 		projectRouter.GET("/deployments/:name", projectApi.GetProjectDeployments)
 		projectRouter.POST("/redeploy/:name", projectApi.RedeployProject)
+		projectRouter.GET("/logs/:name", projectApi.GetProjectLogs)
 	}
 
 	projectSettingRouter := Router.Group("/project-setting")

@@ -16,6 +16,7 @@ type IProjectService interface {
 	CheckProjectName(projectName string) (*dto.BaseResponse, error)
 	ListProjects() (*dto.ListProjectResponse, error)
 	GetProjectDeployments(projectName string) ([]*dto.ListDeploymentResponse, error)
+	GetProjectLogs(projectName string, page int) ([]*dto.ListLogsResponse, error)
 }
 
 func NewIProjectService() IProjectService {
@@ -162,4 +163,33 @@ func (p *ProjectService) GetProjectDeployments(projectName string) ([]*dto.ListD
 	}
 
 	return deploymentListResponse, nil
+}
+
+func (p *ProjectService) GetProjectLogs(projectName string, page int) ([]*dto.ListLogsResponse, error) {
+	var logsResponse []*dto.ListLogsResponse
+	project, err := projectRepo.GetProjectWithName(projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get last deployment
+	lastDeployment, err := projectRepo.GetLastDeployment(project.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	logs, err := projectRepo.ListLogs(lastDeployment.ID, page)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, log := range logs {
+		logsResponse = append(logsResponse, &dto.ListLogsResponse{
+			ID:        log.ID,
+			CreatedAt: log.CreatedAt,
+			Message:   log.Message,
+		})
+	}
+
+	return logsResponse, nil
 }

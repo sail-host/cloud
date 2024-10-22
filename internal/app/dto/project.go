@@ -69,3 +69,9 @@ type ListDeploymentResponse struct {
 	DeploymentTime uint      `json:"deployment_time"`
 	User           string    `json:"user"`
 }
+
+type ListLogsResponse struct {
+	ID        uint      `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	Message   string    `json:"message"`
+}

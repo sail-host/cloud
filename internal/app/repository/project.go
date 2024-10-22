@@ -33,6 +33,7 @@ type IProjectRepo interface {
 	ListProjectDomains(id uint) ([]*model.ProjectDomain, error)
 
 	CreateLog(dep *model.Deployment, log ...string) error
+	ListLogs(deploymentID uint, page int) ([]*model.Log, error)
 }
 
 func NewIProjectRepo() IProjectRepo {
@@ -189,4 +190,12 @@ func (p *ProjectRepo) ListProjectDeployments(id uint) ([]*model.Deployment, erro
 func (p *ProjectRepo) UpdateDeploymentIsCurrent(ignoreID uint) error {
 	db := global.DB
 	return db.Model(&model.Deployment{}).Where("id != ?", ignoreID).Update("is_current", false).Error
+}
+
+func (p *ProjectRepo) ListLogs(deploymentID uint, page int) ([]*model.Log, error) {
+	var logs []*model.Log
+	db := global.DB
+	offset := (page - 1) * 10
+	err := db.Where("deployment_id = ?", deploymentID).Order("created_at DESC").Offset(offset).Limit(10).Find(&logs).Error
+	return logs, err
 }
