@@ -10,3 +10,8 @@ type UpdateBuildAndOutputDirRequest struct {
 	OutputDir      string `json:"output_dir" validate:"required"`
 	InstallCommand string `json:"install_command" validate:"nullable"`
 }
+
+type AddNewDomainRequest struct {
+	Domain   string `json:"domain" validate:"required"`
+	DomainID uint   `json:"domain_id" validate:"required"`
+}

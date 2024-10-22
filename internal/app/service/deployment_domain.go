@@ -5,9 +5,13 @@ import (
 	"path"
 	"regexp"
 
+	sdn_cloudflare "github.com/cloudflare/cloudflare-go"
+	"github.com/sail-host/cloud/internal/app/dto"
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/caddy"
+	"github.com/sail-host/cloud/internal/utils/cloudflare"
+	"github.com/sail-host/cloud/internal/utils/framework"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
 	"k8s.io/apimachinery/pkg/util/rand"
 )
@@ -16,6 +20,7 @@ type DeploymentDomainService struct{}
 
 type IDeploymentDomainService interface {
 	CreateSailHostDomain(deployment *model.Deployment) error
+	AddNewDomain(projectName string, domain dto.AddNewDomainRequest) error
 	// TODO: Add other methods
 }
 
@@ -55,18 +60,11 @@ func (d *DeploymentDomainService) CreateSailHostDomain(deployment *model.Deploym
 	}
 
 	// Create project root directory
-	publicPath := "dist"
-	// TODO: Update this code using framework build path
-	if project.Framework == "nextjs" {
-		publicPath = ""
-	} else if project.Framework == "react" {
-		publicPath = "build"
-	} else if project.Framework == "vue" {
-		publicPath = "dist"
-	} else if project.Framework == "svelte" {
-		publicPath = "build"
-	} else if project.Framework == "vite" {
-		publicPath = "dist"
+	var publicPath string
+	if project.OutputDir != "" {
+		publicPath = project.OutputDir
+	} else {
+		publicPath = framework.OutputDir(project.Framework)
 	}
 
 	rootPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, publicPath)
@@ -117,4 +115,100 @@ func generateDomain(projectName string) string {
 	}
 
 	return domain
+}
+
+func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.AddNewDomainRequest) error {
+	project, err := projectRepo.GetProjectWithName(projectName)
+	if err != nil {
+		global.LOG.Error("Error getting project", err)
+		return err
+	}
+
+	// TODO: Update active and last deployment
+	deployment, err := projectRepo.GetLastDeployment(project.ID)
+	if err != nil {
+		global.LOG.Error("Error getting deployment", err)
+		return err
+	}
+
+	domainModel, err := domainRepo.GetDomainByID(domain.DomainID)
+	if err != nil {
+		global.LOG.Error("Error getting domain", err)
+		return err
+	}
+
+	// Create domain
+	var fullDomain string
+	if domain.Domain == "@" {
+		fullDomain = domainModel.Domain
+	} else {
+		fullDomain = fmt.Sprintf("%s.%s", domain.Domain, domainModel.Domain)
+	}
+
+	projectDomain := &model.ProjectDomain{
+		ProjectID:  project.ID,
+		Project:    *project,
+		DomainID:   domainModel.ID,
+		Domain:     fullDomain,
+		Configured: false,
+		Valid:      false,
+	}
+	_, err = projectRepo.CreateProjectDomain(projectDomain)
+	if err != nil {
+		global.LOG.Error("Error creating project domain", err)
+		return err
+	}
+
+	// Check domain managed using cloudflare create new record
+	if domainModel.DNSProvider == "cloudflare" {
+		cloudflareManager, err := cloudflare.NewManager(domainModel.CloudflareAPIKey)
+		if err != nil {
+			global.LOG.Error("Error creating cloudflare manager", err)
+			return err
+		}
+
+		_, err = cloudflareManager.CreateDNSRecord(domainModel.CloudflareZoneID, sdn_cloudflare.CreateDNSRecordParams{
+			Name:      fullDomain,
+			Type:      "A",
+			Content:   "127.0.0.1", // TODO: Update this to use global config
+			Proxiable: true,
+		})
+		if err != nil {
+			global.LOG.Error("Error creating cloudflare DNS record", err)
+			return err
+		}
+	}
+
+	// Update project domain
+	projectDomain.Configured = true
+	projectDomain.Valid = true
+	err = projectRepo.UpdateProjectDomain(projectDomain)
+	if err != nil {
+		global.LOG.Error("Error updating project domain", err)
+		return err
+	}
+
+	// Update web server config
+	var publicPath string
+	if project.OutputDir != "" {
+		publicPath = project.OutputDir
+	} else {
+		publicPath = framework.OutputDir(project.Framework)
+	}
+
+	rootPath := path.Join(global.CONF.System.DeployDir, deployment.UUID, publicPath)
+
+	// TODO: Update Caddy URL using global config
+	webServer := caddy.NewCaddy("localhost:2019")
+	err = webServer.CreateSite(&caddy.SiteConfig{
+		Domain: fullDomain,
+		Root:   rootPath,
+		SSL:    domainModel.DNSProvider != "cloudflare",
+	})
+	if err != nil {
+		global.LOG.Error("Error creating Caddy site", err)
+		return err
+	}
+
+	return nil
 }
