@@ -19,7 +19,13 @@ type Caddy struct {
 	Url string
 }
 
-func NewCaddy(url string) *Caddy {
+type ICaddy interface {
+	CreateSite(config *SiteConfig) error
+	RemoveSite(domain string) error
+	UpdateSite(config *SiteConfig) error
+}
+
+func NewCaddy(url string) ICaddy {
 	return &Caddy{Url: url}
 }
 

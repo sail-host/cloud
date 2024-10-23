@@ -21,6 +21,7 @@ type DeploymentDomainService struct{}
 type IDeploymentDomainService interface {
 	CreateSailHostDomain(deployment *model.Deployment) error
 	AddNewDomain(projectName string, domain dto.AddNewDomainRequest) error
+	RemoveDomain(projectDomainID uint) error
 	// TODO: Add other methods
 }
 
@@ -207,6 +208,28 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 	})
 	if err != nil {
 		global.LOG.Error("Error creating Caddy site", err)
+		return err
+	}
+
+	return nil
+}
+
+func (d *DeploymentDomainService) RemoveDomain(projectDomainID uint) error {
+	projectDomain, err := projectRepo.GetProjectDomainByID(projectDomainID)
+	if err != nil {
+		return err
+	}
+
+	// Remove Caddy site
+	webServer := caddy.NewCaddy("localhost:2019")
+	err = webServer.RemoveSite(projectDomain.Domain)
+	if err != nil {
+		return err
+	}
+
+	// Remove domain from project
+	err = projectRepo.DeleteProjectDomain(projectDomainID)
+	if err != nil {
 		return err
 	}
 
