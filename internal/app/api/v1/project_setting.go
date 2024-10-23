@@ -52,7 +52,7 @@ func (b *BaseApi) UpdateBuildAndOutputDir(echo echo.Context) error {
 	return echo.JSON(http.StatusOK, baseResponse)
 }
 
-func (b *BaseApi) UpdateProjectDomain(echo echo.Context) error {
+func (b *BaseApi) AddProjectDomain(echo echo.Context) error {
 	var request dto.AddNewDomainRequest
 	var baseResponse dto.BaseResponse
 	if err := echo.Bind(&request); err != nil {
