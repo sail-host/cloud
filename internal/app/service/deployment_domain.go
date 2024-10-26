@@ -22,6 +22,7 @@ type IDeploymentDomainService interface {
 	CreateSailHostDomain(deployment *model.Deployment) error
 	AddNewDomain(projectName string, domain dto.AddNewDomainRequest) error
 	RemoveDomain(projectDomainID uint) error
+	DomainsList(projectName string) (dto.BaseResponse, error)
 	// TODO: Add other methods
 }
 
@@ -234,4 +235,27 @@ func (d *DeploymentDomainService) RemoveDomain(projectDomainID uint) error {
 	}
 
 	return nil
+}
+
+func (d *DeploymentDomainService) DomainsList(projectName string) (dto.BaseResponse, error) {
+	var resp dto.BaseResponse
+	project, err := projectRepo.GetProjectWithName(projectName)
+	if err != nil {
+		global.LOG.Error("Error getting project", err)
+		resp.Message = err.Error()
+		resp.Status = "error"
+		return resp, err
+	}
+
+	domains, err := projectRepo.ListProjectDomains(project.ID)
+	if err != nil {
+		global.LOG.Error("Error getting project domains", err)
+		resp.Message = err.Error()
+		resp.Status = "error"
+		return resp, err
+	}
+
+	resp.Data = domains
+	resp.Status = "success"
+	return resp, nil
 }

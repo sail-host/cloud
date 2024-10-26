@@ -104,3 +104,14 @@ func (b *BaseApi) RemoveProjectDomain(echo echo.Context) error {
 
 	return echo.JSON(http.StatusOK, baseResponse)
 }
+
+func (b *BaseApi) DomainsList(echo echo.Context) error {
+	projectName := echo.Param("name")
+
+	resp, err := deploymentDomainService.DomainsList(projectName)
+	if err != nil {
+		return echo.JSON(http.StatusBadRequest, dto.BaseResponse{Status: "error", Message: err.Error()})
+	}
+
+	return echo.JSON(http.StatusOK, resp)
+}

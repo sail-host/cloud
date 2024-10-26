@@ -30,5 +30,6 @@ func (r *ProjectRouter) InitRouter(Router *echo.Group) {
 		projectSettingRouter.PUT("/update-build-and-output-dir/:name", projectSettingApi.UpdateBuildAndOutputDir)
 		projectSettingRouter.POST("/add-domain/:name", projectSettingApi.AddProjectDomain)
 		projectSettingRouter.DELETE("/remove-domain/:id", projectSettingApi.RemoveProjectDomain)
+		projectSettingRouter.GET("/domains/:name", projectSettingApi.DomainsList)
 	}
 }
