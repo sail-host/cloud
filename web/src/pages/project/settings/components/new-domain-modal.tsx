@@ -46,6 +46,13 @@ const FormSchema = z.object({
     ),
 })
 
+interface AddNewDomainResponse {
+  ip: string
+  domain: string
+  type: string
+  full_domain: string
+}
+
 export function NewDomainModal({
   fetchDomains: update,
 }: {
@@ -55,6 +62,8 @@ export function NewDomainModal({
   const [domains, setDomains] = useState<Domain[]>([])
   const [loading, setLoading] = useState(false)
   const { project } = useProjectStore()
+  const [isAdding, setIsAdding] = useState(false)
+  const [data, setData] = useState<AddNewDomainResponse | null>(null)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -77,7 +86,13 @@ export function NewDomainModal({
         if (res.data.status === 'success') {
           setIsOpen(false)
           toast.success(res.data.message)
+          if (res.data.data) {
+            setData(res.data.data)
+            setIsAdding(true)
+          }
           update()
+        } else {
+          toast.error(res.data?.message || 'Something went wrong')
         }
       })
       .catch((err) => {
@@ -165,6 +180,24 @@ export function NewDomainModal({
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAdding} onOpenChange={setIsAdding}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Domain Added</DialogTitle>
+          </DialogHeader>
+          <div className='flex flex-col items-center justify-center'>
+            <div className=''>
+              <p className='text-sm font-semibold'>Manual DNS Configuration:</p>
+              <p className='text-sm'>1. Add an A record for {data?.domain}</p>
+              <p className='text-sm'>2. Point it to {data?.ip}</p>
+            </div>
+            <p className='mt-3 text-lg font-bold'>{data?.full_domain}</p>
+            <p className='text-sm text-gray-500'>IP: {data?.ip}</p>
+            <p className='text-sm text-gray-500'>Type: {data?.type}</p>
+          </div>
         </DialogContent>
       </Dialog>
     </>
