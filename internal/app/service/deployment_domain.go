@@ -12,6 +12,7 @@ import (
 	"github.com/sail-host/cloud/internal/utils/caddy"
 	"github.com/sail-host/cloud/internal/utils/cloudflare"
 	"github.com/sail-host/cloud/internal/utils/framework"
+	"github.com/sail-host/cloud/internal/utils/ip"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
 	"k8s.io/apimachinery/pkg/util/rand"
 )
@@ -161,6 +162,12 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 		return nil, err
 	}
 
+	publicIP, err := ip.GetPublicIP()
+	if err != nil {
+		global.LOG.Error("Error getting public IP", err)
+		return nil, err
+	}
+
 	// Check domain managed using cloudflare create new record
 	if domainModel.DNSProvider == "cloudflare" {
 		cloudflareManager, err := cloudflare.NewManager(domainModel.CloudflareAPIKey)
@@ -172,7 +179,7 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 		_, err = cloudflareManager.CreateDNSRecord(domainModel.CloudflareZoneID, sdn_cloudflare.CreateDNSRecordParams{
 			Name:      fullDomain,
 			Type:      "A",
-			Content:   "127.0.0.1", // TODO: Update this to use global config
+			Content:   publicIP,
 			Proxiable: true,
 		})
 		if err != nil {
@@ -210,6 +217,16 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 	if err != nil {
 		global.LOG.Error("Error creating Caddy site", err)
 		return nil, err
+	}
+
+	if domainModel.DNSProvider != "cloudflare" {
+		resp := dto.AddNewDomainResponse{
+			IP:         publicIP,
+			FullDomain: fullDomain,
+			Domain:     domain.Domain,
+			Type:       "A",
+		}
+		return resp, nil
 	}
 
 	return nil, nil

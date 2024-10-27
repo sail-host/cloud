@@ -15,3 +15,10 @@ type AddNewDomainRequest struct {
 	Domain   string `json:"domain" validate:"required"`
 	DomainID uint   `json:"domain_id" validate:"required"`
 }
+
+type AddNewDomainResponse struct {
+	IP         string `json:"ip"`
+	Domain     string `json:"domain"`
+	Type       string `json:"type"`
+	FullDomain string `json:"full_domain"`
+}
