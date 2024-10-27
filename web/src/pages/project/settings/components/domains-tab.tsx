@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,93 +9,75 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { useProjectStore } from '@/store/project-store'
+import { BaseResponse } from '@/types/base'
 import { IconCheck, IconGitBranch } from '@tabler/icons-react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { NewDomainModal } from './new-domain-modal'
 
 interface Domain {
-  name: string
-  url: string
-  branch: string
-  env: string
-  isDNS: boolean
-  isActive: boolean
-  isValid: boolean
+  id: number
   createdAt: string
+  updatedAt: string
+  project_id: number
+  domain_id: number
+  domain: string
+  valid: boolean
+  configured: boolean
+  // env: string
+  // branch: string
 }
 
-const domains: Domain[] = [
-  {
-    name: 'techwave.io',
-    url: 'https://techwave.io',
-    branch: 'main',
-    env: 'production',
-    isDNS: true,
-    isActive: true,
-    isValid: true,
-    createdAt: '2024-03-01T12:30:00Z',
-  },
-  {
-    name: 'cloudpulse.net',
-    url: 'https://cloudpulse.net',
-    branch: 'develop',
-    env: 'staging',
-    isDNS: true,
-    isActive: false,
-    isValid: true,
-    createdAt: '2024-02-28T09:15:00Z',
-  },
-  {
-    name: 'devforge.com',
-    url: 'https://devforge.com',
-    branch: 'feature/new-ui',
-    env: 'development',
-    isDNS: false,
-    isActive: true,
-    isValid: false,
-    createdAt: '2024-02-25T18:45:00Z',
-  },
-  {
-    name: 'codestream.org',
-    url: 'https://codestream.org',
-    branch: 'main',
-    env: 'production',
-    isDNS: true,
-    isActive: true,
-    isValid: true,
-    createdAt: '2024-02-20T14:00:00Z',
-  },
-  {
-    name: 'byteburst.app',
-    url: 'https://byteburst.app',
-    branch: 'release/v2.0',
-    env: 'staging',
-    isDNS: false,
-    isActive: true,
-    isValid: true,
-    createdAt: '2024-03-05T10:20:00Z',
-  },
-]
-
 export function DomainsTab() {
+  const { project } = useProjectStore()
+  const [domains, setDomains] = useState<Domain[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchDomains = () => {
+    axios
+      .get<BaseResponse<Domain[]>>(
+        `/api/v1/project-setting/domains/${project?.name}`
+      )
+      .then((res) => {
+        if (res.data.status === 'success') {
+          setDomains(res.data.data)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    fetchDomains()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div className='w-full'>
       <Card>
-        <CardHeader>
+        <CardHeader className='relative'>
           <CardTitle>Domains</CardTitle>
           <CardDescription>
             These domains are assigned to your Production Deployments.
           </CardDescription>
+          <NewDomainModal fetchDomains={fetchDomains} />
         </CardHeader>
         <CardContent>
           <div>
             <Table>
               <TableBody>
                 {domains.map((domain) => (
-                  <TableRow key={domain.name}>
+                  <TableRow key={domain.id}>
                     <TableCell className=''>
                       <div className='flex items-center gap-2'>
-                        <p>{domain.name}</p>
+                        <p>{domain.domain}</p>
                         <Badge className='px-2 py-0 font-light capitalize bg-blue-500 rounded-full hover:bg-blue-500'>
-                          {domain.env}
+                          Production
                         </Badge>
                       </div>
 
@@ -123,7 +106,7 @@ export function DomainsTab() {
                         <p>
                           Active branch:{' '}
                           <span className='font-medium text-foreground'>
-                            {domain.branch}
+                            master
                           </span>
                         </p>
                       </div>
@@ -134,6 +117,14 @@ export function DomainsTab() {
                     </TableCell>
                   </TableRow>
                 ))}
+
+                {loading && (
+                  <TableRow>
+                    <TableCell colSpan={3} className='h-24 text-center'>
+                      <Loader />
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>

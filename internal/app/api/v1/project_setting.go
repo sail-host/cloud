@@ -69,7 +69,7 @@ func (b *BaseApi) AddProjectDomain(echo echo.Context) error {
 		return echo.JSON(http.StatusBadRequest, baseResponse)
 	}
 
-	err = deploymentDomainService.AddNewDomain(echo.Param("name"), request)
+	res, err := deploymentDomainService.AddNewDomain(echo.Param("name"), request)
 	if err != nil {
 		baseResponse.Status = "error"
 		baseResponse.Message = err.Error()
@@ -78,6 +78,7 @@ func (b *BaseApi) AddProjectDomain(echo echo.Context) error {
 
 	baseResponse.Status = "success"
 	baseResponse.Message = "Project domain updated"
+	baseResponse.Data = res
 
 	return echo.JSON(http.StatusOK, baseResponse)
 }

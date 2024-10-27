@@ -20,7 +20,7 @@ type DeploymentDomainService struct{}
 
 type IDeploymentDomainService interface {
 	CreateSailHostDomain(deployment *model.Deployment) error
-	AddNewDomain(projectName string, domain dto.AddNewDomainRequest) error
+	AddNewDomain(projectName string, domain dto.AddNewDomainRequest) (any, error)
 	RemoveDomain(projectDomainID uint) error
 	DomainsList(projectName string) (dto.BaseResponse, error)
 	// TODO: Add other methods
@@ -119,24 +119,24 @@ func generateDomain(projectName string) string {
 	return domain
 }
 
-func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.AddNewDomainRequest) error {
+func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.AddNewDomainRequest) (any, error) {
 	project, err := projectRepo.GetProjectWithName(projectName)
 	if err != nil {
 		global.LOG.Error("Error getting project", err)
-		return err
+		return nil, err
 	}
 
 	// TODO: Update active and last deployment
 	deployment, err := projectRepo.GetLastDeployment(project.ID)
 	if err != nil {
 		global.LOG.Error("Error getting deployment", err)
-		return err
+		return nil, err
 	}
 
 	domainModel, err := domainRepo.GetDomainByID(domain.DomainID)
 	if err != nil {
 		global.LOG.Error("Error getting domain", err)
-		return err
+		return nil, err
 	}
 
 	// Create domain
@@ -158,7 +158,7 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 	_, err = projectRepo.CreateProjectDomain(projectDomain)
 	if err != nil {
 		global.LOG.Error("Error creating project domain", err)
-		return err
+		return nil, err
 	}
 
 	// Check domain managed using cloudflare create new record
@@ -166,7 +166,7 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 		cloudflareManager, err := cloudflare.NewManager(domainModel.CloudflareAPIKey)
 		if err != nil {
 			global.LOG.Error("Error creating cloudflare manager", err)
-			return err
+			return nil, err
 		}
 
 		_, err = cloudflareManager.CreateDNSRecord(domainModel.CloudflareZoneID, sdn_cloudflare.CreateDNSRecordParams{
@@ -177,7 +177,7 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 		})
 		if err != nil {
 			global.LOG.Error("Error creating cloudflare DNS record", err)
-			return err
+			return nil, err
 		}
 	}
 
@@ -187,7 +187,7 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 	err = projectRepo.UpdateProjectDomain(projectDomain)
 	if err != nil {
 		global.LOG.Error("Error updating project domain", err)
-		return err
+		return nil, err
 	}
 
 	// Update web server config
@@ -209,10 +209,10 @@ func (d *DeploymentDomainService) AddNewDomain(projectName string, domain dto.Ad
 	})
 	if err != nil {
 		global.LOG.Error("Error creating Caddy site", err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return nil, nil
 }
 
 func (d *DeploymentDomainService) RemoveDomain(projectDomainID uint) error {
