@@ -16,8 +16,7 @@ jobs:
       - name: Set up Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-          echo 'export PATH="$HOME/.bun/bin:$PATH"' >> $GITHUB_ENV
-          source $GITHUB_ENV
+          source /home/runner/.bashrc 
 
       - name: Build React Project
         working-directory: ./web
