@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import {
+  IconArrowUp,
   IconBrowserCheck,
-  IconExclamationCircle,
   IconNotification,
   IconPalette,
   IconTool,
@@ -20,7 +20,7 @@ export default function Settings() {
       {/* ===== Top Heading ===== */}
       <Layout.Header>
         <Search />
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className='flex items-center ml-auto space-x-4'>
           <ThemeSwitch />
           <UserNav />
         </div>
@@ -36,7 +36,7 @@ export default function Settings() {
           </p>
         </div>
         <Separator className='my-4 lg:my-6' />
-        <div className='flex flex-1 flex-col space-y-8 md:space-y-2 md:overflow-hidden lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <div className='flex flex-col flex-1 space-y-8 md:space-y-2 md:overflow-hidden lg:flex-row lg:space-x-12 lg:space-y-0'>
           <aside className='top-0 lg:sticky lg:w-1/5'>
             <SidebarNav items={sidebarNavItems} />
           </aside>
@@ -76,8 +76,8 @@ const sidebarNavItems = [
     href: '/settings/display',
   },
   {
-    title: 'Error Example',
-    icon: <IconExclamationCircle size={18} />,
-    href: '/settings/error-example',
+    title: 'Upgrade',
+    icon: <IconArrowUp size={18} />,
+    href: '/settings/upgrade',
   },
 ]

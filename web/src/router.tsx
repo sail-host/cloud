@@ -150,6 +150,12 @@ const router = createBrowserRouter([
             }),
           },
           {
+            path: 'upgrade',
+            lazy: async () => ({
+              Component: (await import('./pages/settings/upgrade')).default,
+            }),
+          },
+          {
             path: 'error-example',
             lazy: async () => ({
               Component: (await import('./pages/settings/error-example'))
