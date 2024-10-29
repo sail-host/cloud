@@ -1,67 +1,105 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Link } from 'react-router-dom'
+
+interface Data {
+  name: string
+  domain: string
+  date: string
+  status: string
+  slug: string
+}
+
+const data: Data[] = [
+  {
+    date: '2024-01-01',
+    status: 'success',
+    slug: 'ui',
+    domain: 'ui.sailhost.local',
+    name: 'UI',
+  },
+  {
+    date: '2024-01-02',
+    status: 'error',
+    slug: 'api',
+    domain: 'api.sailhost.local',
+    name: 'API Service',
+  },
+  {
+    date: '2024-01-03',
+    status: 'success',
+    slug: 'docs',
+    domain: 'docs.sailhost.local',
+    name: 'Documentation',
+  },
+  {
+    date: '2024-01-03',
+    status: 'success',
+    slug: 'blog',
+    domain: 'blog.sailhost.local',
+    name: 'Company Blog',
+  },
+  {
+    date: '2024-01-04',
+    status: 'pending',
+    slug: 'dashboard',
+    domain: 'dashboard.sailhost.local',
+    name: 'Admin Dashboard',
+  },
+]
 
 export function RecentSales() {
   return (
     <div className='space-y-8'>
-      <div className='flex items-center'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/01.png' alt='Avatar' />
-          <AvatarFallback>OM</AvatarFallback>
-        </Avatar>
-        <div className='ml-4 space-y-1'>
-          <p className='text-sm font-medium leading-none'>Olivia Martin</p>
-          <p className='text-sm text-muted-foreground'>
-            olivia.martin@email.com
-          </p>
+      {data.map((item, index) => (
+        <div className='flex items-center' key={index}>
+          <div>
+            <p className='flex items-center gap-2 text-sm font-medium leading-none'>
+              <Link to={`/projects/${item.slug}`} className='hover:underline'>
+                {item.name}
+              </Link>
+              <div className='flex flex-col'>
+                <div className='flex items-center'>
+                  {item.status === 'success' && (
+                    <>
+                      <div className='w-2 h-2 bg-green-500 rounded-full' />
+                      <span className='ml-1'>Active</span>
+                    </>
+                  )}
+                  {item.status === 'error' && (
+                    <>
+                      <div className='w-2 h-2 bg-red-500 rounded-full' />
+                      <span className='ml-1'>Error</span>
+                    </>
+                  )}
+                  {item.status === 'pending' && (
+                    <>
+                      <div className='w-2 h-2 bg-yellow-500 rounded-full' />
+                      <span className='ml-1'>Pending</span>
+                    </>
+                  )}
+                  {item.status === 'building' && (
+                    <>
+                      <div className='w-2 h-2 bg-blue-500 rounded-full' />
+                      <span className='ml-1'>Building</span>
+                    </>
+                  )}
+                  {item.status === 'deploying' && (
+                    <>
+                      <div className='w-2 h-2 bg-purple-500 rounded-full' />
+                      <span className='ml-1'>Deploying</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </p>
+            <p className='text-sm text-muted-foreground'>
+              <a href={`https://${item.domain}`} className='underline'>
+                {item.domain}
+              </a>
+            </p>
+          </div>
+          <div className='ml-auto text-sm font-medium'>{item.date}</div>
         </div>
-        <div className='ml-auto font-medium'>+$1,999.00</div>
-      </div>
-      <div className='flex items-center'>
-        <Avatar className='flex h-9 w-9 items-center justify-center space-y-0 border'>
-          <AvatarImage src='/avatars/02.png' alt='Avatar' />
-          <AvatarFallback>JL</AvatarFallback>
-        </Avatar>
-        <div className='ml-4 space-y-1'>
-          <p className='text-sm font-medium leading-none'>Jackson Lee</p>
-          <p className='text-sm text-muted-foreground'>jackson.lee@email.com</p>
-        </div>
-        <div className='ml-auto font-medium'>+$39.00</div>
-      </div>
-      <div className='flex items-center'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/03.png' alt='Avatar' />
-          <AvatarFallback>IN</AvatarFallback>
-        </Avatar>
-        <div className='ml-4 space-y-1'>
-          <p className='text-sm font-medium leading-none'>Isabella Nguyen</p>
-          <p className='text-sm text-muted-foreground'>
-            isabella.nguyen@email.com
-          </p>
-        </div>
-        <div className='ml-auto font-medium'>+$299.00</div>
-      </div>
-      <div className='flex items-center'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/04.png' alt='Avatar' />
-          <AvatarFallback>WK</AvatarFallback>
-        </Avatar>
-        <div className='ml-4 space-y-1'>
-          <p className='text-sm font-medium leading-none'>William Kim</p>
-          <p className='text-sm text-muted-foreground'>will@email.com</p>
-        </div>
-        <div className='ml-auto font-medium'>+$99.00</div>
-      </div>
-      <div className='flex items-center'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/05.png' alt='Avatar' />
-          <AvatarFallback>SD</AvatarFallback>
-        </Avatar>
-        <div className='ml-4 space-y-1'>
-          <p className='text-sm font-medium leading-none'>Sofia Davis</p>
-          <p className='text-sm text-muted-foreground'>sofia.davis@email.com</p>
-        </div>
-        <div className='ml-auto font-medium'>+$39.00</div>
-      </div>
+      ))}
     </div>
   )
 }
