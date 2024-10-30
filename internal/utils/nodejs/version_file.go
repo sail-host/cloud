@@ -28,7 +28,7 @@ func GetVersion(projectPath string) (string, error) {
 		return "", nil
 	}
 
-	return version, nil
+	return version[:3], nil
 }
 
 func isNumeric(c byte) bool {
