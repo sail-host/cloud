@@ -31,13 +31,17 @@ jobs:
           go-version: "1.22"
 
       - name: Build application
-        run: go build -o sailhost ./cmd/main.go
+        run: make prod
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: sailhost
-          path: sailhost
+          path: |
+            sailhost-darwin-amd64.tar.gz
+            sailhost-darwin-arm64.tar.gz
+            sailhost-linux-amd64.tar.gz
+            sailhost-linux-arm64.tar.gz
 
   release:
     runs-on: ubuntu-latest
@@ -72,14 +76,48 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sailhost
-          path: .
+          path: |
+            sailhost-darwin-amd64.tar.gz
+            sailhost-darwin-arm64.tar.gz
+            sailhost-linux-amd64.tar.gz
+            sailhost-linux-arm64.tar.gz
 
-      - name: Upload Application to Release
+      - name: Upload Darwin AMD64 to Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./sailhost
-          asset_name: sailhost
-          asset_content_type: application/octet-stream
+          asset_path: ./sailhost-darwin-amd64.tar.gz
+          asset_name: sailhost-darwin-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Darwin ARM64 to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sailhost-darwin-arm64.tar.gz
+          asset_name: sailhost-darwin-arm64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Linux AMD64 to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sailhost-linux-amd64.tar.gz
+          asset_name: sailhost-linux-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Linux ARM64 to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sailhost-linux-arm64.tar.gz
+          asset_name: sailhost-linux-arm64.tar.gz
+          asset_content_type: application/gzip
