@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import ContentSection from '../components/content-section'
 import { Loading } from '@/components/custom/loading'
 import { Button } from '@/components/ui/button'
+import axios from 'axios'
+import { BaseResponse } from '@/types/base'
 
 export default function SettingsAccount() {
   const [isLoading, setIsLoading] = useState(false)
@@ -11,12 +13,23 @@ export default function SettingsAccount() {
   const checkVersion = () => {
     setIsLoading(true)
 
-    // Fake timeout
-    setTimeout(() => {
-      setAppVersion('1.0.0')
-      setLastVersion('1.0.1')
-      setIsLoading(false)
-    }, 2000)
+    axios
+      .get<
+        BaseResponse<{
+          current_version: string
+          last_version: string
+        }>
+      >('/api/v1/upgrade/check')
+      .then((res) => {
+        setAppVersion(res.data.data.current_version)
+        setLastVersion(res.data.data.last_version)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {

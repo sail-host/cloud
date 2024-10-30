@@ -19,4 +19,5 @@ var (
 	deployService           = service.NewIDeployService()
 	projectSettingService   = service.NewIProjectSettingGeneralService()
 	deploymentDomainService = service.NewIDeploymentDomainService()
+	upgradeService          = service.NewIUpgradeService()
 )
