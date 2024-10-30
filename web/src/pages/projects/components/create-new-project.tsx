@@ -82,14 +82,14 @@ export function CreateNewProject() {
   }, [gitAccount])
 
   return (
-    <div className='grid w-full grid-cols-12 gap-4 mt-4'>
+    <div className='mt-4 grid w-full grid-cols-12 gap-4'>
       <Card className='col-span-8'>
         <CardHeader>
           <CardTitle>Import Git Repository</CardTitle>
         </CardHeader>
         <CardContent>
           <div>
-            <div className='flex items-center w-full gap-3'>
+            <div className='flex w-full items-center gap-3'>
               <div className=''>
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
@@ -102,22 +102,22 @@ export function CreateNewProject() {
                       {gitAccount && (
                         <div className='flex items-center'>
                           {gitAccount.type == 'github' && (
-                            <IconBrandGithub className='w-4 h-4 mr-2' />
+                            <IconBrandGithub className='mr-2 h-4 w-4' />
                           )}
                           {gitAccount.type == 'gitlab' && (
-                            <IconBrandGitlab className='w-4 h-4 mr-2' />
+                            <IconBrandGitlab className='mr-2 h-4 w-4' />
                           )}
                           {gitAccount.type == 'bitbucket' && (
-                            <IconBrandBitbucket className='w-4 h-4 mr-2' />
+                            <IconBrandBitbucket className='mr-2 h-4 w-4' />
                           )}
                           {gitAccount.name}
-                          <IconChevronDown className='absolute w-4 h-4 opacity-50 right-2 shrink-0' />
+                          <IconChevronDown className='absolute right-2 h-4 w-4 shrink-0 opacity-50' />
                         </div>
                       )}
                       {!gitAccount && (
                         <>
                           {'Select Git Account...'}
-                          <IconChevronDown className='absolute w-4 h-4 opacity-50 right-2 shrink-0' />
+                          <IconChevronDown className='absolute right-2 h-4 w-4 shrink-0 opacity-50' />
                         </>
                       )}
                     </Button>
@@ -143,13 +143,13 @@ export function CreateNewProject() {
                               className='relative'
                             >
                               {account.type == 'github' && (
-                                <IconBrandGithub className='w-4 h-4 mr-2' />
+                                <IconBrandGithub className='mr-2 h-4 w-4' />
                               )}
                               {account.type == 'gitlab' && (
-                                <IconBrandGitlab className='w-4 h-4 mr-2' />
+                                <IconBrandGitlab className='mr-2 h-4 w-4' />
                               )}
                               {account.type == 'bitbucket' && (
-                                <IconBrandBitbucket className='w-4 h-4 mr-2' />
+                                <IconBrandBitbucket className='mr-2 h-4 w-4' />
                               )}
                               {account.name}
                               <IconCheck
@@ -165,9 +165,9 @@ export function CreateNewProject() {
                           <CommandItem>
                             <Link
                               to='/git-accounts/create'
-                              className='flex items-center w-full'
+                              className='flex w-full items-center'
                             >
-                              <IconPlus className='w-4 h-4 mr-2' />
+                              <IconPlus className='mr-2 h-4 w-4' />
                               Add Git Account
                             </Link>
                           </CommandItem>
@@ -178,7 +178,7 @@ export function CreateNewProject() {
                 </Popover>
               </div>
               <div className='relative w-full'>
-                <IconSearch className='absolute w-4 h-4 -translate-y-1/2 left-2 top-1/2 text-muted-foreground' />
+                <IconSearch className='absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                 <Input placeholder='Repository URL' className='pl-8' />
               </div>
             </div>
@@ -210,7 +210,7 @@ export function CreateNewProject() {
               )}
 
               {page < lastPage && (
-                <div className='flex items-center justify-center my-4'>
+                <div className='my-4 flex items-center justify-center'>
                   <Button
                     type='button'
                     onClick={() => {

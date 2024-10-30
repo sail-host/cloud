@@ -96,7 +96,7 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
             onClick={handleRedeploy}
             loading={redeployLoading}
           >
-            <IconReload className='w-4 h-4 mr-2' />
+            <IconReload className='mr-2 h-4 w-4' />
             Redeploy
           </Button>
         </div>
@@ -118,11 +118,11 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
                       <div className='font-medium'>
                         {deployment.git_hash.slice(0, 10)}
                       </div>
-                      <div className='flex items-center capitalize gap-x-2 text-muted-foreground'>
+                      <div className='flex items-center gap-x-2 capitalize text-muted-foreground'>
                         {deployment.git_branch}
 
                         {deployment.is_current && (
-                          <Badge className='px-1 py-0 text-xs rounded-full bg-blue-500/40 hover:bg-blue-500/40'>
+                          <Badge className='rounded-full bg-blue-500/40 px-1 py-0 text-xs hover:bg-blue-500/40'>
                             <IconCircleArrowUp className='mr-0.5 inline-block h-3 w-3' />
                             Current
                           </Badge>
@@ -134,31 +134,31 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
                         <div className='flex items-center'>
                           {deployment.status === 'success' && (
                             <>
-                              <div className='w-2 h-2 bg-green-500 rounded-full' />
+                              <div className='h-2 w-2 rounded-full bg-green-500' />
                               <span className='ml-1'>Active</span>
                             </>
                           )}
                           {deployment.status === 'error' && (
                             <>
-                              <div className='w-2 h-2 bg-red-500 rounded-full' />
+                              <div className='h-2 w-2 rounded-full bg-red-500' />
                               <span className='ml-1'>Error</span>
                             </>
                           )}
                           {deployment.status === 'pending' && (
                             <>
-                              <div className='w-2 h-2 bg-yellow-500 rounded-full' />
+                              <div className='h-2 w-2 rounded-full bg-yellow-500' />
                               <span className='ml-1'>Pending</span>
                             </>
                           )}
                           {deployment.status === 'building' && (
                             <>
-                              <div className='w-2 h-2 bg-blue-500 rounded-full' />
+                              <div className='h-2 w-2 rounded-full bg-blue-500' />
                               <span className='ml-1'>Building</span>
                             </>
                           )}
                           {deployment.status === 'deploying' && (
                             <>
-                              <div className='w-2 h-2 bg-purple-500 rounded-full' />
+                              <div className='h-2 w-2 rounded-full bg-purple-500' />
                               <span className='ml-1'>Deploying</span>
                             </>
                           )}
@@ -178,7 +178,7 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
                     <TableCell>
                       <div className='flex flex-col'>
                         <div className='flex items-center gap-x-2'>
-                          <IconGitPullRequest className='w-4 h-4' />
+                          <IconGitPullRequest className='h-4 w-4' />
                           <a
                             href={`${deployment.git_url}/tree/${deployment.git_branch}`}
                             className='font-light hover:underline'
@@ -189,10 +189,10 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
                           </a>
                         </div>
                         <div className='flex items-center gap-x-2'>
-                          <IconGitCommit className='w-4 h-4' />
+                          <IconGitCommit className='h-4 w-4' />
                           <a
                             href={`${deployment.git_url}/commit/${deployment.git_hash}`}
-                            className='flex items-center font-light gap-x-2 hover:underline'
+                            className='flex items-center gap-x-2 font-light hover:underline'
                             target='_blank'
                             rel='noreferrer'
                           >
@@ -217,7 +217,7 @@ export function DeploymentsTab({ uuid }: { uuid?: string }) {
                     </TableCell>
                     <TableCell className='text-right'>
                       <Button variant='ghost' size='icon'>
-                        <IconDotsVertical className='w-4 h-4' />
+                        <IconDotsVertical className='h-4 w-4' />
                       </Button>
                     </TableCell>
                   </TableRow>

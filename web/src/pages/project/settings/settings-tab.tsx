@@ -22,8 +22,8 @@ export function SettingsTab() {
             <CardDescription>Configure your project settings.</CardDescription>
           </div>
         </CardHeader>
-        <CardContent className='pt-4 border-t'>
-          <div className='flex flex-col flex-1 space-y-4 md:space-y-2 md:overflow-hidden lg:flex-row lg:space-x-8 lg:space-y-0'>
+        <CardContent className='border-t pt-4'>
+          <div className='flex flex-1 flex-col space-y-4 md:space-y-2 md:overflow-hidden lg:flex-row lg:space-x-8 lg:space-y-0'>
             <aside className='top-0 lg:sticky lg:w-1/5'>
               <SettingsTabSidebar
                 activeTab={activeTab}

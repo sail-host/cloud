@@ -28,14 +28,14 @@ export function StepTwoRightCard() {
               target='_blank'
               className='flex items-center gap-1 hover:underline'
             >
-              <IconBrandGithub className='w-5 h-5' />
+              <IconBrandGithub className='h-5 w-5' />
               {project?.owner}/{project?.name}
             </Link>
           </div>
           <div>
             <p className='text-sm text-muted-foreground'>Branch</p>
             <p className='flex items-center gap-1 text-lg font-medium'>
-              <IconGitBranch className='w-5 h-5' />
+              <IconGitBranch className='h-5 w-5' />
               {project?.default_branch}
             </p>
           </div>

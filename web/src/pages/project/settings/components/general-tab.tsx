@@ -63,7 +63,7 @@ export function GeneralTab() {
             onChange={(e) => setProjectName(e.target.value)}
           />
         </CardContent>
-        <CardFooter className='flex justify-end p-3 pr-6 border-t rounded-b-xl bg-muted dark:bg-muted/40'>
+        <CardFooter className='flex justify-end rounded-b-xl border-t bg-muted p-3 pr-6 dark:bg-muted/40'>
           <Button
             onClick={handleSaveProjectName}
             type='button'
@@ -96,7 +96,7 @@ export function GeneralTab() {
             </Button>
           </div>
         </CardContent>
-        <CardFooter className='flex justify-end p-3 pr-6 border-t rounded-b-xl bg-muted dark:bg-muted/40'>
+        <CardFooter className='flex justify-end rounded-b-xl border-t bg-muted p-3 pr-6 dark:bg-muted/40'>
           <Button>Save</Button>
         </CardFooter>
       </Card>
@@ -110,7 +110,7 @@ export function GeneralTab() {
           </CardDescription>
         </CardHeader>
         <CardContent className='border-t'>
-          <div className='flex flex-row gap-4 mt-6'>
+          <div className='mt-6 flex flex-row gap-4'>
             <Skeleton className='h-20 w-36' />
             <div className='flex flex-col justify-center'>
               <h5 className='text-base font-bold'>solvie-dashboard</h5>
@@ -120,7 +120,7 @@ export function GeneralTab() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className='flex justify-end p-3 pr-6 border-t border-red-500 rounded-b-xl bg-red-600/10 dark:border-red-500/30 dark:bg-red-500/10'>
+        <CardFooter className='flex justify-end rounded-b-xl border-t border-red-500 bg-red-600/10 p-3 pr-6 dark:border-red-500/30 dark:bg-red-500/10'>
           <Button variant='destructive'>Delete Project</Button>
         </CardFooter>
       </Card>

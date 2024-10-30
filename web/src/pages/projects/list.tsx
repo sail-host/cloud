@@ -66,14 +66,14 @@ export default function Projects() {
       {/* ===== Top Heading ===== */}
       <Layout.Header sticky>
         <Search />
-        <div className='flex items-center ml-auto space-x-4'>
+        <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <UserNav />
         </div>
       </Layout.Header>
 
       <Layout.Body>
-        <div className='flex items-center justify-between mb-2 space-y-2'>
+        <div className='mb-2 flex items-center justify-between space-y-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Projects</h2>
             <p className='text-muted-foreground'>
@@ -83,7 +83,7 @@ export default function Projects() {
         </div>
         <ProjectsFilter />
         {dataLoading ? (
-          <div className='flex items-center justify-center my-10'>
+          <div className='my-10 flex items-center justify-center'>
             <Loading loading />
           </div>
         ) : (

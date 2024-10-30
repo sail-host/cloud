@@ -39,12 +39,12 @@ export function ProjectTab() {
           <div className='flex items-center gap-x-4'>
             <Button variant='outline' asChild>
               <a href={project?.git_url} target='_blank' rel='noreferrer'>
-                <IconGitBranch className='w-4 h-4 mr-2' />
+                <IconGitBranch className='mr-2 h-4 w-4' />
                 Repository
               </a>
             </Button>
             <Button variant='outline'>
-              <IconReload className='w-4 h-4 mr-2' />
+              <IconReload className='mr-2 h-4 w-4' />
               Rebuild
             </Button>
             <Button>Visit</Button>
@@ -52,9 +52,9 @@ export function ProjectTab() {
         </CardHeader>
         <CardContent className='grid w-full grid-cols-11 gap-4 text-sm'>
           <div className='col-span-4'>
-            <Skeleton className='w-full h-full' />
+            <Skeleton className='h-full w-full' />
           </div>
-          <div className='flex flex-col col-span-7 gap-4'>
+          <div className='col-span-7 flex flex-col gap-4'>
             <div>
               <p className='mb-1 font-light text-muted-foreground'>
                 Deployment URL
@@ -74,7 +74,7 @@ export function ProjectTab() {
                     className='flex items-center hover:underline'
                   >
                     {domain.domain}
-                    <IconExternalLink className='w-4 h-4 ml-1' />
+                    <IconExternalLink className='ml-1 h-4 w-4' />
                   </a>
                 ))}
               </div>
@@ -92,31 +92,31 @@ export function ProjectTab() {
                 <div className='flex items-center'>
                   {project?.status === 'success' && (
                     <>
-                      <div className='w-2 h-2 bg-green-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-green-500' />
                       <span className='ml-1'>Active</span>
                     </>
                   )}
                   {project?.status === 'error' && (
                     <>
-                      <div className='w-2 h-2 bg-red-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-red-500' />
                       <span className='ml-1'>Error</span>
                     </>
                   )}
                   {project?.status === 'pending' && (
                     <>
-                      <div className='w-2 h-2 bg-yellow-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-yellow-500' />
                       <span className='ml-1'>Pending</span>
                     </>
                   )}
                   {project?.status === 'building' && (
                     <>
-                      <div className='w-2 h-2 bg-blue-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-blue-500' />
                       <span className='ml-1'>Building</span>
                     </>
                   )}
                   {project?.status === 'deploying' && (
                     <>
-                      <div className='w-2 h-2 bg-purple-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-purple-500' />
                       <span className='ml-1'>Deploying</span>
                     </>
                   )}
@@ -133,13 +133,13 @@ export function ProjectTab() {
               <p className='mb-1 font-light text-muted-foreground'>Source</p>
               <div className='flex flex-col gap-0.5'>
                 <div className='flex items-center gap-x-2'>
-                  <IconGitBranch className='w-4 h-4' />
+                  <IconGitBranch className='h-4 w-4' />
                   <a href='#' className='hover:underline'>
                     {project?.git_branch}
                   </a>
                 </div>
                 <div className='flex items-center gap-x-2'>
-                  <IconGitCommit className='w-4 h-4 rotate-90' />
+                  <IconGitCommit className='h-4 w-4 rotate-90' />
                   <a href='#' className='space-x-3 hover:underline'>
                     <span>{project?.git_hash?.substring(0, 10)}</span>
                     <span>{project?.git_commit}</span>

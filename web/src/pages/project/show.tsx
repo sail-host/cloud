@@ -52,7 +52,7 @@ export default function ProjectShow() {
       {!error && (
         <Layout.Header sticky>
           <Search />
-          <div className='flex items-center ml-auto space-x-4'>
+          <div className='ml-auto flex items-center space-x-4'>
             <ThemeSwitch />
             <UserNav />
           </div>
@@ -68,7 +68,7 @@ export default function ProjectShow() {
           <NotFoundError />
         ) : (
           <>
-            <div className='flex items-center justify-between mb-2 space-y-2'>
+            <div className='mb-2 flex items-center justify-between space-y-2'>
               <h1 className='text-2xl font-bold tracking-tight'>
                 {project?.name}
               </h1>
@@ -79,7 +79,7 @@ export default function ProjectShow() {
                 defaultValue='project'
                 className='space-y-4'
               >
-                <div className='w-full pb-2 overflow-x-auto'>
+                <div className='w-full overflow-x-auto pb-2'>
                   <TabsList>
                     <TabsTrigger value='project'>Project</TabsTrigger>
                     <TabsTrigger value='deployments'>Deployments</TabsTrigger>

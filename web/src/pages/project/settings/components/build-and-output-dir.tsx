@@ -156,7 +156,7 @@ export function BuildAndOutputDir() {
                   variant='outline'
                   role='combobox'
                   aria-expanded={open}
-                  className='justify-between w-full'
+                  className='w-full justify-between'
                 >
                   {selectedFramework &&
                   frameworks.find(
@@ -187,7 +187,7 @@ export function BuildAndOutputDir() {
                   ) : (
                     'Select framework...'
                   )}
-                  <IconChevronDown className='w-4 h-4 ml-2 opacity-50 shrink-0' />
+                  <IconChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className='w-[740px] p-0'>
@@ -241,7 +241,7 @@ export function BuildAndOutputDir() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <IconHelpCircle className='w-5 h-5' />
+                    <IconHelpCircle className='h-5 w-5' />
                   </TooltipTrigger>
                   <TooltipContent className='border bg-background'>
                     <p className='max-w-[300px] text-center'>
@@ -260,7 +260,7 @@ export function BuildAndOutputDir() {
                 value={buildCommand}
                 onChange={(e) => setBuildCommand(e.target.value)}
               />
-              <div className='flex items-center justify-end col-span-1 space-x-2'>
+              <div className='col-span-1 flex items-center justify-end space-x-2'>
                 <Label htmlFor='override-build-command'>Override</Label>{' '}
                 <Switch
                   id='override-build-command'
@@ -279,7 +279,7 @@ export function BuildAndOutputDir() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <IconHelpCircle className='w-5 h-5' />
+                    <IconHelpCircle className='h-5 w-5' />
                   </TooltipTrigger>
                   <TooltipContent className='border bg-background'>
                     <p className='max-w-[300px] text-center'>
@@ -298,7 +298,7 @@ export function BuildAndOutputDir() {
                 value={outputDir}
                 onChange={(e) => setOutputDir(e.target.value)}
               />
-              <div className='flex items-center justify-end col-span-1 space-x-2'>
+              <div className='col-span-1 flex items-center justify-end space-x-2'>
                 <Label htmlFor='override-output-directory'>Override</Label>{' '}
                 <Switch
                   id='override-output-directory'
@@ -315,7 +315,7 @@ export function BuildAndOutputDir() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    <IconHelpCircle className='w-5 h-5' />
+                    <IconHelpCircle className='h-5 w-5' />
                   </TooltipTrigger>
                   <TooltipContent className='border bg-background'>
                     <p className='max-w-[300px] text-center'>
@@ -335,7 +335,7 @@ export function BuildAndOutputDir() {
                 value={installCommand}
                 onChange={(e) => setInstallCommand(e.target.value)}
               />
-              <div className='flex items-center justify-end col-span-1 space-x-2'>
+              <div className='col-span-1 flex items-center justify-end space-x-2'>
                 <Label htmlFor='override-install-command'>Override</Label>{' '}
                 <Switch
                   id='override-install-command'
@@ -349,7 +349,7 @@ export function BuildAndOutputDir() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className='flex justify-end p-3 pr-6 border-t rounded-b-xl bg-muted dark:bg-muted/40'>
+      <CardFooter className='flex justify-end rounded-b-xl border-t bg-muted p-3 pr-6 dark:bg-muted/40'>
         <Button loading={loading} onClick={handleSave} type='button'>
           Save
         </Button>
