@@ -12,6 +12,7 @@ import (
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/framework"
+	"github.com/sail-host/cloud/internal/utils/nodejs"
 )
 
 type DeployService struct{}
@@ -43,7 +44,7 @@ func (d *DeployService) CreateProject(c echo.Context, project *dto.CreateProject
 		OutputDir:        project.OutputDir,
 		InstallCommand:   project.InstallCommand,
 		RootDir:          project.RootDir,
-		NodeVersion:      "v20",
+		NodeVersion:      "v20", // Default node version
 	})
 	if err != nil {
 		return err
@@ -136,6 +137,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "in_progress", "Deployment in progress", gitDeploymentID)
 
+	// Clone repo
 	err = gitInternalService.CloneRepo(gitModel.ID, project.GitRepo, project.ProductionBranch, deployment.UUID)
 	if err != nil {
 		errorDeployment(deployment, err)
@@ -150,8 +152,26 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
+	// Check node version
+	nodeVersion, err := nodejs.GetVersion(path.Join(global.CONF.System.DeployDir, deployment.UUID))
+	if err != nil {
+		errorDeployment(deployment, err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error getting node version", gitDeploymentID)
+		return
+	}
+	if nodeVersion != "" {
+		project.NodeVersion = nodeVersion
+		err = projectRepo.UpdateProject(project)
+		if err != nil {
+			errorDeployment(deployment, err)
+			gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error updating project node version", gitDeploymentID)
+			return
+		}
+	}
+
 	nodejsDeploymentService := NewINodejsDeploymentService()
 
+	// Install dependencies
 	err = nodejsDeploymentService.InstallDependencies(deployment)
 	if err != nil {
 		errorDeployment(deployment, err)
@@ -159,6 +179,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
+	// Build project
 	err = nodejsDeploymentService.Build(deployment)
 	if err != nil {
 		errorDeployment(deployment, err)
@@ -168,6 +189,7 @@ func (d *DeployService) Deploy(project *model.Project) {
 
 	deploymentDomainService := NewIDeploymentDomainService()
 
+	// Create sailhost domain
 	if !isRedeploy {
 		err = deploymentDomainService.CreateSailHostDomain(deployment)
 		if err != nil {
