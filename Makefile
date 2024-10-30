@@ -15,7 +15,7 @@ build:
 	@echo "Building web..."
 	cd web && bun run build
 	@echo "Building server..."
-	go build -o tmp/main cmd/web/main.go
+	go build -o tmp/main cmd/main.go
 
 prod:
 	@echo "Build Mac AMD64"
