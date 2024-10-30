@@ -70,15 +70,15 @@ export function ProjectCardItem({ item }: ProjectCardItemProps) {
           <img
             src={iconFramework[item.framework]}
             alt={item.name}
-            className='w-6 h-6 rounded-full'
+            className='h-6 w-6 rounded-full'
           />
         ) : (
-          <div className='w-6 h-6 bg-gray-200 rounded-full'></div>
+          <div className='h-6 w-6 rounded-full bg-gray-200'></div>
         )}
         <div className='flex items-center gap-1'>
           <h3 className='text-sm font-medium'>{item.name}</h3>
-          <IconLock className='w-4 h-4 text-muted-foreground' />
-          <IconPointFilled className='w-2 h-2 text-muted-foreground/60' />
+          <IconLock className='h-4 w-4 text-muted-foreground' />
+          <IconPointFilled className='h-2 w-2 text-muted-foreground/60' />
           <span className='text-sm text-muted-foreground'>
             {formatDistanceToNow(new Date(item.updated_at))}
           </span>

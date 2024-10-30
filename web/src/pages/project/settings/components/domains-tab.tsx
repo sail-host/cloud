@@ -76,14 +76,14 @@ export function DomainsTab() {
                     <TableCell className=''>
                       <div className='flex items-center gap-2'>
                         <p>{domain.domain}</p>
-                        <Badge className='px-2 py-0 font-light capitalize bg-blue-500 rounded-full hover:bg-blue-500'>
+                        <Badge className='rounded-full bg-blue-500 px-2 py-0 font-light capitalize hover:bg-blue-500'>
                           Production
                         </Badge>
                       </div>
 
-                      <div className='flex items-center mt-3 gap-x-4'>
+                      <div className='mt-3 flex items-center gap-x-4'>
                         <div className='flex items-center gap-x-2'>
-                          <div className='flex items-center justify-center w-5 h-5 bg-green-500 rounded-full'>
+                          <div className='flex h-5 w-5 items-center justify-center rounded-full bg-green-500'>
                             <IconCheck size={16} />
                           </div>
                           <p className='text-sm font-light'>
@@ -91,7 +91,7 @@ export function DomainsTab() {
                           </p>
                         </div>
                         <div className='flex items-center gap-x-2'>
-                          <div className='flex items-center justify-center w-5 h-5 bg-green-500 rounded-full'>
+                          <div className='flex h-5 w-5 items-center justify-center rounded-full bg-green-500'>
                             <IconCheck size={16} />
                           </div>
                           <p className='text-sm font-light'>
@@ -101,7 +101,7 @@ export function DomainsTab() {
                       </div>
                     </TableCell>
                     <TableCell className=''>
-                      <div className='flex items-center text-sm font-light gap-x-2 text-muted-foreground'>
+                      <div className='flex items-center gap-x-2 text-sm font-light text-muted-foreground'>
                         <IconGitBranch size={16} />
                         <p>
                           Active branch:{' '}

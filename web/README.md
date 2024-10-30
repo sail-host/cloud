@@ -45,16 +45,49 @@ Go to the project directory
   cd shadcn-admin
 ```
 
+##### Run using bun
+
+For better performance, consider using [Bun](https://bun.sh/).
+
+Install `bun` for **macOS** and **Linux**.
+
+```bash
+# for macOS, Linux, and WSL
+curl -fsSL https://bun.sh/install | bash
+# to install a specific version
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.0.0"
+```
+
+Install `bun` for **Windows**.
+
+```bash
+powershell -c "irm bun.sh/install.ps1|iex"
+```
+
 Install dependencies
 
 ```bash
-  pnpm install
+  bun install
 ```
 
 Start the server
 
 ```bash
-  pnpm run dev
+  bun run dev
+```
+
+##### Run using npm
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run dev
 ```
 
 ## Author

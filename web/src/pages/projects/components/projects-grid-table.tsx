@@ -23,7 +23,7 @@ interface Props {
 
 export function ProjectsGridTable({ projects }: Props) {
   return (
-    <div className='grid grid-cols-12 gap-4 mt-4'>
+    <div className='mt-4 grid grid-cols-12 gap-4'>
       {projects.map((project) => (
         <div
           key={project.id}
@@ -39,13 +39,13 @@ export function ProjectsGridTable({ projects }: Props) {
 function ProjectCard({ project }: { project: Project }) {
   return (
     <Card className='col-span-3 text-sm'>
-      <CardHeader className='flex flex-row items-center justify-between p-3 pb-2 space-y-0'>
+      <CardHeader className='flex flex-row items-center justify-between space-y-0 p-3 pb-2'>
         <CardTitle className='inline-flex text-sm font-medium'>
-          <IconFolderCode size={28} className='mt-1 mr-2' />
+          <IconFolderCode size={28} className='mr-2 mt-1' />
           <div className='flex flex-col -space-y-0.5 text-sm'>
             <Link
               to={`/projects/${project.name.toLocaleLowerCase()}`}
-              className='font-medium cursor-pointer hover:underline'
+              className='cursor-pointer font-medium hover:underline'
             >
               {project.name}
             </Link>
@@ -61,7 +61,7 @@ function ProjectCard({ project }: { project: Project }) {
         </CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='w-auto h-auto px-2'>
+            <Button variant='ghost' className='h-auto w-auto px-2'>
               <IconDotsVertical size={20} />
             </Button>
           </DropdownMenuTrigger>

@@ -49,13 +49,13 @@ export function ConfigureNewProject() {
   }
 
   return (
-    <div className='grid w-full grid-cols-12 gap-4 mt-4'>
+    <div className='mt-4 grid w-full grid-cols-12 gap-4'>
       <Card className='col-span-8'>
         <CardHeader>
           <CardTitle>Configure Project</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='w-full pt-6 space-y-4 border-t'>
+          <div className='w-full space-y-4 border-t pt-6'>
             <ProjectInformation />
 
             <BuildOutputSettingsTab />

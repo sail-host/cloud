@@ -31,18 +31,18 @@ export function BuildOutputSettingsTab() {
   const [installCommandEnabled, setInstallCommandEnabled] = useState(false)
 
   return (
-    <Accordion type='single' collapsible className='px-3 border rounded-md'>
+    <Accordion type='single' collapsible className='rounded-md border px-3'>
       <AccordionItem value='item-1'>
         <AccordionTrigger>Build and Output Settings</AccordionTrigger>
         <AccordionContent>
-          <div className='pl-1 mt-3 space-y-4'>
+          <div className='mt-3 space-y-4 pl-1'>
             <div className='flex flex-col gap-2'>
               <Label className='flex items-center gap-1'>
                 Build Command
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <IconHelpCircle className='w-5 h-5' />
+                      <IconHelpCircle className='h-5 w-5' />
                     </TooltipTrigger>
                     <TooltipContent className='border bg-background'>
                       <p className='max-w-[300px] text-center'>
@@ -83,7 +83,7 @@ export function BuildOutputSettingsTab() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <IconHelpCircle className='w-5 h-5' />
+                      <IconHelpCircle className='h-5 w-5' />
                     </TooltipTrigger>
                     <TooltipContent className='border bg-background'>
                       <p className='max-w-[300px] text-center'>
@@ -124,7 +124,7 @@ export function BuildOutputSettingsTab() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <IconHelpCircle className='w-5 h-5' />
+                      <IconHelpCircle className='h-5 w-5' />
                     </TooltipTrigger>
                     <TooltipContent className='border bg-background'>
                       <p className='max-w-[300px] text-center'>

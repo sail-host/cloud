@@ -44,7 +44,7 @@ export default function AuthProvider({
 
   if (loading) {
     return (
-      <div className='z-50 flex items-center justify-center h-screen'>
+      <div className='z-50 flex h-screen items-center justify-center'>
         <Loading loading={true} />
       </div>
     )

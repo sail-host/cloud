@@ -35,7 +35,7 @@ export function SelectFramework({
           variant='outline'
           role='combobox'
           aria-expanded={open}
-          className='justify-between w-full'
+          className='w-full justify-between'
         >
           {selectedFramework &&
           frameworks.find(
@@ -66,7 +66,7 @@ export function SelectFramework({
           ) : (
             'Select framework...'
           )}
-          <IconChevronDown className='w-4 h-4 ml-2 opacity-50 shrink-0' />
+          <IconChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-[740px] p-0'>

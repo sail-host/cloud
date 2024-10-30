@@ -112,7 +112,7 @@
     @apply border-border;
   }
   body {
-    @apply w-full min-h-svh bg-background text-foreground;
+    @apply min-h-svh w-full bg-background text-foreground;
   }
   body > #root {
     @apply h-svh;

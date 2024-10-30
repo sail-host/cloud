@@ -60,31 +60,31 @@ export function RecentSales() {
                 <div className='flex items-center'>
                   {item.status === 'success' && (
                     <>
-                      <div className='w-2 h-2 bg-green-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-green-500' />
                       <span className='ml-1'>Active</span>
                     </>
                   )}
                   {item.status === 'error' && (
                     <>
-                      <div className='w-2 h-2 bg-red-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-red-500' />
                       <span className='ml-1'>Error</span>
                     </>
                   )}
                   {item.status === 'pending' && (
                     <>
-                      <div className='w-2 h-2 bg-yellow-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-yellow-500' />
                       <span className='ml-1'>Pending</span>
                     </>
                   )}
                   {item.status === 'building' && (
                     <>
-                      <div className='w-2 h-2 bg-blue-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-blue-500' />
                       <span className='ml-1'>Building</span>
                     </>
                   )}
                   {item.status === 'deploying' && (
                     <>
-                      <div className='w-2 h-2 bg-purple-500 rounded-full' />
+                      <div className='h-2 w-2 rounded-full bg-purple-500' />
                       <span className='ml-1'>Deploying</span>
                     </>
                   )}

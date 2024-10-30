@@ -38,12 +38,12 @@ export function EnvVariableTab() {
   }
 
   return (
-    <Accordion type='single' collapsible className='px-3 border rounded-md'>
+    <Accordion type='single' collapsible className='rounded-md border px-3'>
       <AccordionItem value='item-1'>
         <AccordionTrigger>Environment Variables</AccordionTrigger>
         <AccordionContent>
           <div className='mt-3'>
-            <div className='grid items-end w-full grid-cols-11 gap-2 pr-1'>
+            <div className='grid w-full grid-cols-11 items-end gap-2 pr-1'>
               <div className='col-span-5'>
                 <div className='flex flex-col gap-2'>
                   <Label>Name</Label>
@@ -78,14 +78,14 @@ export function EnvVariableTab() {
               </p>
             </div>
 
-            <div className='grid grid-cols-11 gap-2 p-2 mt-3 text-sm border rounded-md text-muted-foreground'>
+            <div className='mt-3 grid grid-cols-11 gap-2 rounded-md border p-2 text-sm text-muted-foreground'>
               <div className='col-span-5'>Key</div>
               <div className='col-span-5'>Value</div>
             </div>
 
             {environments.length > 0 &&
               environments.map((env) => (
-                <div className='grid grid-cols-11 gap-2 px-1 mt-2'>
+                <div className='mt-2 grid grid-cols-11 gap-2 px-1'>
                   <div className='col-span-5'>
                     <Input
                       placeholder='NEXT_PUBLIC_API_URL'
@@ -110,7 +110,7 @@ export function EnvVariableTab() {
                       className='w-full'
                       onClick={() => handleDelete(env.id)}
                     >
-                      <IconTrashX className='w-4 h-4' />
+                      <IconTrashX className='h-4 w-4' />
                     </Button>
                   </div>
                 </div>

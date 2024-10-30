@@ -25,7 +25,7 @@ export function EnvironmentsTab() {
         </CardHeader>
         <CardContent>
           <div className=''>
-            <div className='grid items-end w-full grid-cols-11 gap-2 pr-1'>
+            <div className='grid w-full grid-cols-11 items-end gap-2 pr-1'>
               <div className='col-span-5'>
                 <div className='flex flex-col gap-2'>
                   <Label>Name</Label>
@@ -50,12 +50,12 @@ export function EnvironmentsTab() {
               </p>
             </div>
 
-            <div className='grid grid-cols-11 gap-2 p-2 mt-3 text-sm border rounded-md text-muted-foreground'>
+            <div className='mt-3 grid grid-cols-11 gap-2 rounded-md border p-2 text-sm text-muted-foreground'>
               <div className='col-span-5'>Key</div>
               <div className='col-span-5'>Value</div>
             </div>
 
-            <div className='grid grid-cols-11 gap-2 px-1 mt-2'>
+            <div className='mt-2 grid grid-cols-11 gap-2 px-1'>
               <div className='col-span-5'>
                 <Input placeholder='NEXT_PUBLIC_API_URL' />
               </div>
@@ -64,14 +64,14 @@ export function EnvironmentsTab() {
               </div>
               <div className='col-span-1'>
                 <Button variant='outline' className='w-full'>
-                  <IconTrashX className='w-4 h-4' />
+                  <IconTrashX className='h-4 w-4' />
                 </Button>
               </div>
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className='flex justify-end p-3 pr-6 border-t rounded-b-xl bg-muted dark:bg-muted/40'>
+        <CardFooter className='flex justify-end rounded-b-xl border-t bg-muted p-3 pr-6 dark:bg-muted/40'>
           <Button>Save</Button>
         </CardFooter>
       </Card>

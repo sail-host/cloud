@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { PinInput, PinInputField } from '@/components/custom/pin-input'
 import { Separator } from '@/components/ui/separator'
 
-interface OtpFormProps extends HTMLAttributes<HTMLDivElement> { }
+interface OtpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
 const formSchema = z.object({
   otp: z.string().min(1, { message: 'Please enter your otp code.' }),

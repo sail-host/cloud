@@ -42,20 +42,20 @@ export default function CreateDomain() {
       {/* ===== Top Heading ===== */}
       <Layout.Header sticky>
         <Search />
-        <div className='flex items-center ml-auto space-x-4'>
+        <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
           <UserNav />
         </div>
       </Layout.Header>
 
       <Layout.Body>
-        <div className='flex items-center justify-between mb-2 space-y-2'>
+        <div className='mb-2 flex items-center justify-between space-y-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Create Domain</h2>
             <p className='text-muted-foreground'>Create a new domain!</p>
           </div>
         </div>
-        <div className='flex-1 px-4 py-1 -mx-4 overflow-auto lg:flex-row lg:space-x-12 lg:space-y-0'>
+        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           <DomainsForm onSubmit={onSubmit} isLoading={isLoading} />
         </div>
       </Layout.Body>

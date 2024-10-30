@@ -62,7 +62,7 @@ export function DomainsTable({ domains, loading }: DomainsTableProps) {
           <TableRow>
             <TableCell colSpan={6} className='text-center'>
               <div className='flex items-center justify-center'>
-                <IconAlertCircle className='w-4 h-4 mr-2' />
+                <IconAlertCircle className='mr-2 h-4 w-4' />
                 <span>No domains found</span>
               </div>
             </TableCell>
@@ -72,7 +72,7 @@ export function DomainsTable({ domains, loading }: DomainsTableProps) {
             <TableRow key={domain.id}>
               <TableCell className='font-medium'>{domain.id}</TableCell>
               <TableCell className='font-medium'>{domain.domain}</TableCell>
-              <TableCell className='flex items-center capitalize gap-x-2'>
+              <TableCell className='flex items-center gap-x-2 capitalize'>
                 {domain.dns_provider === 'cloudflare' ? (
                   <IconBrandCloudflare />
                 ) : (
@@ -84,10 +84,10 @@ export function DomainsTable({ domains, loading }: DomainsTableProps) {
                 <Link
                   to={`https://${domain.domain}`}
                   target='_blank'
-                  className='flex items-center text-blue-500 gap-x-1 hover:text-blue-600'
+                  className='flex items-center gap-x-1 text-blue-500 hover:text-blue-600'
                 >
                   {domain.domain}
-                  <ExternalLinkIcon className='w-4 h-4' />
+                  <ExternalLinkIcon className='h-4 w-4' />
                 </Link>
               </TableCell>
               <TableCell>
@@ -100,7 +100,7 @@ export function DomainsTable({ domains, loading }: DomainsTableProps) {
                       variant='ghost'
                       className='flex h-8 w-8 p-0 text-right data-[state=open]:bg-muted'
                     >
-                      <DotsHorizontalIcon className='w-4 h-4' />
+                      <DotsHorizontalIcon className='h-4 w-4' />
                       <span className='sr-only'>Open menu</span>
                     </Button>
                   </DropdownMenuTrigger>
