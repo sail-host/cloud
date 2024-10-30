@@ -19,3 +19,16 @@ func (b *BaseApi) CheckUpgrade(echo echo.Context) error {
 
 	return echo.JSON(http.StatusOK, res)
 }
+
+func (b *BaseApi) Update(echo echo.Context) error {
+	var baseError dto.BaseError
+
+	res, err := upgradeService.Update(echo)
+	if err != nil {
+		baseError.Status = "error"
+		baseError.Message = err.Error()
+		return echo.JSON(http.StatusBadRequest, baseError)
+	}
+
+	return echo.JSON(http.StatusOK, res)
+}

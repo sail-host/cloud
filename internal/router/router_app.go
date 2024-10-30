@@ -19,5 +19,6 @@ func (r *AppRouter) InitRouter(Router *echo.Group) {
 	upgradeRouter := Router.Group("/upgrade")
 	{
 		upgradeRouter.GET("/check", apiV1.ApiGroupApp.BaseApi.CheckUpgrade)
+		upgradeRouter.POST("/update", apiV1.ApiGroupApp.BaseApi.Update)
 	}
 }

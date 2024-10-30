@@ -4,11 +4,31 @@ import { Loading } from '@/components/custom/loading'
 import { Button } from '@/components/ui/button'
 import axios from 'axios'
 import { BaseResponse } from '@/types/base'
+import { toast } from 'sonner'
 
 export default function SettingsAccount() {
   const [isLoading, setIsLoading] = useState(false)
   const [appVersion, setAppVersion] = useState('')
   const [lastVersion, setLastVersion] = useState('')
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const handleUpdate = () => {
+    setIsUpdating(true)
+
+    axios
+      .post<BaseResponse>('/api/v1/upgrade/update')
+      .then((res) => {
+        toast.success(
+          res.data?.message || 'Update success, please reload the page'
+        )
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.message || 'Failed to update')
+      })
+      .finally(() => {
+        setIsUpdating(false)
+      })
+  }
 
   const checkVersion = () => {
     setIsLoading(true)
@@ -83,7 +103,15 @@ export default function SettingsAccount() {
                   </div>
                 </div>
                 <div className='inline-block'>
-                  {appVersion !== lastVersion && <Button>Upgrade Now</Button>}
+                  {appVersion !== lastVersion && (
+                    <Button
+                      type='button'
+                      onClick={handleUpdate}
+                      loading={isUpdating}
+                    >
+                      Upgrade Now
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
