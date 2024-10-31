@@ -2,6 +2,7 @@ package router
 
 import (
 	"log"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
@@ -31,6 +32,9 @@ func Routers() *echo.Echo {
 	// TODO: Add this middleware for log and debug
 	Router.Use(echoMiddleware.Logger())
 	Router.Use(echoMiddleware.Recover())
+
+	// rate limiter middleware
+	Router.Use(middleware.RateLimiter(5, 30*time.Second)) // 5 requests per 30 seconds
 
 	setStatic(Router)
 
