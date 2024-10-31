@@ -33,3 +33,6 @@ prod:
 	@echo "Build Linux ARM64"
 	GOOS=linux GOARCH=arm64 go build -o sailhost-linux-arm64 cmd/main.go
 	tar -czvf "sailhost-linux-arm64.tar.gz" sailhost-linux-arm64
+
+test:
+	go test ./...
