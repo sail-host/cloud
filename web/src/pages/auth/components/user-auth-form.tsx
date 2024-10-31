@@ -33,6 +33,9 @@ const formSchema = z.object({
     })
     .min(7, {
       message: 'Password must be at least 7 characters long',
+    })
+    .regex(/[a-zA-Z]/, {
+      message: 'Password must contain at least one letter',
     }),
 })
 
