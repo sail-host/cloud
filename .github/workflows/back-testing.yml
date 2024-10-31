@@ -1,0 +1,25 @@
+name: Back Testing
+
+on:
+  push:
+    branches: ["master", "dev", "feat/*"]
+  pull_request:
+    branches: ["master", "dev", "feat/*"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22"
+
+      - name: Run tests
+        run: make test
+
+      - name: Build application
+        run: make prod
