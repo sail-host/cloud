@@ -28,7 +28,15 @@ func (m *SystemdManager) CreateService(config ServiceConfig) error {
 		return fmt.Errorf("failed to write service file: %w", err)
 	}
 
-	return m.reloadDaemon()
+	if err = m.reloadDaemon(); err != nil {
+		return fmt.Errorf("failed to reload systemd daemon: %w", err)
+	}
+
+	if err = m.EnableService(config.Name); err != nil {
+		return fmt.Errorf("failed to enable service: %w", err)
+	}
+
+	return nil
 }
 
 func (m *SystemdManager) UpdateService(name string, config ServiceConfig) error {
@@ -40,6 +48,11 @@ func (m *SystemdManager) UpdateService(name string, config ServiceConfig) error 
 
 func (m *SystemdManager) DeleteService(name string) error {
 	servicePath := filepath.Join(systemdPath, name+".service")
+
+	if err := m.DisableService(name); err != nil {
+		return fmt.Errorf("failed to disable service: %w", err)
+	}
+
 	if err := os.Remove(servicePath); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("failed to delete service file: %w", err)
 	}
@@ -64,6 +77,14 @@ func (m *SystemdManager) ReloadService(name string) error {
 
 func (m *SystemdManager) reloadDaemon() error {
 	return m.runSystemctl("daemon-reload", "")
+}
+
+func (m *SystemdManager) EnableService(name string) error {
+	return m.runSystemctl("enable", name)
+}
+
+func (m *SystemdManager) DisableService(name string) error {
+	return m.runSystemctl("disable", name)
 }
 
 func (m *SystemdManager) runSystemctl(command, serviceName string) error {

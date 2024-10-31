@@ -1,27 +1,24 @@
 package systemd
 
-import (
-	"path/filepath"
-)
-
 type NextJSConfig struct {
 	Port         string
 	ProjectPath  string
 	StartCommand string
+	ConfigName   string
 }
 
 func NewNextJSService(config NextJSConfig) ServiceConfig {
 	return ServiceConfig{
-		Name:        filepath.Base(config.ProjectPath),
+		Name:        config.ConfigName,
 		Description: "NextJS Application Service",
 		ExecStart:   config.StartCommand,
 		WorkingDir:  config.ProjectPath,
-		User:        "nodejs",
+		User:        "root",
 		Environment: map[string]string{
 			"PORT": config.Port,
 		},
 		Restart:          "always",
 		Type:             "simple",
-		SyslogIdentifier: filepath.Base(config.ProjectPath),
+		SyslogIdentifier: config.ConfigName,
 	}
 }

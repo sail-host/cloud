@@ -14,19 +14,20 @@ func TestNewNextJSService(t *testing.T) {
 				Port:         "3000",
 				ProjectPath:  "/test/path",
 				StartCommand: "npm start",
+				ConfigName:   "path",
 			},
 			want: ServiceConfig{
 				Name:        "path",
 				Description: "NextJS Application Service",
 				ExecStart:   "npm start",
 				WorkingDir:  "/test/path",
-				User:        "nodejs",
+				User:        "root",
 				Environment: map[string]string{
 					"PORT": "3000",
 				},
 				Restart:          "always",
 				Type:             "simple",
-				SyslogIdentifier: "nextjs-project",
+				SyslogIdentifier: "path",
 			},
 		},
 	}
