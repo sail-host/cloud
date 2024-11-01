@@ -1,11 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"path"
 
 	"github.com/sail-host/cloud/internal/app/model"
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/nodejs"
+	"github.com/sail-host/cloud/internal/utils/systemd"
 )
 
 type NodejsDeploymentService struct{}
@@ -13,6 +15,7 @@ type NodejsDeploymentService struct{}
 type INodejsDeploymentService interface {
 	InstallDependencies(deployment *model.Deployment) error
 	Build(deployment *model.Deployment) error
+	Start(deployment *model.Deployment) error
 }
 
 func NewINodejsDeploymentService() INodejsDeploymentService {
@@ -119,6 +122,50 @@ func (n *NodejsDeploymentService) Build(deployment *model.Deployment) error {
 		}
 		if err != nil {
 			global.LOG.Error("Error running build command", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (n *NodejsDeploymentService) Start(deployment *model.Deployment) error {
+	project, err := projectRepo.GetProjectByID(deployment.ProjectID)
+	if err != nil {
+		global.LOG.Error("Error getting project", err)
+		return err
+	}
+
+	manager := systemd.New()
+	configName := fmt.Sprintf("sailhost-%d", deployment.ID)
+	port := fmt.Sprintf("%d", 10000+deployment.ID)
+
+	if project.Framework == "nextjs" {
+		service := systemd.NewNextJSService(systemd.NextJSConfig{
+			Port:         port,
+			ProjectPath:  project.RootDir, // TODO: check if this is correct
+			StartCommand: "npm run start", // TODO: check if this is correct
+			ConfigName:   configName,
+		})
+
+		err := manager.CreateService(service)
+		if err != nil {
+			global.LOG.Error("Error creating NextJS service", err)
+			return err
+		}
+	}
+
+	if project.Framework == "nuxtjs" {
+		service := systemd.NewNuxtJSService(systemd.NuxtJSConfig{
+			Port:         port,
+			ProjectPath:  project.RootDir,
+			StartCommand: "npm run start",
+			ConfigName:   configName,
+		})
+
+		err := manager.CreateService(service)
+		if err != nil {
+			global.LOG.Error("Error creating NuxtJS service", err)
 			return err
 		}
 	}

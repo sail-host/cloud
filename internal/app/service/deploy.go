@@ -187,6 +187,14 @@ func (d *DeployService) Deploy(project *model.Project) {
 		return
 	}
 
+	// Start project
+	err = nodejsDeploymentService.Start(deployment)
+	if err != nil {
+		errorDeployment(deployment, err)
+		gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error starting project", gitDeploymentID)
+		return
+	}
+
 	deploymentDomainService := NewIDeploymentDomainService()
 
 	// Create sailhost domain
