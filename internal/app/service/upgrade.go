@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/sail-host/cloud/internal/app/dto"
-	"github.com/sail-host/cloud/internal/config"
+	"github.com/sail-host/cloud/internal/constants"
 	"github.com/sail-host/cloud/internal/global"
 	"github.com/sail-host/cloud/internal/utils/sailhost"
 )
@@ -31,7 +31,7 @@ func (u *UpgradeService) CheckUpgrade(c echo.Context) (*dto.BaseResponse, error)
 	var baseResponse dto.BaseResponse
 	baseResponse.Data = map[string]string{
 		"last_version":    lastVersion,
-		"current_version": config.Version,
+		"current_version": constants.Version,
 	}
 	baseResponse.Message = "Check upgrade success"
 	baseResponse.Status = "success"

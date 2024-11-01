@@ -18,5 +18,3 @@ type System struct {
 	DeployDir   string `mapstructure:"deploy_dir"`
 	UtilsDir    string `mapstructure:"utils_dir"`
 }
-
-var Version = "v0.0.8"
