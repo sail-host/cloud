@@ -1,6 +1,7 @@
 package viper
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -91,6 +92,7 @@ func setViperConfig(cfg config.Config) {
 	viper.Set("system.encrypt_key", cfg.System.EncryptKey)
 	viper.Set("system.deploy_dir", cfg.System.DeployDir)
 	viper.Set("system.utils_dir", cfg.System.UtilsDir)
+	viper.Set("system.app_url", cfg.System.AppUrl)
 }
 
 // Create config file
@@ -126,6 +128,6 @@ func createConfig(devMode bool, configDir string) config.Config {
 	rootConfig.System.DeployDir = path.Join(configDir, "deploy")
 	rootConfig.System.UtilsDir = path.Join(configDir, "utils")
 	rootConfig.System.EncryptKey = random.StringGenerator(32)
-
+	rootConfig.System.AppUrl = fmt.Sprintf("http://%s:%s", rootConfig.System.BindAddress, rootConfig.System.Port)
 	return rootConfig
 }
