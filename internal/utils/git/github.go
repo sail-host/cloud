@@ -217,3 +217,22 @@ func (g *Github) UpdateDeploymentStatus(owner, repo, status, message string, dep
 	}
 	return nil
 }
+
+func (g *Github) SetRepoWebhook(owner, repo, webhookUrl string) error {
+	ctx := context.Background()
+	_, _, err := g.Client.Repositories.CreateHook(ctx, owner, repo, &github.Hook{
+		URL: &webhookUrl,
+		Events: []string{
+			"push",
+			"pull_request",
+		},
+		Active: github.Bool(true),
+		Config: &github.HookConfig{
+			URL:         &webhookUrl,
+			ContentType: github.String("json"),
+			InsecureSSL: github.String("1"), // TODO: Remove this
+			// TODO: Add secret
+		},
+	})
+	return err
+}

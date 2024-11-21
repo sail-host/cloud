@@ -40,6 +40,10 @@ func (gm *GitManager) UpdateDeploymentStatus(owner, repo, status, message string
 	return gm.Provider.UpdateDeploymentStatus(owner, repo, status, message, deploymentID)
 }
 
+func (gm *GitManager) SetRepoWebhook(owner, repo, webhookUrl string) error {
+	return gm.Provider.SetRepoWebhook(owner, repo, webhookUrl)
+}
+
 func NewGitManager(provider GitProvider) *GitManager {
 	return &GitManager{Provider: provider}
 }

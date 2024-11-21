@@ -15,5 +15,6 @@ func commonGroups() []ICommonRouter {
 		&DomainRouter{},
 		&GitInternalRouter{},
 		&ProjectRouter{},
+		&WebhookRouter{},
 	}
 }

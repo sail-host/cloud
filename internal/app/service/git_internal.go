@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"path"
 	"sync"
 
@@ -25,6 +26,7 @@ type IGitInternalService interface {
 	CloneRepo(id uint, repo, branch, uuid string) error
 	CreateDeployment(id uint, repo, uuid string, deployment model.Deployment) (int64, error)
 	UpdateDeploymentStatus(id uint, repo, status, message string, deploymentID int64) error
+	SetRepoWebhook(project *model.Project) error
 }
 
 func NewIGitInternalService() IGitInternalService {
@@ -210,6 +212,28 @@ func (s *GitInternalService) UpdateDeploymentStatus(id uint, repo, status, messa
 		github := git.NewGithub(gitModel.Token, gitModel.Owner)
 		gitManager = git.NewGitManager(github)
 		err = gitManager.UpdateDeploymentStatus(gitModel.Owner, repo, status, message, deploymentID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *GitInternalService) SetRepoWebhook(project *model.Project) error {
+	webhookUrl := fmt.Sprintf("%s/api/v1/webhook/github/%d", global.CONF.System.AppUrl, project.ID)
+
+	var gitManager *git.GitManager
+	gitModel, err := gitRepo.GetGitByID(project.GitID)
+	if err != nil {
+		return err
+	}
+
+	switch gitModel.Type {
+	case "github":
+		github := git.NewGithub(gitModel.Token, gitModel.Owner)
+		gitManager = git.NewGitManager(github)
+		err = gitManager.SetRepoWebhook(gitModel.Owner, project.GitRepo, webhookUrl)
 		if err != nil {
 			return err
 		}

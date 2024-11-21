@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sail-host/cloud/internal/global"
 )
 
 type WebhookGithubService struct {
@@ -42,6 +43,7 @@ func (s *WebhookGithubService) HandleWebhook(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	global.LOG.Info("Github webhook payload", payload)
 
 	// Get project id from param
 	projectID := c.Param("project_id")
@@ -60,7 +62,7 @@ func (s *WebhookGithubService) HandleWebhook(c echo.Context) error {
 	}
 
 	// Check project branch
-	if payload.Ref != project.ProductionBranch {
+	if payload.Ref != "refs/heads/"+project.ProductionBranch {
 		return errors.New("branch not match")
 	}
 
