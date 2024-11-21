@@ -20,4 +20,5 @@ var (
 	projectSettingService   = service.NewIProjectSettingGeneralService()
 	deploymentDomainService = service.NewIDeploymentDomainService()
 	upgradeService          = service.NewIUpgradeService()
+	webhookGithubService    = service.NewIWebhookGithubService()
 )

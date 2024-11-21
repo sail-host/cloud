@@ -13,4 +13,5 @@ type GitProvider interface {
 	CloneRepo(owner, repo, path, branch, token, username string) error
 	CreateDeployment(owner, repo string, deployment *git.DeploymentRequest) (int64, error)
 	UpdateDeploymentStatus(owner, repo, status, message string, deploymentID int64) error
+	SetRepoWebhook(owner, repo, webhookUrl string) error
 }

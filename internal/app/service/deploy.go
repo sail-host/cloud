@@ -53,6 +53,13 @@ func (d *DeployService) CreateProject(c echo.Context, project *dto.CreateProject
 	global.LOG.Info("Project created and deploy started", projectModel)
 	go d.Deploy(projectModel)
 
+	// Set repo webhook
+	gitInternalService := NewIGitInternalService()
+	err = gitInternalService.SetRepoWebhook(projectModel)
+	if err != nil {
+		global.LOG.Error("Error setting repo webhook", err)
+	}
+
 	return nil
 }
 
