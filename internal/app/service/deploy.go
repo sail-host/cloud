@@ -214,6 +214,16 @@ func (d *DeployService) Deploy(project *model.Project) {
 		}
 	}
 
+	// Redeploy update web server config
+	if isRedeploy {
+		err = deploymentDomainService.UpdateWebServerConfig(project, deployment)
+		if err != nil {
+			errorDeployment(deployment, err)
+			gitInternalService.UpdateDeploymentStatus(gitModel.ID, project.GitRepo, "failure", "Error updating web server config", gitDeploymentID)
+			return
+		}
+	}
+
 	// Update deployment
 	deployment.Status = "success"
 	deployment.DeploymentTime = uint(time.Since(startTime).Seconds())

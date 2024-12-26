@@ -24,7 +24,7 @@ type IDeploymentDomainService interface {
 	AddNewDomain(projectName string, domain dto.AddNewDomainRequest) (any, error)
 	RemoveDomain(projectDomainID uint) error
 	DomainsList(projectName string) (dto.BaseResponse, error)
-	// TODO: Add other methods
+	UpdateWebServerConfig(project *model.Project, deployment *model.Deployment) error
 }
 
 func NewIDeploymentDomainService() IDeploymentDomainService {
@@ -275,4 +275,29 @@ func (d *DeploymentDomainService) DomainsList(projectName string) (dto.BaseRespo
 	resp.Data = domains
 	resp.Status = "success"
 	return resp, nil
+}
+
+func (d *DeploymentDomainService) UpdateWebServerConfig(project *model.Project, deployment *model.Deployment) error {
+
+	// Get project domains
+	domains, err := projectRepo.ListProjectDomains(project.ID)
+	if err != nil {
+		return err
+	}
+
+	// Update Caddy sites
+	// TODO: Update Caddy URL using global config
+	webServer := caddy.NewCaddy("localhost:2019")
+	for _, domain := range domains {
+		err = webServer.UpdateSite(&caddy.SiteConfig{
+			Domain: domain.Domain,
+			Root:   path.Join(global.CONF.System.DeployDir, deployment.UUID, domain.Project.OutputDir),
+		})
+		if err != nil {
+			global.LOG.Error("Error updating Caddy site", err)
+			continue
+		}
+	}
+
+	return nil
 }
