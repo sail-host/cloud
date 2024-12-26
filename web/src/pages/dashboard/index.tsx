@@ -18,13 +18,14 @@ import {
   IconGitBranch,
   IconSitemap,
 } from '@tabler/icons-react'
+import { Analytics } from './components/analytics'
 
 export default function Dashboard() {
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
       <Layout.Header>
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className='flex items-center ml-auto space-x-4'>
           <Search />
           <ThemeSwitch />
           <UserNav />
@@ -33,7 +34,7 @@ export default function Dashboard() {
 
       {/* ===== Main ===== */}
       <Layout.Body>
-        <div className='mb-2 flex items-center justify-between space-y-2'>
+        <div className='flex items-center justify-between mb-2 space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
         </div>
         <Tabs
@@ -41,7 +42,7 @@ export default function Dashboard() {
           defaultValue='overview'
           className='space-y-4'
         >
-          <div className='w-full overflow-x-auto pb-2'>
+          <div className='w-full pb-2 overflow-x-auto'>
             <TabsList>
               <TabsTrigger value='overview'>Overview</TabsTrigger>
               <TabsTrigger value='analytics'>Analytics</TabsTrigger>
@@ -52,11 +53,11 @@ export default function Dashboard() {
           <TabsContent value='overview' className='space-y-4'>
             <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
               <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                   <CardTitle className='text-sm font-medium'>
                     Projects
                   </CardTitle>
-                  <IconSitemap className='h-4 w-4 text-muted-foreground' />
+                  <IconSitemap className='w-4 h-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>23/23</div>
@@ -66,11 +67,11 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                   <CardTitle className='text-sm font-medium'>
                     Git Accounts
                   </CardTitle>
-                  <IconGitBranch className='h-4 w-4 text-muted-foreground' />
+                  <IconGitBranch className='w-4 h-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>2/2</div>
@@ -80,11 +81,11 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                   <CardTitle className='text-sm font-medium'>
                     Disk Usage
                   </CardTitle>
-                  <IconDatabase className='h-4 w-4 text-muted-foreground' />
+                  <IconDatabase className='w-4 h-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>63/100GB</div>
@@ -94,11 +95,11 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
               <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
                   <CardTitle className='text-sm font-medium'>
                     Ram Usage
                   </CardTitle>
-                  <IconCpu className='h-4 w-4 text-muted-foreground' />
+                  <IconCpu className='w-4 h-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                   <div className='text-2xl font-bold'>3.5/8GB</div>
@@ -129,6 +130,9 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+          <TabsContent value='analytics'>
+            <Analytics />
           </TabsContent>
         </Tabs>
       </Layout.Body>

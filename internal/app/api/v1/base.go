@@ -21,4 +21,5 @@ var (
 	deploymentDomainService = service.NewIDeploymentDomainService()
 	upgradeService          = service.NewIUpgradeService()
 	webhookGithubService    = service.NewIWebhookGithubService()
+	metricsService          = service.NewMetricsService()
 )
